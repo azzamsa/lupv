@@ -1,14 +1,14 @@
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QMainWindow, QApplication, QTableWidget, QTableWidgetItem
 
-import MainWindow2
+import MainWindow
 import PersonPopup
 import sys
 import os
 import collections
 
 
-class Main(QMainWindow, MainWindow2.Ui_MainWindow):
+class Main(QMainWindow, MainWindow.Ui_MainWindow):
 
     def __init__(self, parent=None):
         super(Main, self).__init__(parent)

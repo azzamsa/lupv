@@ -28,8 +28,10 @@ class MainView(QMainWindow, Ui_MainWindow):
         # Toggle theme
         dark_theme = '../Lupv/Resources/theme/dark.qss'
         light_theme = '../Lupv/Resources/theme/light.qss'
-        self.actionToggleDark.triggered.connect(lambda: self.toggle_theme(dark_theme))
-        self.actionToggleLight.triggered.connect(lambda: self.toggle_theme(light_theme))
+        self.actionToggleDark.triggered.connect(
+            lambda: self.toggle_theme(dark_theme))
+        self.actionToggleLight.triggered.connect(
+            lambda: self.toggle_theme(light_theme))
         self.toggle_theme('../Lupv/Resources/theme/dark.qss')  # default theme
 
         css = """
@@ -46,7 +48,8 @@ class MainView(QMainWindow, Ui_MainWindow):
         welcome_message = QLabel()
         welcome_message.setText("Please open tasks to start analyzing")
         welcome_message.setStyleSheet(css)
-        self.verticalLayout.addWidget(welcome_message, alignment=Qt.AlignCenter)
+        self.verticalLayout.addWidget(welcome_message,
+                                      alignment=Qt.AlignCenter)
 
         self.show()
 

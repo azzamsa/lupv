@@ -21,22 +21,4 @@ if __name__ == "__main__":
     lupv = Lupv(sys.argv)
     lupv.setQuitOnLastWindowClosed(False)
 
-    # Splash Screen
-    splash_pix = QPixmap('../Lupr/Resources/img/lup-splash.svg')
-    splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
-
-    progressBar = QProgressBar(splash)
-    progressBar.setGeometry(0, 260, 700, 25)
-
-    splash.setMask(splash_pix.mask())
-    splash.show()
-
-    for i in range(0, 100, 10):
-        progressBar.setValue(i)
-        t = time.time()
-        while time.time() < t + 0.1:
-            lupv.processEvents()
-
-    splash.close()
-
     sys.exit(lupv.exec_())

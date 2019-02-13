@@ -32,7 +32,8 @@ class MainView(QMainWindow, Ui_MainWindow):
         self._main_controller.create()
 
     def quit_app(self):
-        sys.exit()
+        QtWidgets.QApplication.quit()
+
 
     def load_data(self):
         self.choose_record_dir()

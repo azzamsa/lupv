@@ -4,6 +4,7 @@ from collections import OrderedDict
 from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
                              QApplication)
 from PyQt5.QtCore import QFile, QTextStream
+from PyQt5.QtGui import QKeySequence
 
 
 class MyDict(OrderedDict):
@@ -23,6 +24,7 @@ class MainView(QMainWindow, Ui_MainWindow):
 
         self.actionOpen_Task.triggered.connect(self.load_data)
         self.actionQuit.triggered.connect(self.quit_app)
+        self.actionQuit.setShortcut(QKeySequence("Ctrl+q"))
 
         # Toggle theme
         dark_theme = '../Lupv/Resources/theme/dark.qss'

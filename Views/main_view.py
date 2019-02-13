@@ -2,8 +2,8 @@ from Views.main_window import Ui_MainWindow
 
 from collections import OrderedDict
 from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
-                             QApplication)
-from PyQt5.QtCore import QFile, QTextStream
+                             QApplication, QLabel)
+from PyQt5.QtCore import QFile, QTextStream, Qt, QRect
 from PyQt5.QtGui import QKeySequence
 
 
@@ -20,7 +20,6 @@ class MainView(QMainWindow, Ui_MainWindow):
         self._model = model
         self._main_controller = main_controller
         self.setupUi(self)
-        self.show()
 
         self.actionOpen_Task.triggered.connect(self.load_data)
         self.actionQuit.triggered.connect(self.quit_app)
@@ -32,6 +31,14 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.actionToggleDark.triggered.connect(lambda: self.toggle_theme(dark_theme))
         self.actionToggleLight.triggered.connect(lambda: self.toggle_theme(light_theme))
         self.toggle_theme('../Lupv/Resources/theme/dark.qss')  # default theme
+
+        self.tableWidget.setVisible(False)
+        welcome_message = QLabel()
+        welcome_message.setText("Please open tasks to start analyzing")
+        welcome_message.setAlignment(Qt.AlignCenter)
+        self.verticalLayout.addWidget(welcome_message)
+
+        self.show()
 
     def toggle_theme(self, path):
         lupv = QApplication.instance()

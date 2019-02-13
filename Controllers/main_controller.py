@@ -55,18 +55,17 @@ class MainController(QObject):
         first_record = str(commits[-1].committed_datetime).split("+")[0]
         return first_record
 
-    def create_records(self):
-        root_dir = self._model.get_record_dir()
-        students = self.get_students_dir(root_dir)
+    def create_records(self, path):
+        students = self.get_students_dir(path)
         records = []
 
         for student in students:
             name = str(student).split("-")[0]
             nim = str(student).split("-")[1]
-            work_duration = self.get_work_duration(root_dir + "/" + student)
-            record_amounts = self.get_record_amounts(root_dir + "/" + student)
-            first_record = self.get_first_record(root_dir + "/" + student)
-            last_record = self.get_last_record(root_dir + "/" + student)
+            work_duration = self.get_work_duration(path + "/" + student)
+            record_amounts = self.get_record_amounts(path + "/" + student)
+            first_record = self.get_first_record(path + "/" + student)
+            last_record = self.get_last_record(path + "/" + student)
             name = Records(name, nim, work_duration, record_amounts,
                            first_record, last_record)
             records.append(name)

@@ -21,7 +21,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         self._main_controller = main_controller
         self.setupUi(self)
 
-        self.actionOpen_Task.triggered.connect(self.load_data)
+        self.actionOpen_Task.triggered.connect(self.populate_records)
         self.actionQuit.triggered.connect(self.quit_app)
         self.actionQuit.setShortcut(QKeySequence("Ctrl+q"))
 
@@ -60,26 +60,32 @@ class MainView(QMainWindow, Ui_MainWindow):
         stream = QTextStream(file)
         lupv.setStyleSheet(stream.readAll())
 
-    def choose_record_dir(self):
-        record_dir = str(QFileDialog.getExistingDirectory(self,
-                                                          "Select Directory"))
-        self._main_controller.set_record_dir(record_dir)
+    def choosedir_dialog(self, caption):
+        """Prompts dialog to choose record directory"""
+        options = (QFileDialog.ShowDirsOnly |
+                   QFileDialog.DontResolveSymlinks)
+        return QFileDialog.getExistingDirectory(self,
+                                                caption=caption,
+                                                options=options)
 
     def quit_app(self):
         QApplication.quit()
 
-    def load_data(self):
-        self.choose_record_dir()
-        records = self._main_controller.create_records()
+    def populate_records(self):
+        path = self.choosedir_dialog('Select Directory...')
+        if not path:
+            return None
+
+        records = self._main_controller.create_records(path)
         ordered_records = MyDict()
 
-        for record in records:
-            ordered_records[record.name]["name"] = record.name
-            ordered_records[record.name]["nim"] = record.nim
-            ordered_records[record.name]["record_amounts"] = record.record_amounts
-            ordered_records[record.name]["work_duration"] = record.work_duration
-            ordered_records[record.name]["first_record"] = record.first_record
-            ordered_records[record.name]["last_record"] = record.last_record
+        for rec in records:
+            ordered_records[rec.name]["name"] = rec.name
+            ordered_records[rec.name]["nim"] = rec.nim
+            ordered_records[rec.name]["record_amounts"] = rec.record_amounts
+            ordered_records[rec.name]["work_duration"] = rec.work_duration
+            ordered_records[rec.name]["first_record"] = rec.first_record
+            ordered_records[rec.name]["last_record"] = rec.last_record
 
         self.tableWidget.setRowCount(0)
 

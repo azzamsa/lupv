@@ -65,10 +65,6 @@ class MainView(QMainWindow, Ui_MainWindow):
                                                           "Select Directory"))
         self._main_controller.set_record_dir(record_dir)
 
-    def read_tasks(self):
-        self.choose_record_dir()
-        self._main_controller.create()
-
     def quit_app(self):
         QApplication.quit()
 

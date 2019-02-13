@@ -50,7 +50,13 @@ class MainView(QMainWindow, Ui_MainWindow):
 
         for row_number, key_name in enumerate(ordered_records):
             self.tableWidget.insertRow(row_number)
-            for column_number, column_key in enumerate(ordered_records[key_name]):
-                table_item = QTableWidgetItem(str(ordered_records[key_name][column_key]))
+            for column_number, column_key in enumerate(
+                    ordered_records[key_name]):
+                table_item = QTableWidgetItem(
+                    str(ordered_records[key_name][column_key]))
                 self.tableWidget.setItem(row_number, column_number,
                                          table_item)
+        self.tableWidget.setVisible(False)
+        self.tableWidget.verticalScrollBar().setValue(0)
+        self.tableWidget.resizeColumnsToContents()
+        self.tableWidget.setVisible(True)

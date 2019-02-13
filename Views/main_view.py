@@ -19,7 +19,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.show()
 
-        self.actionRead_Task.triggered.connect(self.load_data)
+        self.actionOpen_Task.triggered.connect(self.load_data)
         self.actionQuit.triggered.connect(self.quit_app)
 
     def choose_record_dir(self):

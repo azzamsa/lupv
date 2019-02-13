@@ -3,7 +3,7 @@ from Views.main_window import Ui_MainWindow
 from collections import OrderedDict
 from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
                              QApplication, QLabel)
-from PyQt5.QtCore import QFile, QTextStream, Qt, QRect
+from PyQt5.QtCore import QFile, QTextStream, Qt
 from PyQt5.QtGui import QKeySequence
 
 
@@ -32,11 +32,21 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.actionToggleLight.triggered.connect(lambda: self.toggle_theme(light_theme))
         self.toggle_theme('../Lupv/Resources/theme/dark.qss')  # default theme
 
+        css = """
+        color: white;
+        font-size: 12px;
+        border-radius: 20px;
+        qproperty-alignment: AlignCenter;
+        min-height: 25px;
+        min-width: 250px;
+        background: #1d2c3a;
+        """
+
         self.tableWidget.setVisible(False)
         welcome_message = QLabel()
         welcome_message.setText("Please open tasks to start analyzing")
-        welcome_message.setAlignment(Qt.AlignCenter)
-        self.verticalLayout.addWidget(welcome_message)
+        welcome_message.setStyleSheet(css)
+        self.verticalLayout.addWidget(welcome_message, alignment=Qt.AlignCenter)
 
         self.show()
 

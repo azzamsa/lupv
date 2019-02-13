@@ -3,6 +3,7 @@ from Views.main_window import Ui_MainWindow
 from collections import OrderedDict
 from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
                              QApplication)
+from PyQt5.QtCore import QFile, QTextStream
 
 
 class MyDict(OrderedDict):
@@ -22,6 +23,20 @@ class MainView(QMainWindow, Ui_MainWindow):
 
         self.actionOpen_Task.triggered.connect(self.load_data)
         self.actionQuit.triggered.connect(self.quit_app)
+
+        # Toggle theme
+        dark_theme = '../Lupv/Resources/theme/dark.qss'
+        light_theme = '../Lupv/Resources/theme/light.qss'
+        self.actionToggleDark.triggered.connect(lambda: self.toggle_theme(dark_theme))
+        self.actionToggleLight.triggered.connect(lambda: self.toggle_theme(light_theme))
+        self.toggle_theme('../Lupv/Resources/theme/dark.qss')  # default theme
+
+    def toggle_theme(self, path):
+        lupv = QApplication.instance()
+        file = QFile(path)
+        file.open(QFile.ReadOnly | QFile.Text)
+        stream = QTextStream(file)
+        lupv.setStyleSheet(stream.readAll())
 
     def choose_record_dir(self):
         record_dir = str(QFileDialog.getExistingDirectory(self,

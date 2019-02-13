@@ -43,6 +43,7 @@ class MainView(QMainWindow, Ui_MainWindow):
             ordered_records[record.name]["name"] = record.name
             ordered_records[record.name]["nim"] = record.nim
             ordered_records[record.name]["record_amounts"] = record.record_amounts
+            ordered_records[record.name]["work_duration"] = record.work_duration
             ordered_records[record.name]["first_record"] = record.first_record
             ordered_records[record.name]["last_record"] = record.last_record
 

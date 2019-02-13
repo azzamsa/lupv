@@ -1,14 +1,15 @@
-import sys
-from collections import OrderedDict
 from Views.main_window import Ui_MainWindow
 
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QTableWidget, QTableWidgetItem
+from collections import OrderedDict
+from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
+                             QApplication)
 
 
 class MyDict(OrderedDict):
     def __missing__(self, key):
         val = self[key] = MyDict()
         return val
+
 
 class MainView(QMainWindow, Ui_MainWindow):
 
@@ -32,8 +33,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         self._main_controller.create()
 
     def quit_app(self):
-        QtWidgets.QApplication.quit()
-
+        QApplication.quit()
 
     def load_data(self):
         self.choose_record_dir()

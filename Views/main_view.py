@@ -119,6 +119,7 @@ class MainView(QMainWindow, Ui_MainWindow):
                     str(ordered_records[key_name][column_key]))
                 self.tableWidget.setItem(row_number, column_number,
                                          table_item)
+        self.welcome_message.setVisible(False)
         self.tableWidget.setVisible(False)
         self.tableWidget.verticalScrollBar().setValue(0)
         self.tableWidget.resizeColumnsToContents()

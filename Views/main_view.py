@@ -22,8 +22,9 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.actionOpen_Task.triggered.connect(self.populate_records)
+        self.actionOpen_Task.setShortcut(QKeySequence("Ctrl+O"))
         self.actionQuit.triggered.connect(self.quit_app)
-        self.actionQuit.setShortcut(QKeySequence("Ctrl+q"))
+        self.actionQuit.setShortcut(QKeySequence("Ctrl+Q"))
 
         # Toggle theme
         dark_theme = '../Lupv/Resources/theme/dark.qss'

@@ -15,7 +15,14 @@ class MainController(QObject):
         self._model.set_record_dir(record_dir)
 
     def get_students_dir(self, root_dir):
-        return os.listdir(root_dir)
+        directories = os.listdir(root_dir)
+        student_dirs = []
+        for directory in directories:
+            if os.path.isdir(root_dir + '/' + directory + '/.git'):
+                student_dirs.append(directory)
+            else:
+                print('skipped' + directory + '. Task not valid.')
+        return student_dirs
 
     def get_name(self, dir_path):
         pass

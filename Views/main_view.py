@@ -1,8 +1,10 @@
+import os
+from Resources.theme import breeze_resources
 from Views.main_window import Ui_MainWindow
 
 from collections import OrderedDict
 from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
-                             QApplication, QLabel)
+                             QApplication, QLabel, QMessageBox)
 from PyQt5.QtCore import QFile, QTextStream, Qt
 from PyQt5.QtGui import QKeySequence
 
@@ -46,10 +48,10 @@ class MainView(QMainWindow, Ui_MainWindow):
         """
 
         self.tableWidget.setVisible(False)
-        welcome_message = QLabel()
-        welcome_message.setText("Please open tasks to start analyzing")
-        welcome_message.setStyleSheet(css)
-        self.verticalLayout.addWidget(welcome_message,
+        self.welcome_message = QLabel()
+        self.welcome_message.setText("Please open tasks to start analyzing")
+        self.welcome_message.setStyleSheet(css)
+        self.verticalLayout.addWidget(self.welcome_message,
                                       alignment=Qt.AlignCenter)
 
         self.show()
@@ -69,6 +71,22 @@ class MainView(QMainWindow, Ui_MainWindow):
                                                 caption=caption,
                                                 options=options)
 
+    def validate_path(self, path):
+        directories = os.listdir(path)
+        invalid_dirs = []
+        for directory in directories:
+            if not os.path.isdir(path + '/' + directory + "/.git"):
+                invalid_dirs.append(directory)
+        if len(invalid_dirs) == 0:
+            return True
+        elif len(invalid_dirs) <= 10:
+            QMessageBox.warning(self, '', 'Not a valid Tasks directory'
+                                '\n\nContains invalid Task: \n'
+                                + '\n'.join(invalid_dirs))
+        else:
+            QMessageBox.warning(self, '', 'Not a valid Tasks directory'
+                                '\n\nContains many invalid Tasks ')
+
     def quit_app(self):
         QApplication.quit()
 
@@ -76,6 +94,9 @@ class MainView(QMainWindow, Ui_MainWindow):
         path = self.choosedir_dialog('Select Directory...')
         if not path:
             return None
+        else:
+            if not self.validate_path(path):
+                return None
 
         records = self._main_controller.create_records(path)
         ordered_records = MyDict()

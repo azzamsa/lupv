@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>580</width>
-    <height>493</height>
+    <width>1132</width>
+    <height>771</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,16 +15,9 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="label_nama">
-       <property name="text">
-        <string>Nama </string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QListWidget" name="listWidget"/>
+      <widget class="QListView" name="listView"/>
      </item>
     </layout>
    </item>

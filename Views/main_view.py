@@ -1,10 +1,11 @@
 import os
 from Resources.theme import breeze_resources
 from Views.main_window import Ui_MainWindow
+from Views.student_view import Ui_Form
 
 from collections import OrderedDict
 from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
-                             QApplication, QLabel, QMessageBox)
+                             QApplication, QLabel, QMessageBox, QWidget)
 from PyQt5.QtCore import QFile, QTextStream, Qt
 from PyQt5.QtGui import QKeySequence
 
@@ -13,6 +14,11 @@ class MyDict(OrderedDict):
     def __missing__(self, key):
         val = self[key] = MyDict()
         return val
+
+class StudentView(QWidget, Ui_Form):
+    def __init__(self, parent=None):
+        super(StudentView, self).__init__(parent)
+        self.setupUi(self)
 
 
 class MainView(QMainWindow, Ui_MainWindow):
@@ -27,6 +33,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.actionOpen_Task.setShortcut(QKeySequence("Ctrl+O"))
         self.actionQuit.triggered.connect(self.quit_app)
         self.actionQuit.setShortcut(QKeySequence("Ctrl+Q"))
+        self.tableWidget.clicked.connect(self.open_person_popup)
 
         # Toggle theme
         dark_theme = '../Lupv/Resources/theme/dark.qss'
@@ -89,6 +96,7 @@ class MainView(QMainWindow, Ui_MainWindow):
 
     def quit_app(self):
         QApplication.quit()
+        self.close()
 
     def populate_records(self):
         path = self.choosedir_dialog('Select Directory...')
@@ -124,3 +132,24 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.tableWidget.verticalScrollBar().setValue(0)
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.setVisible(True)
+
+    def debug_trace(self):
+        '''Set a tracepoint in the Python debugger that works with Qt'''
+        from PyQt5.QtCore import pyqtRemoveInputHook
+
+        from pdb import set_trace
+        pyqtRemoveInputHook()
+        set_trace()
+
+    def open_person_popup(self):
+        self.mynew_window = StudentView()
+        # TODO get first item only
+        # self.foo = self.tableWidget.currentItem()
+        # self.bar = self.tableWidget.currentRow()
+        self.name = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
+        self.nim = self.tableWidget.item(self.tableWidget.currentRow(), 1).text()
+        self.dir_name = self.name + "-" + self.nim
+        self.mynew_window.name_label.setText(self.dir_name)
+        self.mynew_window.setWindowTitle(self.dir_name)
+        # self.debug_trace()
+        self.mynew_window.show()

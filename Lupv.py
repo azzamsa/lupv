@@ -19,6 +19,5 @@ class Lupv(QApplication):
 
 if __name__ == "__main__":
     lupv = Lupv(sys.argv)
-    lupv.setQuitOnLastWindowClosed(False)
 
     sys.exit(lupv.exec_())

@@ -18,10 +18,10 @@ class MyDict(OrderedDict):
 
 class MainView(QMainWindow, Ui_MainWindow):
 
-    def __init__(self, model, main_controller):
+    def __init__(self, model, controller):
         super().__init__()
         self._model = model
-        self._main_controller = main_controller
+        self._controller = controller
         self.setupUi(self)
 
         self.actionOpen_Records.triggered.connect(self.populate_records)
@@ -31,12 +31,10 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.tableWidget.clicked.connect(self.open_person_popup)
 
         # Toggle theme
-        dark_theme = '../Lupv/Resources/theme/dark.qss'
-        light_theme = '../Lupv/Resources/theme/light.qss'
-        self.actionToggleDark.triggered.connect(
-            lambda: self.toggle_theme(dark_theme))
-        self.actionToggleLight.triggered.connect(
-            lambda: self.toggle_theme(light_theme))
+        dark = '../Lupv/Resources/theme/dark.qss'
+        light = '../Lupv/Resources/theme/light.qss'
+        self.actionToggleDark.triggered.connect(lambda: self.toggle_theme(dark))
+        self.actionToggleLight.triggered.connect(lambda: self.toggle_theme(light))
         self.toggle_theme('../Lupv/Resources/theme/dark.qss')  # default theme
 
         css = """
@@ -50,10 +48,10 @@ class MainView(QMainWindow, Ui_MainWindow):
         """
 
         self.tableWidget.setVisible(False)
-        self.welcome_message = QLabel()
-        self.welcome_message.setText("Please open records to start analyzing")
-        self.welcome_message.setStyleSheet(css)
-        self.verticalLayout.addWidget(self.welcome_message,
+        self.welcome_lbl = QLabel()
+        self.welcome_lbl.setText("Please open records to start analyzing")
+        self.welcome_lbl.setStyleSheet(css)
+        self.verticalLayout.addWidget(self.welcome_lbl,
                                       alignment=Qt.AlignCenter)
 
         self.show()
@@ -75,8 +73,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         """Prompts dialog to choose record directory"""
         options = (QFileDialog.ShowDirsOnly |
                    QFileDialog.DontResolveSymlinks)
-        return QFileDialog.getExistingDirectory(self,
-                                                caption=caption,
+        return QFileDialog.getExistingDirectory(self, caption=caption,
                                                 options=options)
 
     def validate_path(self, path):
@@ -85,11 +82,11 @@ class MainView(QMainWindow, Ui_MainWindow):
         This is necessary because invalid path will break `read_records` and
         make application crash.
         """
-        directories = os.listdir(path)
+        dirs = os.listdir(path)
         invalid_dirs = []
-        for directory in directories:
-            if not os.path.isdir(path + '/' + directory + "/.git"):
-                invalid_dirs.append(directory)
+        for d in dirs:
+            if not os.path.isdir(path + '/' + d + "/.git"):
+                invalid_dirs.append(d)
         if len(invalid_dirs) == 0:
             return True
         elif len(invalid_dirs) <= 10:
@@ -100,9 +97,9 @@ class MainView(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, '', 'Not a valid Tasks directory'
                                 '\n\nContains many invalid Tasks ')
 
-    def save_record_path(self, rec_path):
+    def save_record_path(self, record_path):
         "save record path"
-        self._main_controller.save_record_path(rec_path)
+        self._controller.save_record_path(record_path)
 
     def populate_records(self):
         "Populate record to Table"
@@ -114,28 +111,26 @@ class MainView(QMainWindow, Ui_MainWindow):
                 return None
 
         self.save_record_path(path)
-        recs = self._main_controller.read_records(path)
-        ordered_recs = MyDict()
+        recs = self._controller.read_records(path)
+        ord_recs = MyDict()  # ordered records
 
         for rec in recs:
-            ordered_recs[rec.name]["name"] = rec.name
-            ordered_recs[rec.name]["nim"] = rec.nim
-            ordered_recs[rec.name]["record_amounts"] = rec.record_amounts
-            ordered_recs[rec.name]["work_duration"] = rec.work_duration
-            ordered_recs[rec.name]["first_record"] = rec.first_record
-            ordered_recs[rec.name]["last_record"] = rec.last_record
+            ord_recs[rec.name]["name"] = rec.name
+            ord_recs[rec.name]["nim"] = rec.nim
+            ord_recs[rec.name]["record_amounts"] = rec.record_amounts
+            ord_recs[rec.name]["work_duration"] = rec.work_duration
+            ord_recs[rec.name]["first_record"] = rec.first_record
+            ord_recs[rec.name]["last_record"] = rec.last_record
 
         self.tableWidget.setRowCount(0)
 
-        for row_number, key_name in enumerate(ordered_recs):
-            self.tableWidget.insertRow(row_number)
-            for column_number, column_key in enumerate(
-                    ordered_recs[key_name]):
-                table_item = QTableWidgetItem(
-                    str(ordered_recs[key_name][column_key]))
-                self.tableWidget.setItem(row_number, column_number,
-                                         table_item)
-        self.welcome_message.setVisible(False)
+        for row_num, key_name in enumerate(ord_recs):
+            self.tableWidget.insertRow(row_num)
+            for col_num, col_key in enumerate(ord_recs[key_name]):
+                tbl_item = QTableWidgetItem(str(ord_recs[key_name][col_key]))
+                self.tableWidget.setItem(row_num, col_num, tbl_item)
+
+        self.welcome_lbl.setVisible(False)
         self.tableWidget.setVisible(False)
         self.tableWidget.verticalScrollBar().setValue(0)
         self.tableWidget.resizeColumnsToContents()
@@ -146,5 +141,5 @@ class MainView(QMainWindow, Ui_MainWindow):
         nim = self.tableWidget.item(self.tableWidget.currentRow(), 1).text()
         student_dir = name + "-" + nim
         self.student_view = StudentView(self._model,
-                                        self._main_controller, student_dir)
+                                        self._controller, student_dir)
         self.student_view.show()

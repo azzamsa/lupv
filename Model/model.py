@@ -10,5 +10,5 @@ class Model(QObject):
     def get_record_path(self):
         return self._record_path
 
-    def set_record_path(self, rec_path):
-        self._record_path = rec_path
+    def set_record_path(self, record_path):
+        self._record_path = record_path

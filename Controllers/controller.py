@@ -4,23 +4,23 @@ import git
 from Model.records import Records
 
 
-class MainController(QObject):
+class Controller(QObject):
 
     def __init__(self, model):
         super().__init__()
 
         self._model = model
 
-    def save_record_path(self, rec_path):
+    def save_record_path(self, record_path):
         "save task path to model"
-        self._model.set_record_path(rec_path)
+        self._model.set_record_path(record_path)
 
-    def get_student_dirs(self, rec_path):
+    def get_student_dirs(self, record_path):
         "Return list of student directories"
-        dirs = os.listdir(rec_path)
+        dirs = os.listdir(record_path)
         student_dirs = []
         for d in dirs:
-            if os.path.isdir(rec_path + '/' + d + '/.git'):
+            if os.path.isdir(record_path + '/' + d + '/.git'):
                 student_dirs.append(d)
             else:
                 print('skipped' + d + '. Task not valid.')
@@ -32,15 +32,15 @@ class MainController(QObject):
     def get_nim(self, path):
         pass
 
-    def get_records(self, rec_path):
+    def get_records(self, record_path):
         """Return list of records from individual directory"""
-        repo = git.Repo(rec_path)
+        repo = git.Repo(record_path)
         records = list(repo.iter_commits('master'))
         return records
 
-    def calc_work_duration(self, rec_path):
+    def calc_work_duration(self, record_path):
         """Calculate duration between first and last commit"""
-        records = self.get_records(rec_path)
+        records = self.get_records(record_path)
         dates = []
 
         for r in records:
@@ -51,26 +51,27 @@ class MainController(QObject):
         duration = first_records - last_records
         return duration
 
-    def count_records(self, rec_path):
+    def count_records(self, record_path):
         """Count the total amount of records"""
-        records = self.get_records(rec_path)
+        records = self.get_records(record_path)
         return len(records)
 
-    def get_last_record(self, rec_path):
+    def get_last_record(self, record_path):
         """Take the last record"""
-        records = self.get_records(rec_path)
+        records = self.get_records(record_path)
         last_record = str(records[0].committed_datetime).split("+")[0]
         return last_record
 
-    def get_first_record(self, rec_path):
+    def get_first_record(self, record_path):
         """Take the first record"""
-        records = self.get_records(rec_path)
+        records = self.get_records(record_path)
         first_record = str(records[-1].committed_datetime).split("+")[0]
         return first_record
 
-    def read_records(self, rec_path):
+    def read_records(self, record_path):
         """Read records from individual dirs then return them as
         `Records` object"""
+        rec_path = record_path
         student_dirs = self.get_student_dirs(rec_path)
         records = []
 
@@ -85,5 +86,4 @@ class MainController(QObject):
                              first_record, last_record)
             records.append(record)
 
-        # self.debug_trace()
         return records

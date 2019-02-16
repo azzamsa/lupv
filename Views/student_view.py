@@ -6,12 +6,12 @@ from PyQt5.QtWidgets import QWidget, QTreeWidgetItem
 
 class StudentView(QWidget, Ui_Form):
 
-    def __init__(self, model, main_controller, student_dir):
+    def __init__(self, model, controller, student_dir):
         super().__init__()
         self.setupUi(self)
         self._student_dir = student_dir
         self._model = model
-        self._main_controller = main_controller
+        self._controller = controller
 
         self.name_label.setText(student_dir)
         self.setWindowTitle(student_dir)
@@ -19,9 +19,9 @@ class StudentView(QWidget, Ui_Form):
         self.push_me.clicked.connect(self.populate_log)
 
     def parse_logs(self):
-        rec_path = self._model.get_record_path()
-        student_dir = rec_path + '/' + self._student_dir
-        recs = self._main_controller.get_records(student_dir)
+        record_path = self._model.get_record_path()
+        student_dir = record_path + '/' + self._student_dir
+        recs = self._controller.get_records(student_dir)
         logs = []
 
         for rec in recs:

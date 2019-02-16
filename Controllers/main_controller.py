@@ -11,70 +11,87 @@ class MainController(QObject):
 
         self._model = model
 
-    def set_record_dir(self, record_dir):
-        self._model.set_record_dir(record_dir)
+    def save_record_path(self, rec_path):
+        "save task path to model"
+        self._model.set_record_path(rec_path)
 
-    def get_students_dir(self, root_dir):
-        directories = os.listdir(root_dir)
+    def get_student_dirs(self, rec_path):
+        "Return list of student directories"
+        dirs = os.listdir(rec_path)
         student_dirs = []
-        for directory in directories:
-            if os.path.isdir(root_dir + '/' + directory + '/.git'):
-                student_dirs.append(directory)
+        for d in dirs:
+            if os.path.isdir(rec_path + '/' + d + '/.git'):
+                student_dirs.append(d)
             else:
-                print('skipped' + directory + '. Task not valid.')
+                print('skipped' + d + '. Task not valid.')
         return student_dirs
 
-    def get_name(self, dir_path):
+    def get_name(self, path):
         pass
 
-    def get_nim(self, dir_path):
+    def get_nim(self, path):
         pass
 
-    def get_commits(self, dir_path):
-        repo = git.Repo(dir_path)
-        commits = list(repo.iter_commits('master'))
-        return commits
+    def get_records(self, rec_path):
+        """Return list of records from individual directory"""
+        repo = git.Repo(rec_path)
+        records = list(repo.iter_commits('master'))
+        return records
 
-    def get_work_duration(self, dir_path):
-        commits = self.get_commits(dir_path)
+    def calc_work_duration(self, rec_path):
+        """Calculate duration between first and last commit"""
+        records = self.get_records(rec_path)
         dates = []
 
-        for c in commits:
-            dates.append(c.committed_datetime)
+        for r in records:
+            dates.append(r.committed_datetime)
 
-        first_commit = dates[0]
-        last_commit = dates[-1]
-        duration = first_commit - last_commit
+        first_records = dates[0]
+        last_records = dates[-1]
+        duration = first_records - last_records
         return duration
 
-    def get_record_amounts(self, dir_path):
-        commits = self.get_commits(dir_path)
-        records_amount = len(commits)
-        return records_amount
+    def count_records(self, rec_path):
+        """Count the total amount of records"""
+        records = self.get_records(rec_path)
+        return len(records)
 
-    def get_last_record(self, dir_path):
-        commits = self.get_commits(dir_path)
-        last_record = str(commits[0].committed_datetime).split("+")[0]
+    def get_last_record(self, rec_path):
+        """Take the last record"""
+        records = self.get_records(rec_path)
+        last_record = str(records[0].committed_datetime).split("+")[0]
         return last_record
 
-    def get_first_record(self, dir_path):
-        commits = self.get_commits(dir_path)
-        first_record = str(commits[-1].committed_datetime).split("+")[0]
+    def get_first_record(self, rec_path):
+        """Take the first record"""
+        records = self.get_records(rec_path)
+        first_record = str(records[-1].committed_datetime).split("+")[0]
         return first_record
 
-    def create_records(self, path):
-        students = self.get_students_dir(path)
+    def read_records(self, rec_path):
+        """Read records from individual dirs then return them as
+        `Records` object"""
+        student_dirs = self.get_student_dirs(rec_path)
         records = []
 
-        for student in students:
-            name = str(student).split("-")[0]
-            nim = str(student).split("-")[1]
-            work_duration = self.get_work_duration(path + "/" + student)
-            record_amounts = self.get_record_amounts(path + "/" + student)
-            first_record = self.get_first_record(path + "/" + student)
-            last_record = self.get_last_record(path + "/" + student)
-            name = Records(name, nim, work_duration, record_amounts,
-                           first_record, last_record)
-            records.append(name)
+        for d in student_dirs:
+            name = str(d).split("-")[0]
+            nim = str(d).split("-")[1]
+            work_duration = self.calc_work_duration(rec_path + "/" + d)
+            record_amounts = self.count_records(rec_path + "/" + d)
+            first_record = self.get_first_record(rec_path + "/" + d)
+            last_record = self.get_last_record(rec_path + "/" + d)
+            record = Records(name, nim, work_duration, record_amounts,
+                             first_record, last_record)
+            records.append(record)
 
+        # self.debug_trace()
         return records
+
+    def debug_trace(self):
+        '''Set a tracepoint in the Python debugger that works with Qt'''
+        from PyQt5.QtCore import pyqtRemoveInputHook
+
+        from pdb import set_trace
+        pyqtRemoveInputHook()
+        set_trace()

@@ -1,11 +1,11 @@
 import os
 from Resources.theme import breeze_resources
 from Views.main_window import Ui_MainWindow
-from Views.student_view import Ui_Form
+from Views.student_view import StudentView
 
 from collections import OrderedDict
 from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
-                             QApplication, QLabel, QMessageBox, QWidget)
+                             QApplication, QLabel, QMessageBox)
 from PyQt5.QtCore import QFile, QTextStream, Qt
 from PyQt5.QtGui import QKeySequence
 
@@ -14,11 +14,6 @@ class MyDict(OrderedDict):
     def __missing__(self, key):
         val = self[key] = MyDict()
         return val
-
-class StudentView(QWidget, Ui_Form):
-    def __init__(self, parent=None):
-        super(StudentView, self).__init__(parent)
-        self.setupUi(self)
 
 
 class MainView(QMainWindow, Ui_MainWindow):
@@ -29,8 +24,8 @@ class MainView(QMainWindow, Ui_MainWindow):
         self._main_controller = main_controller
         self.setupUi(self)
 
-        self.actionOpen_Task.triggered.connect(self.populate_records)
-        self.actionOpen_Task.setShortcut(QKeySequence("Ctrl+O"))
+        self.actionOpen_Records.triggered.connect(self.populate_records)
+        self.actionOpen_Records.setShortcut(QKeySequence("Ctrl+O"))
         self.actionQuit.triggered.connect(self.quit_app)
         self.actionQuit.setShortcut(QKeySequence("Ctrl+Q"))
         self.tableWidget.clicked.connect(self.open_person_popup)
@@ -56,14 +51,20 @@ class MainView(QMainWindow, Ui_MainWindow):
 
         self.tableWidget.setVisible(False)
         self.welcome_message = QLabel()
-        self.welcome_message.setText("Please open tasks to start analyzing")
+        self.welcome_message.setText("Please open records to start analyzing")
         self.welcome_message.setStyleSheet(css)
         self.verticalLayout.addWidget(self.welcome_message,
                                       alignment=Qt.AlignCenter)
 
         self.show()
 
+    def quit_app(self):
+        """Quit application"""
+        QApplication.quit()
+        self.close()
+
     def toggle_theme(self, path):
+        """Change application theme based on theme location"""
         lupv = QApplication.instance()
         file = QFile(path)
         file.open(QFile.ReadOnly | QFile.Text)
@@ -79,6 +80,11 @@ class MainView(QMainWindow, Ui_MainWindow):
                                                 options=options)
 
     def validate_path(self, path):
+        """Validate chosen path.
+
+        This is necessary because invalid path will break `read_records` and
+        make application crash.
+        """
         directories = os.listdir(path)
         invalid_dirs = []
         for directory in directories:
@@ -94,11 +100,12 @@ class MainView(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, '', 'Not a valid Tasks directory'
                                 '\n\nContains many invalid Tasks ')
 
-    def quit_app(self):
-        QApplication.quit()
-        self.close()
+    def save_record_path(self, rec_path):
+        "save record path"
+        self._main_controller.save_record_path(rec_path)
 
     def populate_records(self):
+        "Populate record to Table"
         path = self.choosedir_dialog('Select Directory...')
         if not path:
             return None
@@ -106,25 +113,26 @@ class MainView(QMainWindow, Ui_MainWindow):
             if not self.validate_path(path):
                 return None
 
-        records = self._main_controller.create_records(path)
-        ordered_records = MyDict()
+        self.save_record_path(path)
+        recs = self._main_controller.read_records(path)
+        ordered_recs = MyDict()
 
-        for rec in records:
-            ordered_records[rec.name]["name"] = rec.name
-            ordered_records[rec.name]["nim"] = rec.nim
-            ordered_records[rec.name]["record_amounts"] = rec.record_amounts
-            ordered_records[rec.name]["work_duration"] = rec.work_duration
-            ordered_records[rec.name]["first_record"] = rec.first_record
-            ordered_records[rec.name]["last_record"] = rec.last_record
+        for rec in recs:
+            ordered_recs[rec.name]["name"] = rec.name
+            ordered_recs[rec.name]["nim"] = rec.nim
+            ordered_recs[rec.name]["record_amounts"] = rec.record_amounts
+            ordered_recs[rec.name]["work_duration"] = rec.work_duration
+            ordered_recs[rec.name]["first_record"] = rec.first_record
+            ordered_recs[rec.name]["last_record"] = rec.last_record
 
         self.tableWidget.setRowCount(0)
 
-        for row_number, key_name in enumerate(ordered_records):
+        for row_number, key_name in enumerate(ordered_recs):
             self.tableWidget.insertRow(row_number)
             for column_number, column_key in enumerate(
-                    ordered_records[key_name]):
+                    ordered_recs[key_name]):
                 table_item = QTableWidgetItem(
-                    str(ordered_records[key_name][column_key]))
+                    str(ordered_recs[key_name][column_key]))
                 self.tableWidget.setItem(row_number, column_number,
                                          table_item)
         self.welcome_message.setVisible(False)
@@ -133,23 +141,15 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.setVisible(True)
 
-    def debug_trace(self):
-        '''Set a tracepoint in the Python debugger that works with Qt'''
-        from PyQt5.QtCore import pyqtRemoveInputHook
-
-        from pdb import set_trace
-        pyqtRemoveInputHook()
-        set_trace()
 
     def open_person_popup(self):
-        self.mynew_window = StudentView()
         # TODO get first item only
         # self.foo = self.tableWidget.currentItem()
         # self.bar = self.tableWidget.currentRow()
-        self.name = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
-        self.nim = self.tableWidget.item(self.tableWidget.currentRow(), 1).text()
-        self.dir_name = self.name + "-" + self.nim
-        self.mynew_window.name_label.setText(self.dir_name)
-        self.mynew_window.setWindowTitle(self.dir_name)
-        # self.debug_trace()
-        self.mynew_window.show()
+        name = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
+        nim = self.tableWidget.item(self.tableWidget.currentRow(), 1).text()
+        student_dir = name + "-" + nim
+        self.student_view = StudentView(student_dir)
+        self.student_view.name_label.setText(student_dir)
+        self.student_view.setWindowTitle(student_dir)
+        self.student_view.show()

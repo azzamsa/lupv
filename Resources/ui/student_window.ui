@@ -27,17 +27,22 @@
       <widget class="QTreeWidget" name="log_tree">
        <column>
         <property name="text">
-         <string notr="true">Foo</string>
+         <string notr="true">Name</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string>baz</string>
+         <string>Machine</string>
         </property>
        </column>
        <column>
         <property name="text">
          <string>Bar</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>SHA</string>
         </property>
        </column>
       </widget>

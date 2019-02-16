@@ -32,6 +32,9 @@ class Controller(QObject):
     def get_nim(self, path):
         pass
 
+    def initialize_repo(self, record_path):
+        return git.Repo(record_path)
+
     def get_records(self, record_path):
         """Return list of records from individual directory"""
         repo = git.Repo(record_path)
@@ -67,6 +70,11 @@ class Controller(QObject):
         records = self.get_records(record_path)
         first_record = str(records[-1].committed_datetime).split("+")[0]
         return first_record
+
+    def get_first_record_sha(self, record_path):
+        """Take the first SHA record"""
+        records = self.get_records(record_path)
+        return records[-1].hexsha
 
     def read_records(self, record_path):
         """Read records from individual dirs then return them as

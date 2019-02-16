@@ -22,7 +22,7 @@ class Ui_Form(object):
         self.horizontalLayout.addWidget(self.diff_ptextexit)
         self.log_tree = QtWidgets.QTreeWidget(Form)
         self.log_tree.setObjectName("log_tree")
-        self.log_tree.headerItem().setText(0, "Foo")
+        self.log_tree.headerItem().setText(0, "Name")
         self.horizontalLayout.addWidget(self.log_tree)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.close_btn = QtWidgets.QPushButton(Form)
@@ -35,7 +35,8 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Lupv"))
-        self.log_tree.headerItem().setText(1, _translate("Form", "baz"))
+        self.log_tree.headerItem().setText(1, _translate("Form", "Machine"))
         self.log_tree.headerItem().setText(2, _translate("Form", "Bar"))
+        self.log_tree.headerItem().setText(3, _translate("Form", "SHA"))
         self.close_btn.setText(_translate("Form", "OK"))
 

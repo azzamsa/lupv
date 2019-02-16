@@ -2,6 +2,7 @@ from Model.logs import Logs
 from Views.student_window import Ui_Form
 
 from PyQt5.QtWidgets import QWidget, QTreeWidgetItem
+from PyQt5.QtGui import QTextCursor
 
 
 class StudentView(QWidget, Ui_Form):
@@ -16,6 +17,7 @@ class StudentView(QWidget, Ui_Form):
         self.setWindowTitle(student_dir)
 
         self.populate_log()
+        self.log_tree.itemSelectionChanged.connect(self.display_diff)
         self.close_btn.clicked.connect(self.close)
 
     def parse_logs(self):
@@ -28,7 +30,8 @@ class StudentView(QWidget, Ui_Form):
             name = rec.committer.name
             summary = rec.summary
             email = rec.committer.email
-            log = Logs(name, summary, email)
+            sha = rec.hexsha
+            log = Logs(name, summary, email, sha)
             logs.append(log)
 
         return logs
@@ -39,4 +42,15 @@ class StudentView(QWidget, Ui_Form):
             QTreeWidgetItem(self.log_tree,
                             [str(l.name),
                              str(l.email),
-                             str(l.summary)])
+                             str(l.summary),
+                             str(l.sha)])
+
+    def display_diff(self):
+        items = self.log_tree.selectedItems()
+        sha = items[0].text(3)
+        record_path = self._model.get_record_path()
+        student_dir = record_path + '/' + self._student_dir
+        first_rec_sha = self._controller.get_first_record_sha(student_dir)
+        repo = self._controller.initialize_repo(student_dir)
+        diff = repo.git.diff(first_rec_sha, sha)
+        self.diff_ptextexit.setPlainText(diff)

@@ -141,15 +141,10 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.setVisible(True)
 
-
     def open_person_popup(self):
-        # TODO get first item only
-        # self.foo = self.tableWidget.currentItem()
-        # self.bar = self.tableWidget.currentRow()
         name = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
         nim = self.tableWidget.item(self.tableWidget.currentRow(), 1).text()
         student_dir = name + "-" + nim
-        self.student_view = StudentView(student_dir)
-        self.student_view.name_label.setText(student_dir)
-        self.student_view.setWindowTitle(student_dir)
+        self.student_view = StudentView(self._model,
+                                        self._main_controller, student_dir)
         self.student_view.show()

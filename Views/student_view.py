@@ -1,31 +1,42 @@
-# -*- coding: utf-8 -*-
+from Model.logs import Logs
+from Views.student_window import Ui_Form
 
-# Form implementation generated from reading ui file '/home/azzamsya/code-coba-home/skripsi/Lupv/Resources/ui/student_view.ui'
-#
-# Created by: PyQt5 UI code generator 5.7
-#
-# WARNING! All changes made in this file will be lost!
+from PyQt5.QtWidgets import QWidget, QTreeWidgetItem
 
-from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(400, 300)
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(Form)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.verticalLayout = QtWidgets.QVBoxLayout()
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.name_label = QtWidgets.QLabel(Form)
-        self.name_label.setObjectName("name_label")
-        self.verticalLayout.addWidget(self.name_label)
-        self.verticalLayout_2.addLayout(self.verticalLayout)
+class StudentView(QWidget, Ui_Form):
 
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+    def __init__(self, model, main_controller, student_dir):
+        super().__init__()
+        self.setupUi(self)
+        self._student_dir = student_dir
+        self._model = model
+        self._main_controller = main_controller
 
-    def retranslateUi(self, Form):
-        _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
-        self.name_label.setText(_translate("Form", "TextLabel"))
+        self.name_label.setText(student_dir)
+        self.setWindowTitle(student_dir)
 
+        self.push_me.clicked.connect(self.populate_log)
+
+    def parse_logs(self):
+        rec_path = self._model.get_record_path()
+        student_dir = rec_path + '/' + self._student_dir
+        recs = self._main_controller.get_records(student_dir)
+        logs = []
+
+        for rec in recs:
+            name = rec.committer.name
+            summary = rec.summary
+            email = rec.committer.email
+            log = Logs(name, summary, email)
+            logs.append(log)
+
+        return logs
+
+    def populate_log(self):
+        logs = self.parse_logs()
+        for l in logs:
+            QTreeWidgetItem(self.log_tree,
+                            [str(l.name),
+                             str(l.email),
+                             str(l.summary)])

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/azzamsya/code-coba-home/skripsi/Lupv/Resources/ui/main_window.ui'
 #
-# Created by: PyQt5 UI code generator 5.7
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -58,13 +58,13 @@ class Ui_MainWindow(object):
         self.actionLoad_Task.setObjectName("actionLoad_Task")
         self.actionQuit = QtWidgets.QAction(MainWindow)
         self.actionQuit.setObjectName("actionQuit")
-        self.actionOpen_Task = QtWidgets.QAction(MainWindow)
-        self.actionOpen_Task.setObjectName("actionOpen_Task")
+        self.actionOpen_Records = QtWidgets.QAction(MainWindow)
+        self.actionOpen_Records.setObjectName("actionOpen_Records")
         self.actionToggleLight = QtWidgets.QAction(MainWindow)
         self.actionToggleLight.setObjectName("actionToggleLight")
         self.actionToggleDark = QtWidgets.QAction(MainWindow)
         self.actionToggleDark.setObjectName("actionToggleDark")
-        self.menuMenu.addAction(self.actionOpen_Task)
+        self.menuMenu.addAction(self.actionOpen_Records)
         self.menuMenu.addAction(self.actionQuit)
         self.menuThemes.addAction(self.actionToggleLight)
         self.menuThemes.addAction(self.actionToggleDark)
@@ -96,7 +96,7 @@ class Ui_MainWindow(object):
         self.menuThemes.setTitle(_translate("MainWindow", "&Themes"))
         self.actionLoad_Task.setText(_translate("MainWindow", "Load Task"))
         self.actionQuit.setText(_translate("MainWindow", "&Quit"))
-        self.actionOpen_Task.setText(_translate("MainWindow", "&Open Task"))
+        self.actionOpen_Records.setText(_translate("MainWindow", "&Open Records"))
         self.actionToggleLight.setText(_translate("MainWindow", "&Light"))
         self.actionToggleDark.setText(_translate("MainWindow", "&Dark"))
 

@@ -13,10 +13,10 @@ class StudentView(QWidget, Ui_Form):
         self._model = model
         self._controller = controller
 
-        self.name_label.setText(student_dir)
         self.setWindowTitle(student_dir)
 
-        self.push_me.clicked.connect(self.populate_log)
+        self.populate_log()
+        self.close_btn.clicked.connect(self.close)
 
     def parse_logs(self):
         record_path = self._model.get_record_path()

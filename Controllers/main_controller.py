@@ -87,11 +87,3 @@ class MainController(QObject):
 
         # self.debug_trace()
         return records
-
-    def debug_trace(self):
-        '''Set a tracepoint in the Python debugger that works with Qt'''
-        from PyQt5.QtCore import pyqtRemoveInputHook
-
-        from pdb import set_trace
-        pyqtRemoveInputHook()
-        set_trace()

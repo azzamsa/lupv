@@ -90,6 +90,7 @@ class StudentView(QWidget, Ui_Form):
             return selected_file
 
     def get_all_windows(self, sha):
+        # TODO remove git attribute
         student_repo = self.get_student_repo()
         diff = student_repo.git.show(sha, '.watchers/all_windows')
         diff_body = diff.splitlines()[14:]
@@ -106,7 +107,26 @@ class StudentView(QWidget, Ui_Form):
         for window in windows:
             QTreeWidgetItem(self.all_windows_tw, [window])
 
+    def get_auth_info(self, sha):
+        # TODO get all the revision. non first revision is blank
+        student_repo = self.get_student_repo()
+        diff = student_repo.git.show(sha, '.watchers/auth_info')
+        infos = diff.splitlines()[12:]
+        auth_info = []
+        for info in infos:
+            if info != '':
+                auth_info.append(info)
+        return auth_info
+
+    def display_auth_info(self, sha):
+        auth_info = self.get_auth_info(sha)
+        if auth_info:
+            self.name_lbl.setText(auth_info[0])
+            self.machine_lbl.setText(auth_info[1])
+            self.ip_lbl.setText(auth_info[2])
+
     def selection_changed(self):
         sha = self.get_selected_sha()
         self.display_diff(sha)
         self.display_all_windows(sha)
+        self.display_auth_info(sha)

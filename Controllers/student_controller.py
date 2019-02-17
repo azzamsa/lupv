@@ -40,7 +40,7 @@ class StudentController(QObject):
 
     def read_focused_window(self, sha):
         student_repo = self.get_student_repo()
-        focused_window = student_repo.git.show('{}:.watchers/focused_windows'
+        focused_window = student_repo.git.show('{}:.watchers/focused_window'
                                                .format(sha))
         return focused_window
 

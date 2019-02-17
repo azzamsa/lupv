@@ -31,11 +31,11 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.tableWidget.clicked.connect(self.show_student_view)
 
         # Toggle theme
-        dark = '../Lupv/Resources/theme/dark.qss'
-        light = '../Lupv/Resources/theme/light.qss'
+        dark = '../lupv/Resources/theme/dark.qss'
+        light = '../lupv/Resources/theme/light.qss'
         self.actionToggleDark.triggered.connect(lambda: self.toggle_theme(dark))
         self.actionToggleLight.triggered.connect(lambda: self.toggle_theme(light))
-        self.toggle_theme('../Lupv/Resources/theme/dark.qss')  # default theme
+        self.toggle_theme(dark)  # default theme
 
         css = """
         color: white;

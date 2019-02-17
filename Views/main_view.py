@@ -28,7 +28,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.actionOpen_Records.setShortcut(QKeySequence("Ctrl+O"))
         self.actionQuit.triggered.connect(self.quit_app)
         self.actionQuit.setShortcut(QKeySequence("Ctrl+Q"))
-        self.tableWidget.clicked.connect(self.open_person_popup)
+        self.tableWidget.clicked.connect(self.show_student_view)
 
         # Toggle theme
         dark = '../Lupv/Resources/theme/dark.qss'
@@ -136,7 +136,8 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.setVisible(True)
 
-    def open_person_popup(self):
+    def show_student_view(self):
+        """Show student view when tableWidget clicked"""
         name = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
         nim = self.tableWidget.item(self.tableWidget.currentRow(), 1).text()
         student_dir = name + "-" + nim

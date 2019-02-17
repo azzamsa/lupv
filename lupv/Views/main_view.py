@@ -111,7 +111,8 @@ class MainView(QMainWindow, Ui_MainWindow):
                 return None
 
         self.save_record_path(path)
-        recs = self._controller.read_records(path)
+        humanize = True
+        recs = self._controller.read_records(path, humanize)
         ord_recs = MyDict()  # ordered records
 
         for rec in recs:

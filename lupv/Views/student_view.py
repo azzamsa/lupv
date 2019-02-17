@@ -47,7 +47,7 @@ class StudentView(QWidget, Ui_Form):
         if not selected_file:
             selected_file = None
 
-        first_rec_sha = self._controller.get_firstrecord_sha(student_path)
+        first_rec_sha = self._controller.get_first_rec_sha(student_path)
         diff = student_repo.git.diff(first_rec_sha, sha, selected_file)
         self.diff_pte.setPlainText(diff)
 

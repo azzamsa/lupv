@@ -91,12 +91,14 @@ class Controller(QObject):
         for d in student_dirs:
             name = str(d).split("-")[0]
             nim = str(d).split("-")[1]
-            work_duration = self.calc_work_duration(rec_path + "/" + d)
-            record_amounts = self.count_records(rec_path + "/" + d)
-            first_record = self.get_first_record(rec_path + "/" + d)
-            last_record = self.get_last_record(rec_path + "/" + d)
-            record = Records(name, nim, work_duration, record_amounts,
-                             first_record, last_record)
+            student_path = rec_path + "/" + d
+            work_duration = self.calc_work_duration(student_path)
+            record_amounts = self.count_records(student_path)
+            first_record = self.get_first_record(student_path)
+            last_record = self.get_last_record(student_path)
+            record = Records(name, nim, work_duration,
+                             record_amounts, first_record,
+                             last_record)
             records.append(record)
 
         return records

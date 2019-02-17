@@ -175,7 +175,7 @@
        </property>
        <column>
         <property name="text">
-         <string notr="true">All Windows</string>
+         <string notr="true">Windows</string>
         </property>
        </column>
       </widget>

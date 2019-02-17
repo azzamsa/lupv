@@ -2,6 +2,7 @@ from Controllers.student_controller import StudentController
 from Views.student_window import Ui_Form
 
 from PyQt5.QtWidgets import QWidget, QTreeWidgetItem
+from PyQt5.QtGui import QBrush, QColor
 
 
 class StudentView(QWidget, Ui_Form):
@@ -64,9 +65,12 @@ class StudentView(QWidget, Ui_Form):
             selected_file = items[0].text(0)
             return selected_file
 
-    def display_all_windows(self, sha):
+    def display_windows(self, sha):
         # clear previous items
-        self.all_windows_tw.clear()  # FIXME, is it safe ?
+        self.all_windows_tw.clear()  # TODO, is it safe ?
+        focused_window = self._student_ctrl.read_focused_window(sha)
+        focused_row = QTreeWidgetItem(self.all_windows_tw, [focused_window])
+        focused_row.setForeground(0, QBrush(QColor("#41CD52")))
         windows = self._student_ctrl.read_all_windows(sha)
         for window in windows:
             QTreeWidgetItem(self.all_windows_tw, [window])
@@ -81,5 +85,5 @@ class StudentView(QWidget, Ui_Form):
     def selection_changed(self):
         sha = self.get_selected_sha()
         self.display_diff(sha)
-        self.display_all_windows(sha)
+        self.display_windows(sha)
         self.display_auth_info(sha)

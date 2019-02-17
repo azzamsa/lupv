@@ -68,7 +68,7 @@ class Ui_Form(object):
         self.all_windows_tw.setMinimumSize(QtCore.QSize(0, 20))
         self.all_windows_tw.setMaximumSize(QtCore.QSize(16777215, 100))
         self.all_windows_tw.setObjectName("all_windows_tw")
-        self.all_windows_tw.headerItem().setText(0, "All Windows")
+        self.all_windows_tw.headerItem().setText(0, "Windows")
         self.file_tw = QtWidgets.QTreeWidget(self.splitter)
         self.file_tw.setMinimumSize(QtCore.QSize(0, 50))
         self.file_tw.setMaximumSize(QtCore.QSize(16777215, 100))

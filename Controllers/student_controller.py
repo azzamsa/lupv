@@ -2,6 +2,8 @@ from PyQt5.QtCore import QObject
 import git
 from Model.logs import Logs
 
+# TODO highlight / pretteier git diff
+
 
 class StudentController(QObject):
 
@@ -22,26 +24,25 @@ class StudentController(QObject):
         return student_repo
 
     def read_auth_info(self, sha):
-        # TODO get all the revision. non first revision is blank
         student_repo = self.get_student_repo()
-        diff = student_repo.git.show(sha, '.watchers/auth_info')
-        infos = diff.splitlines()[12:]
-        auth_info = []
-        for info in infos:
-            if info != '':
-                auth_info.append(info)
+
+        auth_file = student_repo.git.show('{}:.watchers/auth_info'
+                                          .format(sha))
+        auth_info = auth_file.splitlines()
         return auth_info
 
     def read_all_windows(self, sha):
-        # TODO remove git attribute
         student_repo = self.get_student_repo()
-        diff = student_repo.git.show(sha, '.watchers/all_windows')
-        diff_body = diff.splitlines()[14:]
-        windows = []
-        for line in diff_body:
-            if line != '':
-                windows.append(line)
+        diff = student_repo.git.show('{}:.watchers/all_windows'
+                                     .format(sha))
+        windows = diff.splitlines()
         return windows
+
+    def read_focused_window(self, sha):
+        student_repo = self.get_student_repo()
+        focused_window = student_repo.git.show('{}:.watchers/focused_windows'
+                                               .format(sha))
+        return focused_window
 
     def read_logs(self):
         """Read log form student directory"""

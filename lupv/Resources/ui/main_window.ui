@@ -97,7 +97,15 @@
      <addaction name="actionToggleLight"/>
      <addaction name="actionToggleDark"/>
     </widget>
+    <widget class="QMenu" name="menuDateTime_Format">
+     <property name="title">
+      <string>&amp;DateTime Format</string>
+     </property>
+     <addaction name="actionRelativeDate"/>
+     <addaction name="actionRealDate"/>
+    </widget>
     <addaction name="menuThemes"/>
+    <addaction name="menuDateTime_Format"/>
    </widget>
    <addaction name="menuMenu"/>
    <addaction name="menuSettings"/>
@@ -126,6 +134,16 @@
   <action name="actionToggleDark">
    <property name="text">
     <string>&amp;Dark</string>
+   </property>
+  </action>
+  <action name="actionRelativeDate">
+   <property name="text">
+    <string>&amp;Relative</string>
+   </property>
+  </action>
+  <action name="actionRealDate">
+   <property name="text">
+    <string>R&amp;eal</string>
    </property>
   </action>
  </widget>

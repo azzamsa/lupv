@@ -96,10 +96,10 @@ class Controller(QObject):
         records = self.get_records(record_path)
         return records[-1].hexsha
 
-    def read_records(self, record_path, humanize=True):
+    def read_records(self, humanize=True):
         """Read records from individual dirs then return them as
         `Records` object"""
-        rec_path = record_path
+        rec_path = self._model.get_record_path()
         student_dirs = self.get_student_dirs(rec_path)
         records = []
         dt_type = 0

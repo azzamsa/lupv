@@ -24,11 +24,15 @@ class MainView(QMainWindow, Ui_MainWindow):
         self._controller = controller
         self.setupUi(self)
 
-        self.actionOpen_Records.triggered.connect(self.populate_records)
+        self.actionOpen_Records.triggered.connect(self.open_records)
         self.actionOpen_Records.setShortcut(QKeySequence("Ctrl+O"))
         self.actionQuit.triggered.connect(self.quit_app)
         self.actionQuit.setShortcut(QKeySequence("Ctrl+Q"))
         self.tableWidget.clicked.connect(self.show_student_view)
+        self.actionRealDate.triggered.connect(
+            lambda: self.populate_records(humanize=False))
+        self.actionToggleLight.triggered.connect(
+            lambda: self.populate_records(humanize=True))
 
         # Toggle theme
         dark = '../lupv/Resources/theme/dark.qss'
@@ -101,8 +105,8 @@ class MainView(QMainWindow, Ui_MainWindow):
         "save record path"
         self._controller.save_record_path(record_path)
 
-    def populate_records(self):
-        "Populate record to Table"
+    def open_records(self):
+        """Open records directory then display the record."""
         path = self.choosedir_dialog('Select Directory...')
         if not path:
             return None
@@ -111,8 +115,11 @@ class MainView(QMainWindow, Ui_MainWindow):
                 return None
 
         self.save_record_path(path)
-        humanize = True
-        recs = self._controller.read_records(path, humanize)
+        self.populate_records()
+
+    def populate_records(self, humanize=True):
+        """Populate records."""
+        recs = self._controller.read_records(humanize)
         ord_recs = MyDict()  # ordered records
 
         for rec in recs:

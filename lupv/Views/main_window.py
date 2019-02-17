@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/azzamsya/code-coba-home/skripsi/Lupv/Resources/ui/main_window.ui'
+# Form implementation generated from reading ui file '/home/azzamsya/code-coba-home/skripsi/Lupv/lupv/Resources/ui/main_window.ui'
 #
 # Created by: PyQt5 UI code generator 5.11.3
 #
@@ -50,6 +50,8 @@ class Ui_MainWindow(object):
         self.menuSettings.setObjectName("menuSettings")
         self.menuThemes = QtWidgets.QMenu(self.menuSettings)
         self.menuThemes.setObjectName("menuThemes")
+        self.menuDateTime_Format = QtWidgets.QMenu(self.menuSettings)
+        self.menuDateTime_Format.setObjectName("menuDateTime_Format")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -64,11 +66,18 @@ class Ui_MainWindow(object):
         self.actionToggleLight.setObjectName("actionToggleLight")
         self.actionToggleDark = QtWidgets.QAction(MainWindow)
         self.actionToggleDark.setObjectName("actionToggleDark")
+        self.actionRelativeDate = QtWidgets.QAction(MainWindow)
+        self.actionRelativeDate.setObjectName("actionRelativeDate")
+        self.actionRealDate = QtWidgets.QAction(MainWindow)
+        self.actionRealDate.setObjectName("actionRealDate")
         self.menuMenu.addAction(self.actionOpen_Records)
         self.menuMenu.addAction(self.actionQuit)
         self.menuThemes.addAction(self.actionToggleLight)
         self.menuThemes.addAction(self.actionToggleDark)
+        self.menuDateTime_Format.addAction(self.actionRelativeDate)
+        self.menuDateTime_Format.addAction(self.actionRealDate)
         self.menuSettings.addAction(self.menuThemes.menuAction())
+        self.menuSettings.addAction(self.menuDateTime_Format.menuAction())
         self.menubar.addAction(self.menuMenu.menuAction())
         self.menubar.addAction(self.menuSettings.menuAction())
 
@@ -94,9 +103,12 @@ class Ui_MainWindow(object):
         self.menuMenu.setTitle(_translate("MainWindow", "&Menu"))
         self.menuSettings.setTitle(_translate("MainWindow", "Setti&ngs"))
         self.menuThemes.setTitle(_translate("MainWindow", "&Themes"))
+        self.menuDateTime_Format.setTitle(_translate("MainWindow", "&DateTime Format"))
         self.actionLoad_Task.setText(_translate("MainWindow", "Load Task"))
         self.actionQuit.setText(_translate("MainWindow", "&Quit"))
         self.actionOpen_Records.setText(_translate("MainWindow", "&Open Records"))
         self.actionToggleLight.setText(_translate("MainWindow", "&Light"))
         self.actionToggleDark.setText(_translate("MainWindow", "&Dark"))
+        self.actionRelativeDate.setText(_translate("MainWindow", "&Relative"))
+        self.actionRealDate.setText(_translate("MainWindow", "R&eal"))
 

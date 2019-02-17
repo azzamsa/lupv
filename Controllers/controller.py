@@ -32,6 +32,14 @@ class Controller(QObject):
     def get_nim(self, path):
         pass
 
+    def get_files(self, record_path):
+        dirs = os.listdir(record_path)
+        files = []
+        for d in dirs:
+            if os.path.isfile(os.path.join(record_path, d)):
+                files.append(d)
+        return files
+
     def initialize_repo(self, record_path):
         return git.Repo(record_path)
 

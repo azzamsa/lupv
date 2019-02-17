@@ -73,7 +73,8 @@ class StudentView(QWidget, Ui_Form):
         focused_row.setForeground(0, QBrush(QColor("#41CD52")))
         windows = self._student_ctrl.read_all_windows(sha)
         for window in windows:
-            QTreeWidgetItem(self.all_windows_tw, [window])
+            if window != focused_window:
+                QTreeWidgetItem(self.all_windows_tw, [window])
 
     def display_auth_info(self, sha):
         auth_info = self._student_ctrl.read_auth_info(sha)

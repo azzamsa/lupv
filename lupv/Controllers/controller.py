@@ -26,12 +26,6 @@ class Controller(QObject):
                 print('skipped' + d + '. Task not valid.')
         return student_dirs
 
-    def get_name(self, path):
-        pass
-
-    def get_nim(self, path):
-        pass
-
     def get_files(self, record_path):
         dirs = os.listdir(record_path)
         files = []

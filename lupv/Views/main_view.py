@@ -1,4 +1,5 @@
 import os
+from os.path import join
 from Resources.theme import breeze_resources
 from collections import OrderedDict
 
@@ -31,9 +32,11 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.actionQuit.setShortcut(QKeySequence("Ctrl+Q"))
         self.tableWidget.clicked.connect(self.show_student_view)
         self.actionRealDate.triggered.connect(
-            lambda: self.populate_records(humanize=False))
-        self.actionToggleLight.triggered.connect(
-            lambda: self.populate_records(humanize=True))
+                lambda: self.populate_records(humanize=False))
+        self.actionRelativeDate.triggered.connect(
+                lambda: self.populate_records(humanize=True))
+        self.actionRealDate.setEnabled(False)  # default
+        self.actionRelativeDate.setEnabled(False)
 
         # Toggle theme
         dark = '../lupv/Resources/theme/dark.qss'
@@ -90,7 +93,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         dirs = os.listdir(path)
         invalid_dirs = []
         for d in dirs:
-            if not os.path.isdir(path + '/' + d + "/.git"):
+            if not os.path.isdir(join(path, d, '.git')):
                 invalid_dirs.append(d)
         if len(invalid_dirs) == 0:
             return True
@@ -116,6 +119,8 @@ class MainView(QMainWindow, Ui_MainWindow):
                 return None
 
         self.save_record_path(path)
+        self.actionRealDate.setEnabled(True)
+        self.actionRelativeDate.setEnabled(True)
         self.populate_records()
 
     def populate_records(self, humanize=True):

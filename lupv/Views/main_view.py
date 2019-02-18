@@ -84,6 +84,10 @@ class MainView(QMainWindow, Ui_MainWindow):
         return QFileDialog.getExistingDirectory(self, caption=caption,
                                                 options=options)
 
+    def warn(self, title=None, message=None):
+        """Show warning via QMessageBox."""
+        QMessageBox.warning(self, title, message)
+
     def validate_path(self, path):
         """Validate chosen path.
 
@@ -95,15 +99,17 @@ class MainView(QMainWindow, Ui_MainWindow):
         for d in dirs:
             if not os.path.isdir(join(path, d, '.git')):
                 invalid_dirs.append(d)
+
+        msg = 'Not a valid Tasks directory\n'
+        details = '\nContains invalid Task:\n{}'.format(
+            '\n'.join(invalid_dirs))
+
         if len(invalid_dirs) == 0:
             return True
         elif len(invalid_dirs) <= 10:
-            QMessageBox.warning(self, '', 'Not a valid Tasks directory'
-                                '\n\nContains invalid Task: \n'
-                                + '\n'.join(invalid_dirs))
+            self.warn('', message=msg + details)
         else:
-            QMessageBox.warning(self, '', 'Not a valid Tasks directory'
-                                '\n\nContains many invalid Tasks ')
+            self.warn('', message=msg + '\n\nContains many invalid Tasks')
 
     def save_record_path(self, record_path):
         """Save record path."""

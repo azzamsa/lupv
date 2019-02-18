@@ -49,13 +49,6 @@ class Controller(QObject):
         records = self.get_records(record_path)
         duration = []
 
-        # TODO is -1 and 0 really first and last
-        # dates = []
-        # for r in records:
-        #     dates.append(r.committed_datetime)
-        # first_records = dates[0]
-        # last_records = dates[-1]
-
         delta = records[0].committed_datetime - records[-1].committed_datetime
         duration.append(str(delta))
 

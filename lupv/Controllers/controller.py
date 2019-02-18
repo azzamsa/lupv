@@ -1,6 +1,7 @@
 import os
 import git
 import pendulum
+from os.path import join
 
 from PyQt5.QtCore import QObject
 
@@ -23,7 +24,7 @@ class Controller(QObject):
         dirs = os.listdir(record_path)
         student_dirs = []
         for d in dirs:
-            if os.path.isdir(record_path + '/' + d + '/.git'):
+            if os.path.isdir(join(record_path, d, '.git')):
                 student_dirs.append(d)
             else:
                 print('skipped' + d + '. Task not valid.')
@@ -112,7 +113,7 @@ class Controller(QObject):
         for d in student_dirs:
             name = str(d).split("-")[0]
             nim = str(d).split("-")[1]
-            student_path = rec_path + "/" + d
+            student_path = join(rec_path, d)
 
             work_duration = self.calc_work_duration(student_path)
             record_amounts = self.count_records(student_path)

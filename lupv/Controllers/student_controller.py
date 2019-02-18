@@ -1,4 +1,5 @@
 import git
+from os.path import join
 
 from PyQt5.QtCore import QObject
 
@@ -17,7 +18,7 @@ class StudentController(QObject):
 
     def get_student_path(self):
         record_path = self._model.get_record_path()
-        student_path = record_path + '/' + self._student_dir
+        student_path = join(record_path, self._student_dir)
         return student_path
 
     def get_student_repo(self):
@@ -27,23 +28,25 @@ class StudentController(QObject):
 
     def read_auth_info(self, sha):
         student_repo = self.get_student_repo()
-
-        auth_file = student_repo.git.show('{}:.watchers/auth_info'
-                                          .format(sha))
+        auth_path = join('.watchers', 'auth_info')
+        auth_file = student_repo.git.show('{}:{}'
+                                          .format(sha, auth_path))
         auth_info = auth_file.splitlines()
         return auth_info
 
     def read_all_windows(self, sha):
         student_repo = self.get_student_repo()
-        diff = student_repo.git.show('{}:.watchers/all_windows'
-                                     .format(sha))
+        all_win_path = join('.watchers', 'all_windows')
+        diff = student_repo.git.show('{}:{}'
+                                     .format(sha, all_win_path))
         windows = diff.splitlines()
         return windows
 
     def read_focused_window(self, sha):
         student_repo = self.get_student_repo()
-        focused_window = student_repo.git.show('{}:.watchers/focused_window'
-                                               .format(sha))
+        foc_win_path = join('.watchers', 'focused_window')
+        focused_window = student_repo.git.show('{}:{}'
+                                               .format(sha, foc_win_path))
         return focused_window
 
     def read_logs(self):

@@ -56,6 +56,7 @@ class Controller(QObject):
         dt_first = pendulum.instance(records[-1].committed_datetime)
         dt_delta = dt_last - dt_first
         duration.append(dt_delta.in_words(locale='en'))
+
         return duration
 
     def count_records(self, record_path):
@@ -73,6 +74,7 @@ class Controller(QObject):
 
         dt = pendulum.instance(last_rec_dt)
         last_rec_time.append(dt.diff_for_humans())
+
         return last_rec_time
 
     def get_first_rec_time(self, record_path):
@@ -85,6 +87,7 @@ class Controller(QObject):
 
         dt = pendulum.instance(first_rec_dt)
         first_rec_time.append(dt.diff_for_humans())
+
         return first_rec_time
 
     def get_first_rec_sha(self, record_path):

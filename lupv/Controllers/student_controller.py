@@ -9,7 +9,6 @@ from Model.logs import Logs
 
 
 class StudentController(QObject):
-
     def __init__(self, model, student_dir):
         super().__init__()
 
@@ -29,24 +28,22 @@ class StudentController(QObject):
     def read_auth_info(self, sha):
         student_repo = self.get_student_repo()
         auth_path = join('.watchers', 'auth_info')
-        auth_file = student_repo.git.show('{}:{}'
-                                          .format(sha, auth_path))
+        auth_file = student_repo.git.show('{}:{}'.format(sha, auth_path))
         auth_info = auth_file.splitlines()
         return auth_info
 
     def read_all_windows(self, sha):
         student_repo = self.get_student_repo()
         all_win_path = join('.watchers', 'all_windows')
-        diff = student_repo.git.show('{}:{}'
-                                     .format(sha, all_win_path))
+        diff = student_repo.git.show('{}:{}'.format(sha, all_win_path))
         windows = diff.splitlines()
         return windows
 
     def read_focused_window(self, sha):
         student_repo = self.get_student_repo()
         foc_win_path = join('.watchers', 'focused_window')
-        focused_window = student_repo.git.show('{}:{}'
-                                               .format(sha, foc_win_path))
+        focused_window = student_repo.git.show('{}:{}'.format(
+            sha, foc_win_path))
         return focused_window
 
     def read_logs(self):

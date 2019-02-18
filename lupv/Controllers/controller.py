@@ -9,7 +9,6 @@ from Model.records import Records
 
 
 class Controller(QObject):
-
     def __init__(self, model):
         super().__init__()
 
@@ -116,11 +115,8 @@ class Controller(QObject):
             first_rec = self.get_first_rec_time(student_path)
             last_record = self.get_last_rec_time(student_path)
 
-            record = Records(name, nim,
-                             work_duration[dt_type],
-                             record_amounts,
-                             first_rec[dt_type],
-                             last_record[dt_type])
+            record = Records(name, nim, work_duration[dt_type], record_amounts,
+                             first_rec[dt_type], last_record[dt_type])
             records.append(record)
 
         return records

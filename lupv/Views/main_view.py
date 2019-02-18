@@ -19,7 +19,6 @@ class MyDict(OrderedDict):
 
 
 class MainView(QMainWindow, Ui_MainWindow):
-
     def __init__(self, model, controller):
         super().__init__()
         self._model = model
@@ -32,17 +31,19 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.actionQuit.setShortcut(QKeySequence("Ctrl+Q"))
         self.tableWidget.clicked.connect(self.show_student_view)
         self.actionRealDate.triggered.connect(
-                lambda: self.populate_records(humanize=False))
+            lambda: self.populate_records(humanize=False))
         self.actionRelativeDate.triggered.connect(
-                lambda: self.populate_records(humanize=True))
+            lambda: self.populate_records(humanize=True))
         self.actionRealDate.setEnabled(False)  # default
         self.actionRelativeDate.setEnabled(False)
 
         # Toggle theme
         dark = '../lupv/Resources/theme/dark.qss'
         light = '../lupv/Resources/theme/light.qss'
-        self.actionToggleDark.triggered.connect(lambda: self.toggle_theme(dark))
-        self.actionToggleLight.triggered.connect(lambda: self.toggle_theme(light))
+        self.actionToggleDark.triggered.connect(
+            lambda: self.toggle_theme(dark))
+        self.actionToggleLight.triggered.connect(
+            lambda: self.toggle_theme(light))
         self.toggle_theme(dark)  # default theme
 
         css = """
@@ -59,8 +60,8 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.welcome_lbl = QLabel()
         self.welcome_lbl.setText("Please open records to start analyzing")
         self.welcome_lbl.setStyleSheet(css)
-        self.verticalLayout.addWidget(self.welcome_lbl,
-                                      alignment=Qt.AlignCenter)
+        self.verticalLayout.addWidget(
+            self.welcome_lbl, alignment=Qt.AlignCenter)
 
         self.show()
 
@@ -79,10 +80,9 @@ class MainView(QMainWindow, Ui_MainWindow):
 
     def choosedir_dialog(self, caption):
         """Prompts dialog to choose record directory."""
-        options = (QFileDialog.ShowDirsOnly |
-                   QFileDialog.DontResolveSymlinks)
-        return QFileDialog.getExistingDirectory(self, caption=caption,
-                                                options=options)
+        options = (QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
+        return QFileDialog.getExistingDirectory(
+            self, caption=caption, options=options)
 
     def warn(self, title=None, message=None):
         """Show warning via QMessageBox."""
@@ -161,6 +161,6 @@ class MainView(QMainWindow, Ui_MainWindow):
         name = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
         nim = self.tableWidget.item(self.tableWidget.currentRow(), 1).text()
         student_dir = name + "-" + nim
-        self.student_view = StudentView(self._model,
-                                        self._controller, student_dir)
+        self.student_view = StudentView(self._model, self._controller,
+                                        student_dir)
         self.student_view.show()

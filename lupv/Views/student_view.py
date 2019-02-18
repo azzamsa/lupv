@@ -6,7 +6,6 @@ from Views.student_window import Ui_Form
 
 
 class StudentView(QWidget, Ui_Form):
-
     def __init__(self, model, controller, student_dir):
         super().__init__()
         self.setupUi(self)
@@ -32,11 +31,12 @@ class StudentView(QWidget, Ui_Form):
         """Display log to log_QTreeWidget."""
         logs = self._student_ctrl.read_logs()
         for l in logs:
-            QTreeWidgetItem(self.log_tw,
-                            [str(l.name),
-                             str(l.email),
-                             str(l.summary),
-                             str(l.sha)])
+            QTreeWidgetItem(
+                self.log_tw,
+                [str(l.name),
+                 str(l.email),
+                 str(l.summary),
+                 str(l.sha)])
 
     def display_diff(self, sha):
         """Display diff to diff_QPlainTextEdit."""

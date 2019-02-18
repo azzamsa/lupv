@@ -66,10 +66,11 @@ class StudentView(QWidget, Ui_Form):
             return selected_file
 
     def display_windows(self, sha):
-        # clear previous items
-        self.all_windows_tw.clear()  # TODO, is it safe ?
+        self.all_windows_tw.clear()
+
         focused_window = self._student_ctrl.read_focused_window(sha)
         focused_row = QTreeWidgetItem(self.all_windows_tw, [focused_window])
+
         focused_row.setForeground(0, QBrush(QColor("#41CD52")))
         windows = self._student_ctrl.read_all_windows(sha)
         for window in windows:

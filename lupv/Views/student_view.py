@@ -1,8 +1,8 @@
-from Controllers.student_controller import StudentController
-from Views.student_window import Ui_Form
-
 from PyQt5.QtWidgets import QWidget, QTreeWidgetItem
 from PyQt5.QtGui import QBrush, QColor
+
+from Controllers.student_controller import StudentController
+from Views.student_window import Ui_Form
 
 
 class StudentView(QWidget, Ui_Form):
@@ -29,7 +29,7 @@ class StudentView(QWidget, Ui_Form):
         return sha
 
     def display_logs(self):
-        """Display log to log_QTreeWidget"""
+        """Display log to log_QTreeWidget."""
         logs = self._student_ctrl.read_logs()
         for l in logs:
             QTreeWidgetItem(self.log_tw,
@@ -39,7 +39,7 @@ class StudentView(QWidget, Ui_Form):
                              str(l.sha)])
 
     def display_diff(self, sha):
-        """Display diff to diff_QPlainTextEdit"""
+        """Display diff to diff_QPlainTextEdit."""
         student_repo = self._student_ctrl.get_student_repo()
         student_path = self._student_ctrl.get_student_path()
 
@@ -52,14 +52,14 @@ class StudentView(QWidget, Ui_Form):
         self.diff_pte.setPlainText(diff)
 
     def display_files(self):
-        """Display file to file_QTreeWidget"""
+        """Display file to file_QTreeWidget."""
         student_dir = self._student_ctrl.get_student_path()
         files = self._controller.get_files(student_dir)
         for f in files:
             QTreeWidgetItem(self.file_tw, [f])
 
     def get_selected_file(self):
-        """Return selected file in file_QTreeWidget"""
+        """Return selected file in file_QTreeWidget."""
         items = self.file_tw.selectedItems()
         if items:
             selected_file = items[0].text(0)

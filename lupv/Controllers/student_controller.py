@@ -1,5 +1,7 @@
-from PyQt5.QtCore import QObject
 import git
+
+from PyQt5.QtCore import QObject
+
 from Model.logs import Logs
 
 # TODO highlight / pretteier git diff
@@ -45,7 +47,7 @@ class StudentController(QObject):
         return focused_window
 
     def read_logs(self):
-        """Read log form student directory"""
+        """Read log form student directory."""
         student_repo = self.get_student_repo()
         records = list(student_repo.iter_commits('master'))
         logs = []

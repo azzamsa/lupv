@@ -1,7 +1,9 @@
-from PyQt5.QtCore import QObject
 import os
 import git
 import pendulum
+
+from PyQt5.QtCore import QObject
+
 from Model.records import Records
 
 
@@ -36,7 +38,7 @@ class Controller(QObject):
         return files
 
     def get_records(self, record_path):
-        """Return list of records from individual directory"""
+        """Return list of records from individual directory."""
         repo = git.Repo(record_path)
         records = list(repo.iter_commits('master'))
         return records
@@ -63,12 +65,12 @@ class Controller(QObject):
         return duration
 
     def count_records(self, record_path):
-        """Count the total amount of records"""
+        """Count the total amount of records."""
         records = self.get_records(record_path)
         return len(records)
 
     def get_last_rec_time(self, record_path):
-        """Take the last record"""
+        """Take the last record."""
         last_rec_time = []
         records = self.get_records(record_path)
 
@@ -80,7 +82,7 @@ class Controller(QObject):
         return last_rec_time
 
     def get_first_rec_time(self, record_path):
-        """Take the first record"""
+        """Take the first record."""
         first_rec_time = []
         records = self.get_records(record_path)
 
@@ -92,13 +94,13 @@ class Controller(QObject):
         return first_rec_time
 
     def get_first_rec_sha(self, record_path):
-        """Take the first SHA record"""
+        """Take the first SHA record."""
         records = self.get_records(record_path)
         return records[-1].hexsha
 
     def read_records(self, humanize=True):
         """Read records from individual dirs then return them as
-        `Records` object"""
+        `Records` object."""
         rec_path = self._model.get_record_path()
         student_dirs = self.get_student_dirs(rec_path)
         records = []

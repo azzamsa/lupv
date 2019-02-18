@@ -1,13 +1,14 @@
 import os
 from Resources.theme import breeze_resources
-from Views.main_window import Ui_MainWindow
-from Views.student_view import StudentView
-
 from collections import OrderedDict
+
 from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
                              QApplication, QLabel, QMessageBox)
 from PyQt5.QtCore import QFile, QTextStream, Qt
 from PyQt5.QtGui import QKeySequence
+
+from Views.main_window import Ui_MainWindow
+from Views.student_view import StudentView
 
 
 class MyDict(OrderedDict):
@@ -61,12 +62,12 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.show()
 
     def quit_app(self):
-        """Quit application"""
+        """Quit application."""
         QApplication.quit()
         self.close()
 
     def toggle_theme(self, path):
-        """Change application theme based on theme location"""
+        """Change application theme based on theme location."""
         lupv = QApplication.instance()
         file = QFile(path)
         file.open(QFile.ReadOnly | QFile.Text)
@@ -74,7 +75,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         lupv.setStyleSheet(stream.readAll())
 
     def choosedir_dialog(self, caption):
-        """Prompts dialog to choose record directory"""
+        """Prompts dialog to choose record directory."""
         options = (QFileDialog.ShowDirsOnly |
                    QFileDialog.DontResolveSymlinks)
         return QFileDialog.getExistingDirectory(self, caption=caption,
@@ -102,7 +103,7 @@ class MainView(QMainWindow, Ui_MainWindow):
                                 '\n\nContains many invalid Tasks ')
 
     def save_record_path(self, record_path):
-        "save record path"
+        """Save record path."""
         self._controller.save_record_path(record_path)
 
     def open_records(self):
@@ -145,7 +146,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.tableWidget.setVisible(True)
 
     def show_student_view(self):
-        """Show student view when tableWidget clicked"""
+        """Show student view when tableWidget clicked."""
         name = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
         nim = self.tableWidget.item(self.tableWidget.currentRow(), 1).text()
         student_dir = name + "-" + nim

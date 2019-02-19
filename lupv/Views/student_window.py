@@ -19,7 +19,7 @@ class Ui_Form(object):
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.close_btn = QtWidgets.QPushButton(Form)
-        self.close_btn.setMinimumSize(QtCore.QSize(10, 0))
+        self.close_btn.setMinimumSize(QtCore.QSize(100, 0))
         self.close_btn.setObjectName("close_btn")
         self.horizontalLayout.addWidget(self.close_btn)
         self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)

@@ -45,21 +45,25 @@ class StudentView(QWidget, Ui_Form):
     def display_diff(self, sha):
         """Display diff to diff_QPlainTextEdit."""
         student_repo = self._student_ctrl.get_student_repo()
-        student_path = self._student_ctrl.get_student_path()
 
         selected_file = self.get_selected_file()
+        no_file_selected_msg = 'No file selected, Please select one'
+        no_file_rec_msg = 'No availibale record for {} in this period'.format(
+            selected_file)
+
         if not selected_file:
-            nofile_msg = 'No file selected, Please select one'
-            self.diff_pte.setPlainText(nofile_msg)
+            self.diff_pte.setPlainText(no_file_selected_msg)
         else:
-            first_rec_sha = self._controller.get_first_rec_sha(student_path)
-            diff = student_repo.git.diff(first_rec_sha, sha, selected_file)
-            if diff == '':
-                no_rec = 'No availibale record for {} in this period'.format(
-                    selected_file)
-                self.diff_pte.setPlainText(no_rec)
+            file_existp = self._student_ctrl.is_file_exist(selected_file, sha)
+            if file_existp:
+                current_file = student_repo.git.show('{}:{}'.format(
+                    sha, selected_file))
+                if current_file == '':
+                    self.diff_pte.setPlainText(no_file_rec_msg)
+                else:
+                    self.diff_pte.setPlainText(current_file)
             else:
-                self.diff_pte.setPlainText(diff)
+                self.diff_pte.setPlainText(no_file_rec_msg)
 
     def display_files(self):
         """Display file to file_QTreeWidget."""

@@ -62,3 +62,12 @@ class StudentController(QObject):
             logs.append(log)
 
         return logs
+
+    def is_file_exist(self, filename, sha):
+        """Check if filename in current record exist."""
+        student_repo = self.get_student_repo()
+        files = student_repo.git.show('--pretty=' '', '--name-only', sha)
+        if filename in files:
+            return True
+        else:
+            return False

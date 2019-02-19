@@ -63,7 +63,7 @@ class StudentView(QWidget, Ui_Form):
                 else:
                     self.diff_pte.setPlainText(current_file)
             else:
-                self.diff_pte.setPlainText(no_file_rec_msg)
+                pass
 
     def display_files(self):
         """Display file to file_QTreeWidget."""

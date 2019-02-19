@@ -207,6 +207,12 @@
       <widget class="QPlainTextEdit" name="diff_pte"/>
      </widget>
      <widget class="QTreeWidget" name="log_tw">
+      <property name="maximumSize">
+       <size>
+        <width>350</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <column>
        <property name="text">
         <string>Relative Time</string>

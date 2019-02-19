@@ -78,6 +78,7 @@ class Ui_Form(object):
         self.diff_pte = QtWidgets.QPlainTextEdit(self.splitter)
         self.diff_pte.setObjectName("diff_pte")
         self.log_tw = QtWidgets.QTreeWidget(self.splitter_2)
+        self.log_tw.setMaximumSize(QtCore.QSize(350, 16777215))
         self.log_tw.setObjectName("log_tw")
         self.gridLayout.addWidget(self.splitter_2, 0, 0, 1, 1)
 

@@ -12,7 +12,7 @@ class StudentView(QWidget, Ui_Form):
         self._student_dir = student_dir
         self._model = model
         self._controller = controller
-        self._student_ctrl = StudentController(model, student_dir)
+        self._student_ctrl = StudentController(model, controller, student_dir)
 
         self.setWindowTitle(student_dir)
 
@@ -24,7 +24,7 @@ class StudentView(QWidget, Ui_Form):
     def get_selected_sha(self):
         items = self.log_tw.selectedItems()
         if items:
-            sha = items[0].text(3)
+            sha = items[0].text(2)
         return sha
 
     def display_logs(self):
@@ -33,9 +33,8 @@ class StudentView(QWidget, Ui_Form):
         for l in logs:
             QTreeWidgetItem(
                 self.log_tw,
-                [str(l.name),
-                 str(l.email),
-                 str(l.summary),
+                [str(l.relative_datetime),
+                 str(l.datetime),
                  str(l.sha)])
 
     def display_diff(self, sha):

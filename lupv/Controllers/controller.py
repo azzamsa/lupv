@@ -120,3 +120,8 @@ class Controller(QObject):
             records.append(record)
 
         return records
+
+    def humanize_dateime(self, datetime):
+        dt = pendulum.instance(datetime)
+        human_time = dt.diff_for_humans()
+        return human_time

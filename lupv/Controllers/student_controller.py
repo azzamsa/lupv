@@ -9,10 +9,11 @@ from Model.logs import Logs
 
 
 class StudentController(QObject):
-    def __init__(self, model, student_dir):
+    def __init__(self, model, controller, student_dir):
         super().__init__()
 
         self._model = model
+        self._controller = controller
         self._student_dir = student_dir
 
     def get_student_path(self):
@@ -53,11 +54,11 @@ class StudentController(QObject):
         logs = []
 
         for rec in records:
-            name = rec.committer.name
-            summary = rec.summary
-            email = rec.committer.email
+            relative_datetime = self._controller.humanize_dateime(
+                rec.committed_datetime)
+            datetime = str(rec.committed_datetime).split('+')[0]
             sha = rec.hexsha
-            log = Logs(name, summary, email, sha)
+            log = Logs(relative_datetime, datetime, sha)
             logs.append(log)
 
         return logs

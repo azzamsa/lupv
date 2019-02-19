@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/azzamsya/code-coba-home/skripsi/Lupv/Resources/ui/student_window.ui'
+# Form implementation generated from reading ui file '/home/azzamsya/code-coba-home/skripsi/Lupv/lupv/Resources/ui/student_window.ui'
 #
 # Created by: PyQt5 UI code generator 5.11.3
 #
@@ -19,6 +19,7 @@ class Ui_Form(object):
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.close_btn = QtWidgets.QPushButton(Form)
+        self.close_btn.setMinimumSize(QtCore.QSize(10, 0))
         self.close_btn.setObjectName("close_btn")
         self.horizontalLayout.addWidget(self.close_btn)
         self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
@@ -91,8 +92,7 @@ class Ui_Form(object):
         self.label.setText(_translate("Form", "<html><head/><body><p><span style=\" font-weight:600;\">Name:</span></p></body></html>"))
         self.label_2.setText(_translate("Form", "<html><head/><body><p><span style=\" font-weight:600;\">Machine:</span></p></body></html>"))
         self.label_5.setText(_translate("Form", "<html><head/><body><p><span style=\" font-weight:600;\">IP Address:</span></p></body></html>"))
-        self.log_tw.headerItem().setText(0, _translate("Form", "Name"))
-        self.log_tw.headerItem().setText(1, _translate("Form", "Machine"))
-        self.log_tw.headerItem().setText(2, _translate("Form", "Date Time"))
-        self.log_tw.headerItem().setText(3, _translate("Form", "SHA"))
+        self.log_tw.headerItem().setText(0, _translate("Form", "Relative Time"))
+        self.log_tw.headerItem().setText(1, _translate("Form", "Date Time"))
+        self.log_tw.headerItem().setText(2, _translate("Form", "SHA"))
 

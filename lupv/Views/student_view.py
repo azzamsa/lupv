@@ -29,6 +29,7 @@ class StudentView(QWidget, Ui_Form):
 
     def display_logs(self):
         """Display log to log_QTreeWidget."""
+        self.log_tw.hideColumn(2)  # hide SHA column
         logs = self._student_ctrl.read_logs()
         for l in logs:
             QTreeWidgetItem(

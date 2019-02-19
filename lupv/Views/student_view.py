@@ -49,11 +49,17 @@ class StudentView(QWidget, Ui_Form):
 
         selected_file = self.get_selected_file()
         if not selected_file:
-            selected_file = None
-
-        first_rec_sha = self._controller.get_first_rec_sha(student_path)
-        diff = student_repo.git.diff(first_rec_sha, sha, selected_file)
-        self.diff_pte.setPlainText(diff)
+            nofile_msg = 'No file selected, Please select one'
+            self.diff_pte.setPlainText(nofile_msg)
+        else:
+            first_rec_sha = self._controller.get_first_rec_sha(student_path)
+            diff = student_repo.git.diff(first_rec_sha, sha, selected_file)
+            if diff == '':
+                no_rec = 'No availibale record for {} in this period'.format(
+                    selected_file)
+                self.diff_pte.setPlainText(no_rec)
+            else:
+                self.diff_pte.setPlainText(diff)
 
     def display_files(self):
         """Display file to file_QTreeWidget."""

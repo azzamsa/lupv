@@ -93,6 +93,7 @@ class Ui_Form(object):
         self.label.setText(_translate("Form", "<html><head/><body><p><span style=\" font-weight:600;\">Name:</span></p></body></html>"))
         self.label_2.setText(_translate("Form", "<html><head/><body><p><span style=\" font-weight:600;\">Machine:</span></p></body></html>"))
         self.label_5.setText(_translate("Form", "<html><head/><body><p><span style=\" font-weight:600;\">IP Address:</span></p></body></html>"))
+        self.log_tw.setSortingEnabled(True)
         self.log_tw.headerItem().setText(0, _translate("Form", "Relative Time"))
         self.log_tw.headerItem().setText(1, _translate("Form", "Date Time"))
         self.log_tw.headerItem().setText(2, _translate("Form", "SHA"))

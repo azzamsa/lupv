@@ -30,6 +30,7 @@ class StudentView(QWidget, Ui_Form):
     def display_logs(self):
         """Display log to log_QTreeWidget."""
         self.log_tw.hideColumn(2)  # hide SHA column
+
         logs = self._student_ctrl.read_logs()
         for l in logs:
             QTreeWidgetItem(
@@ -37,6 +38,9 @@ class StudentView(QWidget, Ui_Form):
                 [str(l.relative_datetime),
                  str(l.datetime),
                  str(l.sha)])
+
+        self.log_tw.resizeColumnToContents(0)
+        self.log_tw.resizeColumnToContents(1)
 
     def display_diff(self, sha):
         """Display diff to diff_QPlainTextEdit."""

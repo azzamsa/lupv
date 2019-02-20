@@ -6,8 +6,6 @@ from PyQt5.QtCore import QObject
 
 from Model.logs import Logs
 
-# TODO highlight / pretteier git diff
-
 
 class StudentController(QObject):
     def __init__(self, model, controller, student_dir):

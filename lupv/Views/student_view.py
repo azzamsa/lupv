@@ -111,8 +111,8 @@ class StudentView(QWidget, Ui_Form):
         editdistance_ax = self._student_ctrl.calc_editdistance_ax(
             selected_file)
         if editdistance_ax:
-            self.editdistance_view = EditDistanceView(editdistance_ax,
-                                                      self._student_dir)
+            self.editdistance_view = EditDistanceView(
+                editdistance_ax, self._student_ctrl, self._student_dir)
             self.editdistance_view.show()
         else:
             QMessageBox.warning(self, '', 'please choose a file')

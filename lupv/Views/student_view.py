@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import (QWidget, QTreeWidgetItem, QMessageBox)
+from PyQt5.QtWidgets import (QWidget, QTreeWidgetItem, QMessageBox, QMenu)
 from PyQt5.QtGui import QBrush, QColor
+from PyQt5.QtCore import Qt
 
 from Controllers.student_controller import StudentController
 from Views.student_window import Ui_Form
@@ -23,6 +24,9 @@ class StudentView(QWidget, Ui_Form):
         self.close_btn.clicked.connect(self.close)
         self.show_ed_btn.clicked.connect(self.show_editdistance_view)
 
+        self.log_tw.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.log_tw.customContextMenuRequested.connect(self.menu_log_tw)
+
     def get_selected_sha(self):
         items = self.log_tw.selectedItems()
         if items:
@@ -31,7 +35,7 @@ class StudentView(QWidget, Ui_Form):
 
     def display_logs(self):
         """Display log to log_QTreeWidget."""
-        self.log_tw.hideColumn(2)  # hide SHA column
+        self.log_tw.hideColumn(2)  # hide SHA column (default)
 
         logs = self._student_ctrl.read_logs()
         for l in logs:
@@ -116,3 +120,22 @@ class StudentView(QWidget, Ui_Form):
             self.editdistance_view.show()
         else:
             QMessageBox.warning(self, '', 'please choose a file')
+
+    def menu_log_tw(self, event):
+        menu = QMenu(self.log_tw)
+        sha_menu = menu.addMenu("SHA")
+        stat_menu = menu.addMenu("Statistic")
+        actionShow_sha = sha_menu.addAction('Show SHA')
+        actionHide_sha = sha_menu.addAction('Hide SHA')
+        actionShow_stat = stat_menu.addAction('Show stat')
+        actionHide_stat = stat_menu.addAction('Hide stat')
+        action = menu.exec_(self.log_tw.mapToGlobal(event))
+        if action is not None:
+            if action == actionShow_sha:
+                self.log_tw.showColumn(2)
+            elif action == actionHide_sha:
+                self.log_tw.hideColumn(2)
+            elif action == actionShow_stat:
+                print('show stat')
+            elif action == actionHide_stat:
+                print('show stat')

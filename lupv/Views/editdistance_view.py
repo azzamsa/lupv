@@ -1,3 +1,4 @@
+import random
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import (FigureCanvasQTAgg as
                                                 FigureCanvas)
@@ -33,7 +34,9 @@ class EditDistanceView(QWidget):
         ax = self.figure.add_subplot(111)
         records_ax = self._editdistance_ax[0]
         editdistance_ax = self._editdistance_ax[1]
-        ax.plot(records_ax, editdistance_ax)
+        random_color = (random.uniform(0, 1), random.uniform(0, 1),
+                        random.uniform(0, 1))
+        ax.plot(records_ax, editdistance_ax, color=random_color)
 
         name = self._student_dir.split('-')[0]
         nim = self._student_dir.split('-')[1]

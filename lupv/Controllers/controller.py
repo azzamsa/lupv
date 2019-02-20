@@ -44,10 +44,11 @@ class Controller(QObject):
         return records
 
     def calc_work_duration(self, record_path):
-        """Calculate duration between first and last record."""
+        """Calculate duration between last and first."""
         records = self.get_records(record_path)
         duration = []
 
+        # last - first
         delta = records[0].committed_datetime - records[-1].committed_datetime
         duration.append(str(delta))
 

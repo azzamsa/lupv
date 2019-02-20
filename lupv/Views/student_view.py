@@ -1,8 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QTreeWidgetItem
+from PyQt5.QtWidgets import (QWidget, QTreeWidgetItem, QMessageBox)
 from PyQt5.QtGui import QBrush, QColor
 
 from Controllers.student_controller import StudentController
 from Views.student_window import Ui_Form
+from Views.editdistance_view import EditDistanceView
 
 
 class StudentView(QWidget, Ui_Form):
@@ -20,6 +21,7 @@ class StudentView(QWidget, Ui_Form):
         self.display_files()
         self.log_tw.itemSelectionChanged.connect(self.selection_changed)
         self.close_btn.clicked.connect(self.close)
+        self.show_ed_btn.clicked.connect(self.show_editdistance_view)
 
     def get_selected_sha(self):
         items = self.log_tw.selectedItems()
@@ -103,3 +105,14 @@ class StudentView(QWidget, Ui_Form):
         self.display_diff(sha)
         self.display_windows(sha)
         self.display_auth_info(sha)
+
+    def show_editdistance_view(self):
+        selected_file = self.get_selected_file()
+        editdistance_ax = self._student_ctrl.calc_editdistance_ax(
+            selected_file)
+        if editdistance_ax:
+            self.editdistance_view = EditDistanceView(editdistance_ax,
+                                                      self._student_dir)
+            self.editdistance_view.show()
+        else:
+            QMessageBox.warning(self, '', 'please choose a file')

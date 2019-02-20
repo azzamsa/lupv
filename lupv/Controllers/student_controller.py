@@ -1,4 +1,5 @@
 import git
+import editdistance
 from os.path import join
 
 from PyQt5.QtCore import QObject
@@ -71,3 +72,32 @@ class StudentController(QObject):
             return True
         else:
             return False
+
+    def calc_editdistance_ax(self, selected_file):
+        editdistance_ax = []
+        records_count = 0
+        records_ax = []
+        ed_ax = []
+        student_repo = self.get_student_repo()
+        records = list(student_repo.iter_commits('master'))
+        last_record_sha = records[0].hexsha
+
+        if selected_file:
+            last_file = student_repo.git.show('{}:{}'.format(
+                last_record_sha, selected_file))
+
+            for record in records:
+                self.ada = file_existp = self.is_file_exist(
+                    selected_file, record.hexsha)
+                if file_existp:
+                    current_file = student_repo.git.show('{}:{}'.format(
+                        record.hexsha, selected_file))
+                    ed = editdistance.eval(last_file, current_file)
+                    ed_ax.append(ed)
+
+                    records_count += 1
+                    records_ax.append(records_count)
+
+        editdistance_ax.append(records_ax)
+        editdistance_ax.append(ed_ax)
+        return editdistance_ax

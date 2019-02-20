@@ -18,6 +18,9 @@ class Ui_Form(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
+        self.show_ed_btn = QtWidgets.QPushButton(Form)
+        self.show_ed_btn.setObjectName("show_ed_btn")
+        self.horizontalLayout.addWidget(self.show_ed_btn)
         self.close_btn = QtWidgets.QPushButton(Form)
         self.close_btn.setMinimumSize(QtCore.QSize(100, 0))
         self.close_btn.setObjectName("close_btn")
@@ -88,6 +91,7 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
+        self.show_ed_btn.setText(_translate("Form", "Show Edit Distance"))
         self.close_btn.setText(_translate("Form", "OK"))
         self.groupBox.setTitle(_translate("Form", "Activity Info"))
         self.label.setText(_translate("Form", "<html><head/><body><p><span style=\" font-weight:600;\">Name:</span></p></body></html>"))

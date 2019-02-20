@@ -216,7 +216,7 @@
      <widget class="QTreeWidget" name="log_tw">
       <property name="maximumSize">
        <size>
-        <width>350</width>
+        <width>16777215</width>
         <height>16777215</height>
        </size>
       </property>
@@ -236,6 +236,16 @@
       <column>
        <property name="text">
         <string>SHA</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Add</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Del</string>
        </property>
       </column>
      </widget>

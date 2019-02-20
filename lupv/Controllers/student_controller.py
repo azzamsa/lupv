@@ -46,10 +46,12 @@ class StudentController(QObject):
             sha, foc_win_path))
         return focused_window
 
-    def read_logs(self):
+    def read_logs(self, selected_file=None):
         """Read log form student directory."""
         student_repo = self.get_student_repo()
         records = list(student_repo.iter_commits('master'))
+        insertions = 0
+        deletions = 0
         logs = []
 
         for rec in records:
@@ -57,7 +59,18 @@ class StudentController(QObject):
                 rec.committed_datetime)
             datetime = str(rec.committed_datetime).split('+')[0]
             sha = rec.hexsha
-            log = Logs(relative_datetime, datetime, sha)
+
+            # TODO use 1 variable instead of separated add and del
+            if selected_file:
+                file_existp = self.is_file_exist(selected_file, rec.hexsha)
+                if file_existp:
+                    insertions = rec.stats.files[selected_file]['insertions']
+                    deletions = rec.stats.files[selected_file]['deletions']
+                else:
+                    insertions = 0
+                    deletions = 0
+
+            log = Logs(relative_datetime, datetime, sha, insertions, deletions)
             logs.append(log)
 
         return logs
@@ -85,8 +98,7 @@ class StudentController(QObject):
                 last_record_sha, selected_file))
 
             for record in records:
-                self.ada = file_existp = self.is_file_exist(
-                    selected_file, record.hexsha)
+                file_existp = self.is_file_exist(selected_file, record.hexsha)
                 if file_existp:
                     current_file = student_repo.git.show('{}:{}'.format(
                         record.hexsha, selected_file))

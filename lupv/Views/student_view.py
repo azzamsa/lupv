@@ -18,7 +18,7 @@ class StudentView(QWidget, Ui_Form):
 
         self.setWindowTitle(student_dir)
 
-        self.display_logs()
+        self.display_logs(False)
         self.display_files()
         self.log_tw.itemSelectionChanged.connect(self.selection_changed)
         self.close_btn.clicked.connect(self.close)
@@ -28,28 +28,52 @@ class StudentView(QWidget, Ui_Form):
         self.log_tw.customContextMenuRequested.connect(self.menu_log_tw)
 
     def get_selected_sha(self):
+        sha = 0
         items = self.log_tw.selectedItems()
         if items:
             sha = items[0].text(2)
         return sha
 
-    def display_logs(self):
+    def display_logs(self, complete=False):
         """Display log to log_QTreeWidget."""
         self.log_tw.hideColumn(2)  # hide SHA column (default)
+        self.log_tw.hideColumn(3)
+        self.log_tw.hideColumn(4)
 
-        logs = self._student_ctrl.read_logs()
-        for l in logs:
-            QTreeWidgetItem(
-                self.log_tw,
-                [str(l.relative_datetime),
-                 str(l.datetime),
-                 str(l.sha)])
+        selected_file = self.get_selected_file()
+        logs = self._student_ctrl.read_logs(selected_file)
+
+        if complete:
+            if selected_file:
+                self.log_tw.clear()
+                for l in logs:
+                    QTreeWidgetItem(self.log_tw, [
+                        str(l.relative_datetime),
+                        str(l.datetime),
+                        str(l.sha),
+                        str(l.add_stats),
+                        str(l.del_stats)
+                    ])
+                self.log_tw.showColumn(3)
+                self.log_tw.showColumn(4)
+                self.log_tw.resizeColumnToContents(3)
+                self.log_tw.resizeColumnToContents(4)
+            else:
+                QMessageBox.warning(self, '', 'please choose a file')
+        else:
+            for l in logs:
+                QTreeWidgetItem(self.log_tw, [
+                    str(l.relative_datetime),
+                    str(l.datetime),
+                    str(l.sha)
+                ])
 
         self.log_tw.resizeColumnToContents(0)
         self.log_tw.resizeColumnToContents(1)
 
     def display_diff(self, sha):
         """Display diff to diff_QPlainTextEdit."""
+        self.diff_pte.clear()
         student_repo = self._student_ctrl.get_student_repo()
 
         selected_file = self.get_selected_file()
@@ -106,9 +130,10 @@ class StudentView(QWidget, Ui_Form):
 
     def selection_changed(self):
         sha = self.get_selected_sha()
-        self.display_diff(sha)
-        self.display_windows(sha)
-        self.display_auth_info(sha)
+        if sha:
+            self.display_diff(sha)
+            self.display_windows(sha)
+            self.display_auth_info(sha)
 
     def show_editdistance_view(self):
         selected_file = self.get_selected_file()
@@ -133,9 +158,17 @@ class StudentView(QWidget, Ui_Form):
         if action is not None:
             if action == actionShow_sha:
                 self.log_tw.showColumn(2)
+                self.log_tw.resizeColumnToContents(3)
             elif action == actionHide_sha:
                 self.log_tw.hideColumn(2)
+                self.log_tw.resizeColumnToContents(0)
+                self.log_tw.resizeColumnToContents(1)
+                self.log_tw.resizeColumnToContents(3)
+                self.log_tw.resizeColumnToContents(4)
             elif action == actionShow_stat:
-                print('show stat')
+                self.display_logs(True)
             elif action == actionHide_stat:
-                print('show stat')
+                self.log_tw.hideColumn(3)
+                self.log_tw.hideColumn(4)
+                self.log_tw.resizeColumnToContents(0)
+                self.log_tw.resizeColumnToContents(1)

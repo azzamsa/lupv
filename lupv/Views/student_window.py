@@ -81,7 +81,7 @@ class Ui_Form(object):
         self.diff_pte = QtWidgets.QPlainTextEdit(self.splitter)
         self.diff_pte.setObjectName("diff_pte")
         self.log_tw = QtWidgets.QTreeWidget(self.splitter_2)
-        self.log_tw.setMaximumSize(QtCore.QSize(350, 16777215))
+        self.log_tw.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.log_tw.setObjectName("log_tw")
         self.gridLayout.addWidget(self.splitter_2, 0, 0, 1, 1)
 
@@ -101,4 +101,6 @@ class Ui_Form(object):
         self.log_tw.headerItem().setText(0, _translate("Form", "Relative Time"))
         self.log_tw.headerItem().setText(1, _translate("Form", "Date Time"))
         self.log_tw.headerItem().setText(2, _translate("Form", "SHA"))
+        self.log_tw.headerItem().setText(3, _translate("Form", "Add"))
+        self.log_tw.headerItem().setText(4, _translate("Form", "Del"))
 

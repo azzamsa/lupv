@@ -45,11 +45,11 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.to_mainview_btn.clicked.connect(lambda: self.stackedWidget.
                                              setCurrentIndex(0))
         # student page
-        self.actionHide_SHA.setVisible(False)
-        self.actionShow_SHA.setVisible(False)
-        self.actionShow_stats.setVisible(False)
-        self.actionHide_stats.setVisible(False)
-        self.actionShow_Edit_distance.setVisible(False)
+        self.actionHide_SHA.setEnabled(False)
+        self.actionShow_SHA.setEnabled(False)
+        self.actionShow_stats.setEnabled(False)
+        self.actionHide_stats.setEnabled(False)
+        self.actionShow_Edit_distance.setEnabled(False)
 
         # Toggle theme
         dark = '../lupv/Resources/theme/dark.qss'
@@ -177,11 +177,11 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.display_logs(False)
         self.display_files()
 
-        self.actionHide_SHA.setVisible(True)
-        self.actionShow_SHA.setVisible(True)
-        self.actionShow_stats.setVisible(True)
-        self.actionHide_stats.setVisible(True)
-        self.actionShow_Edit_distance.setVisible(True)
+        self.actionHide_SHA.setEnabled(True)
+        self.actionShow_SHA.setEnabled(True)
+        self.actionShow_stats.setEnabled(True)
+        self.actionHide_stats.setEnabled(True)
+        self.actionShow_Edit_distance.setEnabled(True)
 
         self.actionShow_Edit_distance.triggered.connect(
             self.show_editdistance_view)
@@ -201,6 +201,7 @@ class MainView(QMainWindow, Ui_MainWindow):
 
     def display_logs(self, complete=False):
         """Display log to log_QTreeWidget."""
+        self.log_tw.clear()
         self.log_tw.hideColumn(2)  # hide SHA column (default)
         self.log_tw.hideColumn(3)
         self.log_tw.hideColumn(4)

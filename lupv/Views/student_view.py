@@ -21,7 +21,8 @@ class StudentView(QWidget, Ui_Form):
         self.display_logs(False)
         self.display_files()
         self.log_tw.itemSelectionChanged.connect(self.selection_changed)
-        self.close_btn.clicked.connect(self.close)
+        # self.close_btn.clicked.connect(self.close)
+
         self.show_ed_btn.clicked.connect(self.show_editdistance_view)
 
         self.log_tw.setContextMenuPolicy(Qt.CustomContextMenu)

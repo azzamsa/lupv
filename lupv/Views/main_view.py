@@ -9,8 +9,7 @@ from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
 from PyQt5.QtCore import QFile, QTextStream, Qt
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
 
-from Views.stacked import Ui_MainWindow
-from Views.student_view import StudentView
+from Views.main_window import Ui_MainWindow
 from Controllers.student_controller import StudentController
 from Views.editdistance_view import EditDistanceView
 
@@ -28,37 +27,37 @@ class MainView(QMainWindow, Ui_MainWindow):
         self._controller = controller
         self.setupUi(self)
 
+        # mainview actions
         self.actionOpen_Records.triggered.connect(self.open_records)
         self.actionOpen_Records.setShortcut(QKeySequence("Ctrl+O"))
         self.actionQuit.triggered.connect(self.quit_app)
         self.actionQuit.setShortcut(QKeySequence("Ctrl+Q"))
 
         self.tableWidget.clicked.connect(self.show_student_page)
-        self.actionRealDate.triggered.connect(lambda: self.populate_records(
+        self.actionRealDate.triggered.connect(lambda: self.display_records(
             humanize=False))
-        self.actionRelativeDate.triggered.connect(
-            lambda: self.populate_records(humanize=True))
+        self.actionRelativeDate.triggered.connect(lambda: self.display_records(
+            humanize=True))
         self.actionRealDate.setEnabled(False)  # default
         self.actionRelativeDate.setEnabled(False)
 
-        self.stackedWidget.setCurrentIndex(0)
-        self.to_mainview_btn.clicked.connect(lambda: self.stackedWidget.
-                                             setCurrentIndex(0))
-        # student page
+        # student page actions
         self.actionHide_SHA.setEnabled(False)
         self.actionShow_SHA.setEnabled(False)
         self.actionShow_stats.setEnabled(False)
         self.actionHide_stats.setEnabled(False)
-        self.actionShow_Edit_distance.setEnabled(False)
+        self.actionShow_Editdistance.setEnabled(False)
+
+        self.stackedWidget.setCurrentIndex(0)
+        self.to_mainview_btn.clicked.connect(lambda: self.stackedWidget.
+                                             setCurrentIndex(0))
 
         # Toggle theme
         dark = '../lupv/Resources/theme/dark.qss'
         light = '../lupv/Resources/theme/light.qss'
-        self.actionToggleDark.triggered.connect(lambda: self.toggle_theme(dark)
-                                                )
-        self.actionToggleLight.triggered.connect(lambda: self.toggle_theme(
-            light))
-        self.toggle_theme(dark)  # default theme
+        self.actionToggleDark.triggered.connect(lambda: self.set_theme(dark))
+        self.actionToggleLight.triggered.connect(lambda: self.set_theme(light))
+        self.set_theme(dark)  # default theme
 
         css = """
         color: white;
@@ -84,7 +83,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         QApplication.quit()
         self.close()
 
-    def toggle_theme(self, path):
+    def set_theme(self, path):
         """Change application theme based on theme location."""
         lupv = QApplication.instance()
         file = QFile(path)
@@ -138,9 +137,9 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.save_record_path(path)
         self.actionRealDate.setEnabled(True)
         self.actionRelativeDate.setEnabled(True)
-        self.populate_records()
+        self.display_records()
 
-    def populate_records(self, humanize=True):
+    def display_records(self, humanize=True):
         """Populate records."""
         recs = self._controller.read_records(humanize)
         ord_recs = MyDict()  # ordered records
@@ -167,30 +166,52 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.setVisible(True)
 
-    def show_student_page(self):
+    def get_selected_student(self):
         name = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
         nim = self.tableWidget.item(self.tableWidget.currentRow(), 1).text()
-        self.student_glob = student_dir = name + "-" + nim
-        self._student_ctrl = StudentController(self._model, self._controller,
-                                               student_dir)
-        self.log_tw.itemSelectionChanged.connect(self.selection_changed)
-        self.display_logs(False)
-        self.display_files()
+        student_dir = name + "-" + nim
+        return student_dir
 
+    def show_student_page(self):
+        # columns
+        self.reldate_col = 0
+        self.datetime_col = 1
+        self.sha_col = 2
+        self.insertions_col = 3
+        self.deletions_col = 4
+
+        # init
         self.actionHide_SHA.setEnabled(True)
         self.actionShow_SHA.setEnabled(True)
         self.actionShow_stats.setEnabled(True)
         self.actionHide_stats.setEnabled(True)
-        self.actionShow_Edit_distance.setEnabled(True)
+        self.actionShow_Editdistance.setEnabled(True)
 
-        self.actionShow_Edit_distance.triggered.connect(
+        self.actionShow_Editdistance.triggered.connect(
             self.show_editdistance_view)
-        self.actionShow_SHA.triggered.connect(lambda: self.toggle_sha(toogle=True))
-        self.actionHide_SHA.triggered.connect(lambda: self.toggle_sha(toogle=False))
-        self.actionShow_stats.triggered.connect(lambda: self.toogle_stats(toogle=True))
-        self.actionHide_stats.triggered.connect(lambda: self.toogle_stats(toogle=False))
+        self.actionShow_SHA.triggered.connect(lambda: self.toggle_sha(True))
+        self.actionHide_SHA.triggered.connect(lambda: self.toggle_sha(False))
+        self.actionShow_stats.triggered.connect(lambda: self.toogle_stats(True)
+                                                )
+        self.actionHide_stats.triggered.connect(lambda: self.toogle_stats(False
+                                                                          ))
 
+        student_dir = self.get_selected_student()
+        self._student_ctrl = StudentController(self._model, self._controller,
+                                               student_dir)
+
+        self.log_tw.itemSelectionChanged.connect(self.selection_changed)
+        self.clear_widgets()
+
+        self.display_logs(False)
+        self.display_files()
         self.stackedWidget.setCurrentIndex(1)
+
+    def clear_widgets(self):
+        self.diff_pte.clear()
+        self.log_tw.clear()
+        self.file_tw.clear()
+        self.all_windows_tw.clear()
 
     def get_selected_sha(self):
         sha = 0
@@ -202,9 +223,10 @@ class MainView(QMainWindow, Ui_MainWindow):
     def display_logs(self, complete=False):
         """Display log to log_QTreeWidget."""
         self.log_tw.clear()
-        self.log_tw.hideColumn(2)  # hide SHA column (default)
-        self.log_tw.hideColumn(3)
-        self.log_tw.hideColumn(4)
+
+        self.log_tw.hideColumn(self.sha_col)
+        self.log_tw.hideColumn(self.insertions_col)
+        self.log_tw.hideColumn(self.deletions_col)
 
         selected_file = self.get_selected_file()
         logs = self._student_ctrl.read_logs(selected_file)
@@ -216,9 +238,8 @@ class MainView(QMainWindow, Ui_MainWindow):
                     QTreeWidgetItem(self.log_tw, [
                         str(l.relative_datetime),
                         str(l.datetime),
-                        str(l.sha),
-                        str(l.add_stats),
-                        str(l.del_stats)
+                        str(l.sha), '{} Lines'.format(str(l.add_stats)),
+                        '{} Lines'.format(str(l.del_stats))
                     ])
                 self.log_tw.showColumn(3)
                 self.log_tw.showColumn(4)
@@ -303,27 +324,27 @@ class MainView(QMainWindow, Ui_MainWindow):
             self.display_auth_info(sha)
 
     def show_editdistance_view(self):
+        student_dir = self.get_selected_student()
         selected_file = self.get_selected_file()
         if selected_file:
             editdistance_ax = self._student_ctrl.calc_editdistance_ax(
-            selected_file)
+                selected_file)
             if editdistance_ax:
                 self.editdistance_view = EditDistanceView(
-                    editdistance_ax, self._student_ctrl, self.student_glob)
+                    editdistance_ax, self._student_ctrl, student_dir)
                 self.editdistance_view.show()
         else:
-            QMessageBox.warning(self, '', 'please choose a file')
+            QMessageBox.warning(self, '', 'Please choose a file')
 
     def toggle_sha(self, toogle=False):
+        # sha_col = 2
         if toogle:
-            self.log_tw.showColumn(2)
-            self.log_tw.resizeColumnToContents(3)
+            self.log_tw.showColumn(self.sha_col)
         else:
-            self.log_tw.hideColumn(2)
-            self.log_tw.resizeColumnToContents(0)
-            self.log_tw.resizeColumnToContents(1)
-            self.log_tw.resizeColumnToContents(3)
-            self.log_tw.resizeColumnToContents(4)
+            self.log_tw.hideColumn(self.sha_col)
+        for col in range(5):
+            if col != 2:
+                self.log_tw.resizeColumnToContents(col)
 
     def toogle_stats(self, toogle=False):
         if toogle:

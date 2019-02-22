@@ -238,8 +238,13 @@ class MainView(QMainWindow, Ui_MainWindow):
                     QTreeWidgetItem(self.log_tw, [
                         str(l.relative_datetime),
                         str(l.datetime),
-                        str(l.sha), '{} Lines'.format(str(l.add_stats)),
-                        '{} Lines'.format(str(l.del_stats))
+                        str(l.sha),
+                        '{} {line}'.format(
+                            l.add_stats,
+                            line='Line' if l.add_stats == 0 else 'Lines'),
+                        '{} {line}'.format(
+                            l.del_stats,
+                            line='Line' if l.del_stats == 0 else 'Lines')
                     ])
                 self.log_tw.showColumn(3)
                 self.log_tw.showColumn(4)

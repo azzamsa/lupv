@@ -23,10 +23,10 @@ class Controller(QObject):
         dirs = os.listdir(record_path)
         student_dirs = []
         for d in dirs:
-            if os.path.isdir(join(record_path, d, '.git')):
+            if os.path.isdir(join(record_path, d, ".git")):
                 student_dirs.append(d)
             else:
-                print('skipped' + d + '. Task not valid.')
+                print("skipped" + d + ". Task not valid.")
         return student_dirs
 
     def get_files(self, record_path):
@@ -41,7 +41,7 @@ class Controller(QObject):
     def get_records(self, record_path):
         """Return list of records from individual directory."""
         repo = git.Repo(record_path)
-        records = list(repo.iter_commits('master'))
+        records = list(repo.iter_commits("master"))
         return records
 
     def calc_work_duration(self, record_path):
@@ -56,7 +56,7 @@ class Controller(QObject):
         dt_last = pendulum.instance(records[0].committed_datetime)
         dt_first = pendulum.instance(records[-1].committed_datetime)
         dt_delta = dt_last - dt_first
-        duration.append(dt_delta.in_words(locale='en'))
+        duration.append(dt_delta.in_words(locale="en"))
 
         return duration
 
@@ -117,8 +117,14 @@ class Controller(QObject):
             first_rec = self.get_first_rec_time(student_path)
             last_record = self.get_last_rec_time(student_path)
 
-            record = Records(name, nim, work_duration[dt_type], record_amounts,
-                             first_rec[dt_type], last_record[dt_type])
+            record = Records(
+                name,
+                nim,
+                work_duration[dt_type],
+                record_amounts,
+                first_rec[dt_type],
+                last_record[dt_type],
+            )
             records.append(record)
 
         return records

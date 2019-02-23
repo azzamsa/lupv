@@ -3,9 +3,15 @@ from os.path import join
 from Resources.theme import breeze_resources
 from collections import OrderedDict
 
-from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
-                             QApplication, QLabel, QMessageBox,
-                             QTreeWidgetItem)
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QFileDialog,
+    QTableWidgetItem,
+    QApplication,
+    QLabel,
+    QMessageBox,
+    QTreeWidgetItem,
+)
 from PyQt5.QtCore import QFile, QTextStream, Qt
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
 
@@ -34,10 +40,12 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.actionQuit.setShortcut(QKeySequence("Ctrl+Q"))
 
         self.tableWidget.clicked.connect(self.show_student_page)
-        self.actionRealDate.triggered.connect(lambda: self.display_records(
-            humanize=False))
-        self.actionRelativeDate.triggered.connect(lambda: self.display_records(
-            humanize=True))
+        self.actionRealDate.triggered.connect(
+            lambda: self.display_records(humanize=False)
+        )
+        self.actionRelativeDate.triggered.connect(
+            lambda: self.display_records(humanize=True)
+        )
         self.actionRealDate.setEnabled(False)  # default
         self.actionRelativeDate.setEnabled(False)
 
@@ -49,16 +57,15 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.actionShow_Editdistance.setEnabled(False)
 
         self.stackedWidget.setCurrentIndex(0)
-        self.to_mainview_btn.clicked.connect(lambda: self.stackedWidget.
-                                             setCurrentIndex(0))
+        self.to_mainview_btn.clicked.connect(
+            lambda: self.stackedWidget.setCurrentIndex(0)
+        )
 
         # Toggle theme
-        dark = '../lupv/Resources/theme/dark.qss'
-        light = '../lupv/Resources/theme/light.qss'
-        self.actionToggleDark.triggered.connect(
-            lambda: self.toggle_theme(dark))
-        self.actionToggleLight.triggered.connect(
-            lambda: self.toggle_theme(light))
+        dark = "../lupv/Resources/theme/dark.qss"
+        light = "../lupv/Resources/theme/light.qss"
+        self.actionToggleDark.triggered.connect(lambda: self.toggle_theme(dark))
+        self.actionToggleLight.triggered.connect(lambda: self.toggle_theme(light))
         self.toggle_theme(dark)  # default theme
 
         css = """
@@ -75,8 +82,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.welcome_lbl = QLabel()
         self.welcome_lbl.setText("Please open records to start analyzing")
         self.welcome_lbl.setStyleSheet(css)
-        self.verticalLayout.addWidget(
-            self.welcome_lbl, alignment=Qt.AlignCenter)
+        self.verticalLayout.addWidget(self.welcome_lbl, alignment=Qt.AlignCenter)
 
         self.show()
 
@@ -95,9 +101,8 @@ class MainView(QMainWindow, Ui_MainWindow):
 
     def choosedir_dialog(self, caption):
         """Prompts dialog to choose record directory."""
-        options = (QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
-        return QFileDialog.getExistingDirectory(
-            self, caption=caption, options=options)
+        options = QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
+        return QFileDialog.getExistingDirectory(self, caption=caption, options=options)
 
     def validate_path(self, path):
         """Validate chosen path.
@@ -108,20 +113,18 @@ class MainView(QMainWindow, Ui_MainWindow):
         dirs = os.listdir(path)
         invalid_dirs = []
         for d in dirs:
-            if not os.path.isdir(join(path, d, '.git')):
+            if not os.path.isdir(join(path, d, ".git")):
                 invalid_dirs.append(d)
 
-        msg = 'Not a valid Tasks directory\n'
-        details = '\nContains invalid Task:\n{}'.format(
-            '\n'.join(invalid_dirs))
+        msg = "Not a valid Tasks directory\n"
+        details = "\nContains invalid Task:\n{}".format("\n".join(invalid_dirs))
 
         if len(invalid_dirs) == 0:
             return True
         elif len(invalid_dirs) <= 10:
-            QMessageBox.warning(self, '', msg + details)
+            QMessageBox.warning(self, "", msg + details)
         else:
-            QMessageBox.warning(self, '',
-                                msg + '\n\nContains many invalid Tasks')
+            QMessageBox.warning(self, "", msg + "\n\nContains many invalid Tasks")
 
     def save_record_path(self, record_path):
         """Save record path."""
@@ -129,7 +132,7 @@ class MainView(QMainWindow, Ui_MainWindow):
 
     def open_records(self):
         """Open records directory then display the record."""
-        path = self.choosedir_dialog('Select Directory...')
+        path = self.choosedir_dialog("Select Directory...")
         if not path:
             return None
         else:
@@ -176,32 +179,30 @@ class MainView(QMainWindow, Ui_MainWindow):
         return student_dir
 
     def show_student_page(self):
-        # columns
+        """Show Student Page and do initial things."""
+        # named column for easier reading
         self.reldate_col = 0
         self.datetime_col = 1
         self.sha_col = 2
         self.insertions_col = 3
         self.deletions_col = 4
 
-        # init
         self.actionHide_SHA.setEnabled(True)
         self.actionShow_SHA.setEnabled(True)
         self.actionShow_stats.setEnabled(True)
         self.actionHide_stats.setEnabled(True)
         self.actionShow_Editdistance.setEnabled(True)
 
-        self.actionShow_Editdistance.triggered.connect(
-            self.show_editdistance_view)
+        self.actionShow_Editdistance.triggered.connect(self.show_editdistance_view)
         self.actionShow_SHA.triggered.connect(lambda: self.toggle_sha(True))
         self.actionHide_SHA.triggered.connect(lambda: self.toggle_sha(False))
-        self.actionShow_stats.triggered.connect(lambda: self.toogle_stats(True)
-                                                )
-        self.actionHide_stats.triggered.connect(lambda: self.toogle_stats(False
-                                                                          ))
+        self.actionShow_stats.triggered.connect(lambda: self.toogle_stats(True))
+        self.actionHide_stats.triggered.connect(lambda: self.toogle_stats(False))
 
         student_dir = self.get_selected_student()
-        self._student_ctrl = StudentController(self._model, self._controller,
-                                               student_dir)
+        self._student_ctrl = StudentController(
+            self._model, self._controller, student_dir
+        )
 
         self.log_tw.itemSelectionChanged.connect(self.selection_changed)
         self.clear_widgets()
@@ -240,30 +241,33 @@ class MainView(QMainWindow, Ui_MainWindow):
             if selected_file:
                 self.log_tw.clear()
                 for l in logs:
-                    QTreeWidgetItem(self.log_tw, [
-                        str(l.relative_datetime),
-                        str(l.datetime),
-                        str(l.sha),
-                        '{} {line}'.format(
-                            l.add_stats,
-                            line='Line' if l.add_stats == 0 else 'Lines'),
-                        '{} {line}'.format(
-                            l.del_stats,
-                            line='Line' if l.del_stats == 0 else 'Lines')
-                    ])
+                    QTreeWidgetItem(
+                        self.log_tw,
+                        [
+                            str(l.relative_datetime),
+                            str(l.datetime),
+                            str(l.sha),
+                            "{} {line}".format(
+                                l.add_stats,
+                                line="Line" if l.add_stats == 0 else "Lines",
+                            ),
+                            "{} {line}".format(
+                                l.del_stats,
+                                line="Line" if l.del_stats == 0 else "Lines",
+                            ),
+                        ],
+                    )
                 self.log_tw.showColumn(3)
                 self.log_tw.showColumn(4)
                 self.log_tw.resizeColumnToContents(3)
                 self.log_tw.resizeColumnToContents(4)
             else:
-                QMessageBox.warning(self, '', 'please choose a file')
+                QMessageBox.warning(self, "", "please choose a file")
         else:
             for l in logs:
                 QTreeWidgetItem(
-                    self.log_tw,
-                    [str(l.relative_datetime),
-                     str(l.datetime),
-                     str(l.sha)])
+                    self.log_tw, [str(l.relative_datetime), str(l.datetime), str(l.sha)]
+                )
 
         self.log_tw.resizeColumnToContents(0)
         self.log_tw.resizeColumnToContents(1)
@@ -274,18 +278,18 @@ class MainView(QMainWindow, Ui_MainWindow):
         student_repo = self._student_ctrl.get_student_repo()
 
         selected_file = self.get_selected_file()
-        no_file_selected_msg = 'No file selected, Please select one'
-        no_file_rec_msg = 'No availibale record for {} in this period'.format(
-            selected_file)
+        no_file_selected_msg = "No file selected, Please select one"
+        no_file_rec_msg = "No availibale record for {} in this period".format(
+            selected_file
+        )
 
         if not selected_file:
             self.diff_pte.setPlainText(no_file_selected_msg)
         else:
             file_existp = self._student_ctrl.is_file_exist(selected_file, sha)
             if file_existp:
-                current_file = student_repo.git.show('{}:{}'.format(
-                    sha, selected_file))
-                if current_file == '':
+                current_file = student_repo.git.show("{}:{}".format(sha, selected_file))
+                if current_file == "":
                     self.diff_pte.setPlainText(no_file_rec_msg)
                 else:
                     self.diff_pte.setPlainText(current_file)
@@ -341,14 +345,14 @@ class MainView(QMainWindow, Ui_MainWindow):
         student_dir = self.get_selected_student()
         selected_file = self.get_selected_file()
         if selected_file:
-            editdistance_ax = self._student_ctrl.calc_editdistance_ax(
-                selected_file)
+            editdistance_ax = self._student_ctrl.calc_editdistance_ax(selected_file)
             if editdistance_ax:
                 self.editdistance_view = EditDistanceView(
-                    editdistance_ax, self._student_ctrl, student_dir)
+                    editdistance_ax, self._student_ctrl, student_dir
+                )
                 self.editdistance_view.show()
         else:
-            QMessageBox.warning(self, '', 'Please choose a file')
+            QMessageBox.warning(self, "", "Please choose a file")
 
     def toggle_sha(self, toogle=False):
         """Toggle the appearance of SHA columns."""

@@ -27,45 +27,45 @@ class StudentController(QObject):
 
     def read_auth_info(self, sha):
         student_repo = self.get_student_repo()
-        auth_path = join('.watchers', 'auth_info')
-        auth_file = student_repo.git.show('{}:{}'.format(sha, auth_path))
+        auth_path = join(".watchers", "auth_info")
+        auth_file = student_repo.git.show("{}:{}".format(sha, auth_path))
         auth_info = auth_file.splitlines()
         return auth_info
 
     def read_all_windows(self, sha):
         student_repo = self.get_student_repo()
-        all_win_path = join('.watchers', 'all_windows')
-        diff = student_repo.git.show('{}:{}'.format(sha, all_win_path))
+        all_win_path = join(".watchers", "all_windows")
+        diff = student_repo.git.show("{}:{}".format(sha, all_win_path))
         windows = diff.splitlines()
         return windows
 
     def read_focused_window(self, sha):
         student_repo = self.get_student_repo()
-        foc_win_path = join('.watchers', 'focused_window')
-        focused_window = student_repo.git.show('{}:{}'.format(
-            sha, foc_win_path))
+        foc_win_path = join(".watchers", "focused_window")
+        focused_window = student_repo.git.show("{}:{}".format(sha, foc_win_path))
         return focused_window
 
     def read_logs(self, selected_file=None):
         """Read log form student directory."""
         student_repo = self.get_student_repo()
-        records = list(student_repo.iter_commits('master'))
+        records = list(student_repo.iter_commits("master"))
         insertions = 0
         deletions = 0
         logs = []
 
         for rec in records:
             relative_datetime = self._controller.humanize_dateime(
-                rec.committed_datetime)
-            datetime = str(rec.committed_datetime).split('+')[0]
+                rec.committed_datetime
+            )
+            datetime = str(rec.committed_datetime).split("+")[0]
             sha = rec.hexsha
 
             # TODO use 1 variable instead of separated add and del
             if selected_file:
                 file_existp = self.is_file_exist(selected_file, rec.hexsha)
                 if file_existp:
-                    insertions = rec.stats.files[selected_file]['insertions']
-                    deletions = rec.stats.files[selected_file]['deletions']
+                    insertions = rec.stats.files[selected_file]["insertions"]
+                    deletions = rec.stats.files[selected_file]["deletions"]
                 else:
                     insertions = 0
                     deletions = 0
@@ -78,7 +78,7 @@ class StudentController(QObject):
     def is_file_exist(self, filename, sha):
         """Check if filename in current record exist."""
         student_repo = self.get_student_repo()
-        files = student_repo.git.show('--pretty=' '', '--name-only', sha)
+        files = student_repo.git.show("--pretty=" "", "--name-only", sha)
         if filename in files:
             return True
         else:
@@ -90,18 +90,20 @@ class StudentController(QObject):
         records_ax = []
         ed_ax = []
         student_repo = self.get_student_repo()
-        records = list(student_repo.iter_commits('master'))
+        records = list(student_repo.iter_commits("master"))
         last_record_sha = records[0].hexsha
 
         if selected_file:
-            last_file = student_repo.git.show('{}:{}'.format(
-                last_record_sha, selected_file))
+            last_file = student_repo.git.show(
+                "{}:{}".format(last_record_sha, selected_file)
+            )
 
             for record in records:
                 file_existp = self.is_file_exist(selected_file, record.hexsha)
                 if file_existp:
-                    current_file = student_repo.git.show('{}:{}'.format(
-                        record.hexsha, selected_file))
+                    current_file = student_repo.git.show(
+                        "{}:{}".format(record.hexsha, selected_file)
+                    )
                     ed = editdistance.eval(last_file, current_file)
                     ed_ax.append(ed)
 

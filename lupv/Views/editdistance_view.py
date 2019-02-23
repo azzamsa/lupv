@@ -1,9 +1,7 @@
 import random
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import (FigureCanvasQTAgg as
-                                                FigureCanvas)
-from PyQt5.QtWidgets import (QWidget, QPushButton, QVBoxLayout, QHBoxLayout,
-                             QMessageBox)
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QMessageBox
 
 
 class EditDistanceView(QWidget):
@@ -16,9 +14,9 @@ class EditDistanceView(QWidget):
         self.figure = plt.figure()
         self.canvas = FigureCanvas(self.figure)
 
-        self.close_btn = QPushButton('OK')
+        self.close_btn = QPushButton("OK")
         self.close_btn.clicked.connect(self.close)
-        self.save_btn = QPushButton('Save Graph')
+        self.save_btn = QPushButton("Save Graph")
         self.save_btn.clicked.connect(lambda: self.draw_editdistance(True))
 
         btn_layout = QHBoxLayout()
@@ -38,20 +36,22 @@ class EditDistanceView(QWidget):
         ax = self.figure.add_subplot(111)
         records_ax = self._editdistance_ax[0]
         editdistance_ax = self._editdistance_ax[1]
-        random_color = (random.uniform(0, 1), random.uniform(0, 1),
-                        random.uniform(0, 1))
+        random_color = (
+            random.uniform(0, 1),
+            random.uniform(0, 1),
+            random.uniform(0, 1),
+        )
         ax.plot(records_ax, editdistance_ax, color=random_color)
 
-        name = self._student_dir.split('-')[0]
-        nim = self._student_dir.split('-')[1]
-        plt.title('{} {}'.format(name, nim))
-        plt.xlabel('Records count')
-        plt.ylabel('Edit distance from final sumbission')
+        name = self._student_dir.split("-")[0]
+        nim = self._student_dir.split("-")[1]
+        plt.title("{} {}".format(name, nim))
+        plt.xlabel("Records count")
+        plt.ylabel("Edit distance from final sumbission")
 
         self.canvas.draw()
 
         if savep:
-            image_path = self._student_ctrl.get_student_path() + '.png'
+            image_path = self._student_ctrl.get_student_path() + ".png"
             plt.savefig(image_path)
-            QMessageBox.information(self, '',
-                                    'Graph saved to {}'.format(image_path))
+            QMessageBox.information(self, "", "Graph saved to {}".format(image_path))

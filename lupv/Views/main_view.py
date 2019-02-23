@@ -39,7 +39,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.actionQuit.triggered.connect(self.quit_app)
         self.actionQuit.setShortcut(QKeySequence("Ctrl+Q"))
 
-        self.tableWidget.clicked.connect(self.show_student_page)
+        self.main_tablew.clicked.connect(self.show_student_page)
         self.actionRealDate.triggered.connect(
             lambda: self.display_records(humanize=False)
         )
@@ -78,7 +78,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         background: #1d2c3a;
         """
 
-        self.tableWidget.setVisible(False)
+        self.main_tablew.setVisible(False)
         self.welcome_lbl = QLabel()
         self.welcome_lbl.setText("Please open records to start analyzing")
         self.welcome_lbl.setStyleSheet(css)
@@ -106,6 +106,8 @@ class MainView(QMainWindow, Ui_MainWindow):
 
     def validate_path(self, path):
         """Validate chosen path.
+
+        TODO: Move this to controller
 
         This is necessary because invalid path will break `read_records` and
         make application crash.
@@ -157,24 +159,24 @@ class MainView(QMainWindow, Ui_MainWindow):
             ord_recs[rec.name]["first_record"] = rec.first_record
             ord_recs[rec.name]["last_record"] = rec.last_record
 
-        self.tableWidget.setRowCount(0)
+        self.main_tablew.setRowCount(0)
 
         for row_num, key_name in enumerate(ord_recs):
-            self.tableWidget.insertRow(row_num)
+            self.main_tablew.insertRow(row_num)
             for col_num, col_key in enumerate(ord_recs[key_name]):
                 tbl_item = QTableWidgetItem(str(ord_recs[key_name][col_key]))
-                self.tableWidget.setItem(row_num, col_num, tbl_item)
+                self.main_tablew.setItem(row_num, col_num, tbl_item)
 
         self.welcome_lbl.setVisible(False)
-        self.tableWidget.setVisible(False)
-        self.tableWidget.verticalScrollBar().setValue(0)
-        self.tableWidget.resizeColumnsToContents()
-        self.tableWidget.setVisible(True)
+        self.main_tablew.setVisible(False)
+        self.main_tablew.verticalScrollBar().setValue(0)
+        self.main_tablew.resizeColumnsToContents()
+        self.main_tablew.setVisible(True)
 
     def get_selected_student(self):
         """Return selected student from main table"""
-        name = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
-        nim = self.tableWidget.item(self.tableWidget.currentRow(), 1).text()
+        name = self.main_tablew.item(self.main_tablew.currentRow(), 0).text()
+        nim = self.main_tablew.item(self.main_tablew.currentRow(), 1).text()
         student_dir = name + "-" + nim
         return student_dir
 
@@ -204,7 +206,7 @@ class MainView(QMainWindow, Ui_MainWindow):
             self._model, self._controller, student_dir
         )
 
-        self.log_tw.itemSelectionChanged.connect(self.selection_changed)
+        self.log_treew.itemSelectionChanged.connect(self.selection_changed)
         self.clear_widgets()
 
         self.display_logs(False)
@@ -213,36 +215,36 @@ class MainView(QMainWindow, Ui_MainWindow):
 
     def clear_widgets(self):
         """Clear all widget contents."""
-        self.diff_pte.clear()
-        self.log_tw.clear()
-        self.file_tw.clear()
-        self.all_windows_tw.clear()
+        self.diff_textw.clear()
+        self.log_treew.clear()
+        self.file_treew.clear()
+        self.windows_treew.clear()
 
     def get_selected_sha(self):
         """Get SHA value from log_QTreeWidget."""
         sha = 0
-        items = self.log_tw.selectedItems()
+        items = self.log_treew.selectedItems()
         if items:
             sha = items[0].text(2)
         return sha
 
     def display_logs(self, complete=False):
         """Display log to log_QTreeWidget."""
-        self.log_tw.clear()
+        self.log_treew.clear()
 
-        self.log_tw.hideColumn(self.sha_col)
-        self.log_tw.hideColumn(self.insertions_col)
-        self.log_tw.hideColumn(self.deletions_col)
+        self.log_treew.hideColumn(self.sha_col)
+        self.log_treew.hideColumn(self.insertions_col)
+        self.log_treew.hideColumn(self.deletions_col)
 
         selected_file = self.get_selected_file()
         logs = self._student_ctrl.read_logs(selected_file)
 
         if complete:
             if selected_file:
-                self.log_tw.clear()
+                self.log_treew.clear()
                 for l in logs:
                     QTreeWidgetItem(
-                        self.log_tw,
+                        self.log_treew,
                         [
                             str(l.relative_datetime),
                             str(l.datetime),
@@ -257,24 +259,24 @@ class MainView(QMainWindow, Ui_MainWindow):
                             ),
                         ],
                     )
-                self.log_tw.showColumn(3)
-                self.log_tw.showColumn(4)
-                self.log_tw.resizeColumnToContents(3)
-                self.log_tw.resizeColumnToContents(4)
+                self.log_treew.showColumn(3)
+                self.log_treew.showColumn(4)
+                self.log_treew.resizeColumnToContents(3)
+                self.log_treew.resizeColumnToContents(4)
             else:
                 QMessageBox.warning(self, "", "please choose a file")
         else:
             for l in logs:
                 QTreeWidgetItem(
-                    self.log_tw, [str(l.relative_datetime), str(l.datetime), str(l.sha)]
+                    self.log_treew, [str(l.relative_datetime), str(l.datetime), str(l.sha)]
                 )
 
-        self.log_tw.resizeColumnToContents(0)
-        self.log_tw.resizeColumnToContents(1)
+        self.log_treew.resizeColumnToContents(0)
+        self.log_treew.resizeColumnToContents(1)
 
     def display_diff(self, sha):
         """Display diff to diff_QPlainTextEdit."""
-        self.diff_pte.clear()
+        self.diff_textw.clear()
         student_repo = self._student_ctrl.get_student_repo()
 
         selected_file = self.get_selected_file()
@@ -284,45 +286,45 @@ class MainView(QMainWindow, Ui_MainWindow):
         )
 
         if not selected_file:
-            self.diff_pte.setPlainText(no_file_selected_msg)
+            self.diff_textw.setPlainText(no_file_selected_msg)
         else:
             file_existp = self._student_ctrl.is_file_exist(selected_file, sha)
             if file_existp:
                 current_file = student_repo.git.show("{}:{}".format(sha, selected_file))
                 if current_file == "":
-                    self.diff_pte.setPlainText(no_file_rec_msg)
+                    self.diff_textw.setPlainText(no_file_rec_msg)
                 else:
-                    self.diff_pte.setPlainText(current_file)
+                    self.diff_textw.setPlainText(current_file)
             else:
                 pass
 
     def display_files(self):
         """Display file to file_QTreeWidget."""
-        self.file_tw.clear()
+        self.file_treew.clear()
         student_dir = self._student_ctrl.get_student_path()
         files = self._controller.get_files(student_dir)
         for f in files:
-            QTreeWidgetItem(self.file_tw, [f])
+            QTreeWidgetItem(self.file_treew, [f])
 
     def get_selected_file(self):
         """Return selected file in file_QTreeWidget."""
-        items = self.file_tw.selectedItems()
+        items = self.file_treew.selectedItems()
         if items:
             selected_file = items[0].text(0)
             return selected_file
 
     def display_windows(self, sha):
         """Display all windows and focused window from records."""
-        self.all_windows_tw.clear()
+        self.windows_treew.clear()
 
         focused_window = self._student_ctrl.read_focused_window(sha)
-        focused_row = QTreeWidgetItem(self.all_windows_tw, [focused_window])
+        focused_row = QTreeWidgetItem(self.windows_treew, [focused_window])
 
         focused_row.setForeground(0, QBrush(QColor("#41CD52")))
         windows = self._student_ctrl.read_all_windows(sha)
         for window in windows:
             if window != focused_window:
-                QTreeWidgetItem(self.all_windows_tw, [window])
+                QTreeWidgetItem(self.windows_treew, [window])
 
     def display_auth_info(self, sha):
         """Display auth information from records."""
@@ -357,19 +359,19 @@ class MainView(QMainWindow, Ui_MainWindow):
     def toggle_sha(self, toogle=False):
         """Toggle the appearance of SHA columns."""
         if toogle:
-            self.log_tw.showColumn(self.sha_col)
+            self.log_treew.showColumn(self.sha_col)
         else:
-            self.log_tw.hideColumn(self.sha_col)
+            self.log_treew.hideColumn(self.sha_col)
         for col in range(5):
             if col != 2:
-                self.log_tw.resizeColumnToContents(col)
+                self.log_treew.resizeColumnToContents(col)
 
     def toogle_stats(self, toogle=False):
         """Toggle the appearance of stats columns."""
         if toogle:
             self.display_logs(True)
         else:
-            self.log_tw.hideColumn(3)
-            self.log_tw.hideColumn(4)
-            self.log_tw.resizeColumnToContents(0)
-            self.log_tw.resizeColumnToContents(1)
+            self.log_treew.hideColumn(3)
+            self.log_treew.hideColumn(4)
+            self.log_treew.resizeColumnToContents(0)
+            self.log_treew.resizeColumnToContents(1)

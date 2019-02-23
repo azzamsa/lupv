@@ -18,14 +18,14 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QTableWidget" name="tableWidget">
+           <widget class="QTableWidget" name="main_tablew">
             <property name="sortingEnabled">
              <bool>true</bool>
             </property>
@@ -201,21 +201,21 @@
              </property>
             </widget>
            </widget>
-           <widget class="QTreeWidget" name="all_windows_tw">
+           <widget class="QTreeWidget" name="windows_treew">
             <column>
              <property name="text">
               <string notr="true">Windows</string>
              </property>
             </column>
            </widget>
-           <widget class="QTreeWidget" name="file_tw">
+           <widget class="QTreeWidget" name="file_treew">
             <column>
              <property name="text">
               <string notr="true">Files</string>
              </property>
             </column>
            </widget>
-           <widget class="QPlainTextEdit" name="diff_pte">
+           <widget class="QPlainTextEdit" name="diff_textw">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -224,7 +224,7 @@
             </property>
            </widget>
           </widget>
-          <widget class="QTreeWidget" name="log_tw">
+          <widget class="QTreeWidget" name="log_treew">
            <property name="sortingEnabled">
             <bool>true</bool>
            </property>

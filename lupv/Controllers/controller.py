@@ -9,14 +9,30 @@ from Model.records import Records
 
 
 class Controller(QObject):
-    def __init__(self, model):
+    def __init__(self):
         super().__init__()
 
-        self._model = model
+        # self._model = model
 
-    def save_record_path(self, record_path):
-        "save task path to model"
-        self._model.set_record_path(record_path)
+    # def save_record_path(self, record_path):
+    #     "save task path to model"
+    #     self._model.set_record_path(record_path)
+
+    def validate_path(self, path):
+        """Validate chosen path.
+
+        TODO: Move this to controller
+
+        This is necessary because invalid path will break `read_records` and
+        make application crash.
+        """
+        dirs = os.listdir(path)
+        invalid_dirs = []
+        for d in dirs:
+            if not os.path.isdir(join(path, d, ".git")):
+                invalid_dirs.append(d)
+
+        return invalid_dirs
 
     def get_student_dirs(self, record_path):
         "Return list of student directories"
@@ -29,24 +45,24 @@ class Controller(QObject):
                 print("skipped" + d + ". Task not valid.")
         return student_dirs
 
-    def get_files(self, record_path):
+    def get_files(self, student_path):
         """Return list of files inside student directory."""
-        dirs = os.listdir(record_path)
+        dirs = os.listdir(student_path)
         files = []
         for d in dirs:
-            if os.path.isfile(os.path.join(record_path, d)):
+            if os.path.isfile(os.path.join(student_path, d)):
                 files.append(d)
         return files
 
-    def get_records(self, record_path):
+    def get_records(self, student_path):
         """Return list of records from individual directory."""
-        repo = git.Repo(record_path)
+        repo = git.Repo(student_path)
         records = list(repo.iter_commits("master"))
         return records
 
-    def calc_work_duration(self, record_path):
+    def calc_work_duration(self, student_path):
         """Calculate duration between last and first."""
-        records = self.get_records(record_path)
+        records = self.get_records(student_path)
         duration = []
 
         # last - first
@@ -60,15 +76,15 @@ class Controller(QObject):
 
         return duration
 
-    def count_records(self, record_path):
+    def count_records(self, student_path):
         """Count the total amount of records."""
-        records = self.get_records(record_path)
+        records = self.get_records(student_path)
         return len(records)
 
-    def get_last_rec_time(self, record_path):
+    def get_last_rec_time(self, student_path):
         """Take the last record."""
         last_rec_time = []
-        records = self.get_records(record_path)
+        records = self.get_records(student_path)
 
         last_rec_dt = records[0].committed_datetime
         last_rec_time.append(str(last_rec_dt).split("+")[0])
@@ -78,10 +94,10 @@ class Controller(QObject):
 
         return last_rec_time
 
-    def get_first_rec_time(self, record_path):
+    def get_first_rec_time(self, student_path):
         """Take the first record."""
         first_rec_time = []
-        records = self.get_records(record_path)
+        records = self.get_records(student_path)
 
         first_rec_dt = records[-1].committed_datetime
         first_rec_time.append(str(first_rec_dt).split("+")[0])
@@ -91,16 +107,15 @@ class Controller(QObject):
 
         return first_rec_time
 
-    def get_first_rec_sha(self, record_path):
+    def get_first_rec_sha(self, student_path):
         """Take the first SHA record."""
-        records = self.get_records(record_path)
+        records = self.get_records(student_path)
         return records[-1].hexsha
 
-    def read_records(self, humanize=True):
+    def read_records(self, record_path, humanize=True):
         """Read records from individual dirs then return them as
         `Records` object."""
-        rec_path = self._model.get_record_path()
-        student_dirs = self.get_student_dirs(rec_path)
+        student_dirs = self.get_student_dirs(record_path)
         records = []
         dt_type = 0
 
@@ -110,7 +125,7 @@ class Controller(QObject):
         for d in student_dirs:
             name = str(d).split("-")[0]
             nim = str(d).split("-")[1]
-            student_path = join(rec_path, d)
+            student_path = join(record_path, d)
 
             work_duration = self.calc_work_duration(student_path)
             record_amounts = self.count_records(student_path)

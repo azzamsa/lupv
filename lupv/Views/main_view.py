@@ -27,9 +27,8 @@ class MyDict(OrderedDict):
 
 
 class MainView(QMainWindow, Ui_MainWindow):
-    def __init__(self, model, controller):
+    def __init__(self, controller):
         super().__init__()
-        self._model = model
         self._controller = controller
         self.setupUi(self)
 
@@ -39,12 +38,12 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.actionQuit.triggered.connect(self.quit_app)
         self.actionQuit.setShortcut(QKeySequence("Ctrl+Q"))
 
-        self.main_tablew.clicked.connect(self.show_student_page)
+        self.main_tablew.clicked.connect(self.show_student_view)
         self.actionRealDate.triggered.connect(
-            lambda: self.display_records(humanize=False)
+            lambda: self.display_records(self.record_path, humanize=False)
         )
         self.actionRelativeDate.triggered.connect(
-            lambda: self.display_records(humanize=True)
+            lambda: self.display_records(self.record_path, humanize=True)
         )
         self.actionRealDate.setEnabled(False)  # default
         self.actionRelativeDate.setEnabled(False)
@@ -66,7 +65,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         light = "../lupv/Resources/theme/light.qss"
         self.actionToggleDark.triggered.connect(lambda: self.toggle_theme(dark))
         self.actionToggleLight.triggered.connect(lambda: self.toggle_theme(light))
-        self.toggle_theme(dark)  # default theme
+        self.toggle_theme(light)  # default theme
 
         css = """
         color: white;
@@ -99,24 +98,14 @@ class MainView(QMainWindow, Ui_MainWindow):
         stream = QTextStream(file)
         lupv.setStyleSheet(stream.readAll())
 
-    def choosedir_dialog(self, caption):
+    def choosepath_dialog(self, caption):
         """Prompts dialog to choose record directory."""
         options = QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
         return QFileDialog.getExistingDirectory(self, caption=caption, options=options)
 
-    def validate_path(self, path):
-        """Validate chosen path.
-
-        TODO: Move this to controller
-
-        This is necessary because invalid path will break `read_records` and
-        make application crash.
-        """
-        dirs = os.listdir(path)
-        invalid_dirs = []
-        for d in dirs:
-            if not os.path.isdir(join(path, d, ".git")):
-                invalid_dirs.append(d)
+    def is_valid_path(self, path):
+        """Check validity of given path."""
+        invalid_dirs = self._controller.validate_path(path)
 
         msg = "Not a valid Tasks directory\n"
         details = "\nContains invalid Task:\n{}".format("\n".join(invalid_dirs))
@@ -128,46 +117,44 @@ class MainView(QMainWindow, Ui_MainWindow):
         else:
             QMessageBox.warning(self, "", msg + "\n\nContains many invalid Tasks")
 
-    def save_record_path(self, record_path):
-        """Save record path."""
-        self._controller.save_record_path(record_path)
-
     def open_records(self):
         """Open records directory then display the record."""
-        path = self.choosedir_dialog("Select Directory...")
+        path = self.choosepath_dialog("Select Directory...")
         if not path:
             return None
         else:
-            if not self.validate_path(path):
+            if not self.is_valid_path(path):
                 return None
 
-        self.save_record_path(path)
+        self.record_path = path
+        self.display_records(path)
+
         self.actionRealDate.setEnabled(True)
         self.actionRelativeDate.setEnabled(True)
-        self.display_records()
 
-    def display_records(self, humanize=True):
+    def display_records(self, path, humanize=True):
         """Populate records."""
-        recs = self._controller.read_records(humanize)
-        ord_recs = MyDict()  # ordered records
+        records = self._controller.read_records(path, humanize)
+        ord_records = MyDict()  # ordered records
 
-        for rec in recs:
-            ord_recs[rec.name]["name"] = rec.name
-            ord_recs[rec.name]["nim"] = rec.nim
-            ord_recs[rec.name]["record_amounts"] = rec.record_amounts
-            ord_recs[rec.name]["work_duration"] = rec.work_duration
-            ord_recs[rec.name]["first_record"] = rec.first_record
-            ord_recs[rec.name]["last_record"] = rec.last_record
+        for record in records:
+            ord_records[record.name]["name"] = record.name
+            ord_records[record.name]["nim"] = record.nim
+            ord_records[record.name]["record_amounts"] = record.record_amounts
+            ord_records[record.name]["work_duration"] = record.work_duration
+            ord_records[record.name]["first_record"] = record.first_record
+            ord_records[record.name]["last_record"] = record.last_record
 
         self.main_tablew.setRowCount(0)
 
-        for row_num, key_name in enumerate(ord_recs):
+        for row_num, key_name in enumerate(ord_records):
             self.main_tablew.insertRow(row_num)
-            for col_num, col_key in enumerate(ord_recs[key_name]):
-                tbl_item = QTableWidgetItem(str(ord_recs[key_name][col_key]))
+            for col_num, col_key in enumerate(ord_records[key_name]):
+                tbl_item = QTableWidgetItem(str(ord_records[key_name][col_key]))
                 self.main_tablew.setItem(row_num, col_num, tbl_item)
 
         self.welcome_lbl.setVisible(False)
+
         self.main_tablew.setVisible(False)
         self.main_tablew.verticalScrollBar().setValue(0)
         self.main_tablew.resizeColumnsToContents()
@@ -180,7 +167,11 @@ class MainView(QMainWindow, Ui_MainWindow):
         student_dir = name + "-" + nim
         return student_dir
 
-    def show_student_page(self):
+    #
+    # Student View
+    #
+
+    def show_student_view(self):
         """Show Student Page and do initial things."""
         # named column for easier reading
         self.reldate_col = 0
@@ -196,14 +187,15 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.actionShow_Editdistance.setEnabled(True)
 
         self.actionShow_Editdistance.triggered.connect(self.show_editdistance_view)
-        self.actionShow_SHA.triggered.connect(lambda: self.toggle_sha(True))
-        self.actionHide_SHA.triggered.connect(lambda: self.toggle_sha(False))
-        self.actionShow_stats.triggered.connect(lambda: self.toogle_stats(True))
-        self.actionHide_stats.triggered.connect(lambda: self.toogle_stats(False))
+        self.actionShow_SHA.triggered.connect(lambda: self.toggle_sha(toogle=True))
+        self.actionHide_SHA.triggered.connect(lambda: self.toggle_sha(toogle=False))
+        self.actionShow_stats.triggered.connect(lambda: self.toogle_stats(toogle=True))
+        self.actionHide_stats.triggered.connect(lambda: self.toogle_stats(toogle=False))
 
+        record_path = self.record_path
         student_dir = self.get_selected_student()
         self._student_ctrl = StudentController(
-            self._model, self._controller, student_dir
+            self._controller, record_path, student_dir
         )
 
         self.log_treew.itemSelectionChanged.connect(self.selection_changed)
@@ -259,25 +251,25 @@ class MainView(QMainWindow, Ui_MainWindow):
                             ),
                         ],
                     )
-                self.log_treew.showColumn(3)
-                self.log_treew.showColumn(4)
-                self.log_treew.resizeColumnToContents(3)
-                self.log_treew.resizeColumnToContents(4)
+                self.log_treew.showColumn(self.insertions_col)
+                self.log_treew.showColumn(self.deletions_col)
+                self.log_treew.resizeColumnToContents(self.insertions_col)
+                self.log_treew.resizeColumnToContents(self.deletions_col)
             else:
                 QMessageBox.warning(self, "", "please choose a file")
         else:
             for l in logs:
                 QTreeWidgetItem(
-                    self.log_treew, [str(l.relative_datetime), str(l.datetime), str(l.sha)]
+                    self.log_treew,
+                    [str(l.relative_datetime), str(l.datetime), str(l.sha)],
                 )
 
         self.log_treew.resizeColumnToContents(0)
         self.log_treew.resizeColumnToContents(1)
 
-    def display_diff(self, sha):
+    def display_file_content(self, sha):
         """Display diff to diff_QPlainTextEdit."""
         self.diff_textw.clear()
-        student_repo = self._student_ctrl.get_student_repo()
 
         selected_file = self.get_selected_file()
         no_file_selected_msg = "No file selected, Please select one"
@@ -288,15 +280,11 @@ class MainView(QMainWindow, Ui_MainWindow):
         if not selected_file:
             self.diff_textw.setPlainText(no_file_selected_msg)
         else:
-            file_existp = self._student_ctrl.is_file_exist(selected_file, sha)
-            if file_existp:
-                current_file = student_repo.git.show("{}:{}".format(sha, selected_file))
-                if current_file == "":
-                    self.diff_textw.setPlainText(no_file_rec_msg)
-                else:
-                    self.diff_textw.setPlainText(current_file)
+            file_content = self._student_ctrl.read_file_content(selected_file, sha)
+            if file_content == "":
+                self.diff_textw.setPlainText(no_file_rec_msg)
             else:
-                pass
+                self.diff_textw.setPlainText(file_content)
 
     def display_files(self):
         """Display file to file_QTreeWidget."""
@@ -338,23 +326,9 @@ class MainView(QMainWindow, Ui_MainWindow):
         """Actions invoked when selection in log_QTreeWidget changed."""
         sha = self.get_selected_sha()
         if sha:
-            self.display_diff(sha)
+            self.display_file_content(sha)
             self.display_windows(sha)
             self.display_auth_info(sha)
-
-    def show_editdistance_view(self):
-        """Open EditDistance Window"""
-        student_dir = self.get_selected_student()
-        selected_file = self.get_selected_file()
-        if selected_file:
-            editdistance_ax = self._student_ctrl.calc_editdistance_ax(selected_file)
-            if editdistance_ax:
-                self.editdistance_view = EditDistanceView(
-                    editdistance_ax, self._student_ctrl, student_dir
-                )
-                self.editdistance_view.show()
-        else:
-            QMessageBox.warning(self, "", "Please choose a file")
 
     def toggle_sha(self, toogle=False):
         """Toggle the appearance of SHA columns."""
@@ -371,7 +345,25 @@ class MainView(QMainWindow, Ui_MainWindow):
         if toogle:
             self.display_logs(True)
         else:
-            self.log_treew.hideColumn(3)
-            self.log_treew.hideColumn(4)
-            self.log_treew.resizeColumnToContents(0)
-            self.log_treew.resizeColumnToContents(1)
+            self.log_treew.hideColumn(self.insertions_col)
+            self.log_treew.hideColumn(self.deletions_col)
+            self.log_treew.resizeColumnToContents(self.datetime_col)
+            self.log_treew.resizeColumnToContents(self.sha_col)
+
+    #
+    # EditDistance View
+    #
+
+    def show_editdistance_view(self):
+        """Open EditDistance Window"""
+        student_dir = self.get_selected_student()
+        selected_file = self.get_selected_file()
+        if selected_file:
+            editdistance_ax = self._student_ctrl.calc_editdistance_ax(selected_file)
+            if editdistance_ax:
+                self.editdistance_view = EditDistanceView(
+                    editdistance_ax, self._student_ctrl, student_dir
+                )
+                self.editdistance_view.show()
+        else:
+            QMessageBox.warning(self, "", "Please choose a file")

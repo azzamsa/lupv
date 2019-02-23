@@ -55,9 +55,11 @@ class MainView(QMainWindow, Ui_MainWindow):
         # Toggle theme
         dark = '../lupv/Resources/theme/dark.qss'
         light = '../lupv/Resources/theme/light.qss'
-        self.actionToggleDark.triggered.connect(lambda: self.set_theme(dark))
-        self.actionToggleLight.triggered.connect(lambda: self.set_theme(light))
-        self.set_theme(dark)  # default theme
+        self.actionToggleDark.triggered.connect(
+            lambda: self.toggle_theme(dark))
+        self.actionToggleLight.triggered.connect(
+            lambda: self.toggle_theme(light))
+        self.toggle_theme(dark)  # default theme
 
         css = """
         color: white;
@@ -83,7 +85,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         QApplication.quit()
         self.close()
 
-    def set_theme(self, path):
+    def toggle_theme(self, path):
         """Change application theme based on theme location."""
         lupv = QApplication.instance()
         file = QFile(path)
@@ -167,6 +169,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.tableWidget.setVisible(True)
 
     def get_selected_student(self):
+        """Return selected student from main table"""
         name = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
         nim = self.tableWidget.item(self.tableWidget.currentRow(), 1).text()
         student_dir = name + "-" + nim
@@ -208,12 +211,14 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.stackedWidget.setCurrentIndex(1)
 
     def clear_widgets(self):
+        """Clear all widget contents."""
         self.diff_pte.clear()
         self.log_tw.clear()
         self.file_tw.clear()
         self.all_windows_tw.clear()
 
     def get_selected_sha(self):
+        """Get SHA value from log_QTreeWidget."""
         sha = 0
         items = self.log_tw.selectedItems()
         if items:
@@ -303,6 +308,7 @@ class MainView(QMainWindow, Ui_MainWindow):
             return selected_file
 
     def display_windows(self, sha):
+        """Display all windows and focused window from records."""
         self.all_windows_tw.clear()
 
         focused_window = self._student_ctrl.read_focused_window(sha)
@@ -315,6 +321,7 @@ class MainView(QMainWindow, Ui_MainWindow):
                 QTreeWidgetItem(self.all_windows_tw, [window])
 
     def display_auth_info(self, sha):
+        """Display auth information from records."""
         auth_info = self._student_ctrl.read_auth_info(sha)
         if auth_info:
             self.name_lbl.setText(auth_info[0])
@@ -322,6 +329,7 @@ class MainView(QMainWindow, Ui_MainWindow):
             self.ip_lbl.setText(auth_info[2])
 
     def selection_changed(self):
+        """Actions invoked when selection in log_QTreeWidget changed."""
         sha = self.get_selected_sha()
         if sha:
             self.display_diff(sha)
@@ -329,6 +337,7 @@ class MainView(QMainWindow, Ui_MainWindow):
             self.display_auth_info(sha)
 
     def show_editdistance_view(self):
+        """Open EditDistance Window"""
         student_dir = self.get_selected_student()
         selected_file = self.get_selected_file()
         if selected_file:
@@ -342,7 +351,7 @@ class MainView(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, '', 'Please choose a file')
 
     def toggle_sha(self, toogle=False):
-        # sha_col = 2
+        """Toggle the appearance of SHA columns."""
         if toogle:
             self.log_tw.showColumn(self.sha_col)
         else:
@@ -352,6 +361,7 @@ class MainView(QMainWindow, Ui_MainWindow):
                 self.log_tw.resizeColumnToContents(col)
 
     def toogle_stats(self, toogle=False):
+        """Toggle the appearance of stats columns."""
         if toogle:
             self.display_logs(True)
         else:

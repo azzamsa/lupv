@@ -30,6 +30,7 @@ class Controller(QObject):
         return student_dirs
 
     def get_files(self, record_path):
+        """Return list of files inside student directory."""
         dirs = os.listdir(record_path)
         files = []
         for d in dirs:
@@ -123,6 +124,7 @@ class Controller(QObject):
         return records
 
     def humanize_dateime(self, datetime):
+        """Convert date time to relative version."""
         dt = pendulum.instance(datetime)
         human_time = dt.diff_for_humans()
         return human_time

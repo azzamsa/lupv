@@ -1,5 +1,3 @@
-import os
-from os.path import join
 from Resources.theme import breeze_resources
 from collections import OrderedDict
 
@@ -190,7 +188,9 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.show_sha_action.triggered.connect(lambda: self.toggle_sha(toogle=True))
         self.hide_sha_action.triggered.connect(lambda: self.toggle_sha(toogle=False))
         self.show_stats_action.triggered.connect(lambda: self.toogle_stats(toogle=True))
-        self.hide_stats_action.triggered.connect(lambda: self.toogle_stats(toogle=False))
+        self.hide_stats_action.triggered.connect(
+            lambda: self.toogle_stats(toogle=False)
+        )
 
         record_path = self.record_path
         student_dir = self.get_selected_student()

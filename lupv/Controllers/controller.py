@@ -21,8 +21,6 @@ class Controller(QObject):
     def validate_path(self, path):
         """Validate chosen path.
 
-        TODO: Move this to controller
-
         This is necessary because invalid path will break `read_records` and
         make application crash.
         """

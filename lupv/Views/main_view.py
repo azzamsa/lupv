@@ -46,17 +46,8 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.toggle_realdate_action.setEnabled(False)  # default
         self.toggle_relativedate_action.setEnabled(False)
 
-        # student page actions
-        self.hide_sha_action.setEnabled(False)
-        self.show_sha_action.setEnabled(False)
-        self.show_stats_action.setEnabled(False)
-        self.hide_stats_action.setEnabled(False)
-        self.show_editdistance_action.setEnabled(False)
-
         self.stackedWidget.setCurrentIndex(0)
-        self.to_mainview_btn.clicked.connect(
-            lambda: self.stackedWidget.setCurrentIndex(0)
-        )
+        self.enable_actions_menu(page=0)
 
         # Toggle theme
         dark = "../lupv/Resources/theme/dark.qss"
@@ -178,12 +169,9 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.insertions_col = 3
         self.deletions_col = 4
 
-        self.hide_sha_action.setEnabled(True)
-        self.show_sha_action.setEnabled(True)
-        self.show_stats_action.setEnabled(True)
-        self.hide_stats_action.setEnabled(True)
-        self.show_editdistance_action.setEnabled(True)
-
+        self.to_mainview_btn.clicked.connect(
+            lambda: self.stackedWidget.setCurrentIndex(0)
+        )
         self.show_editdistance_action.triggered.connect(self.show_editdistance_view)
         self.show_sha_action.triggered.connect(lambda: self.toggle_sha(toogle=True))
         self.hide_sha_action.triggered.connect(lambda: self.toggle_sha(toogle=False))
@@ -200,10 +188,35 @@ class MainView(QMainWindow, Ui_MainWindow):
 
         self.log_tree.itemSelectionChanged.connect(self.selection_changed)
         self.clear_widgets()
+        self.enable_actions_menu(page=1)
 
         self.display_logs(False)
         self.display_files()
         self.stackedWidget.setCurrentIndex(1)
+
+    def enable_actions_menu(self, page):
+        if page == 0:
+            # main page actions
+            self.toggle_realdate_action.setEnabled(True)
+            self.toggle_relativedate_action.setEnabled(True)
+
+            # student page actions
+            self.hide_sha_action.setEnabled(False)
+            self.show_sha_action.setEnabled(False)
+            self.show_stats_action.setEnabled(False)
+            self.hide_stats_action.setEnabled(False)
+            self.show_editdistance_action.setEnabled(False)
+        elif page == 1:
+            # main page actions
+            self.toggle_realdate_action.setEnabled(False)
+            self.toggle_relativedate_action.setEnabled(False)
+
+            # student page actions
+            self.hide_sha_action.setEnabled(True)
+            self.show_sha_action.setEnabled(True)
+            self.show_stats_action.setEnabled(True)
+            self.hide_stats_action.setEnabled(True)
+            self.show_editdistance_action.setEnabled(True)
 
     def clear_widgets(self):
         """Clear all widget contents."""

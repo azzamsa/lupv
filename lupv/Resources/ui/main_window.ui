@@ -18,14 +18,14 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QTableWidget" name="main_tablew">
+           <widget class="QTableWidget" name="main_table">
             <property name="sortingEnabled">
              <bool>true</bool>
             </property>
@@ -201,21 +201,21 @@
              </property>
             </widget>
            </widget>
-           <widget class="QTreeWidget" name="windows_treew">
+           <widget class="QTreeWidget" name="windows_tree">
             <column>
              <property name="text">
               <string notr="true">Windows</string>
              </property>
             </column>
            </widget>
-           <widget class="QTreeWidget" name="file_treew">
+           <widget class="QTreeWidget" name="file_tree">
             <column>
              <property name="text">
               <string notr="true">Files</string>
              </property>
             </column>
            </widget>
-           <widget class="QPlainTextEdit" name="diff_textw">
+           <widget class="QPlainTextEdit" name="file_content_widget">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -224,7 +224,7 @@
             </property>
            </widget>
           </widget>
-          <widget class="QTreeWidget" name="log_treew">
+          <widget class="QTreeWidget" name="log_tree">
            <property name="sortingEnabled">
             <bool>true</bool>
            </property>
@@ -275,8 +275,8 @@
     <property name="title">
      <string>Fi&amp;le</string>
     </property>
-    <addaction name="actionOpen_Records"/>
-    <addaction name="actionQuit"/>
+    <addaction name="open_records_action"/>
+    <addaction name="quit_action"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
@@ -286,8 +286,8 @@
      <property name="title">
       <string>&amp;DateTime Format</string>
      </property>
-     <addaction name="actionRelativeDate"/>
-     <addaction name="actionRealDate"/>
+     <addaction name="toggle_relativedate_action"/>
+     <addaction name="toggle_realdate_action"/>
     </widget>
     <widget class="QMenu" name="menuThemes">
      <property name="title">
@@ -295,8 +295,8 @@
      </property>
      <addaction name="separator"/>
      <addaction name="separator"/>
-     <addaction name="actionToggleLight"/>
-     <addaction name="actionToggleDark"/>
+     <addaction name="toogle_light_action"/>
+     <addaction name="toogle_dark_action"/>
     </widget>
     <addaction name="menuThemes"/>
     <addaction name="menuDateTime_Format"/>
@@ -311,18 +311,18 @@
      </property>
      <addaction name="separator"/>
      <addaction name="separator"/>
-     <addaction name="actionShow_stats"/>
-     <addaction name="actionHide_stats"/>
+     <addaction name="show_stats_action"/>
+     <addaction name="hide_stats_action"/>
     </widget>
     <widget class="QMenu" name="menuSHA">
      <property name="title">
       <string>S&amp;HA</string>
      </property>
-     <addaction name="actionShow_SHA"/>
-     <addaction name="actionHide_SHA"/>
+     <addaction name="show_sha_action"/>
+     <addaction name="hide_sha_action"/>
     </widget>
     <addaction name="separator"/>
-    <addaction name="actionShow_Editdistance"/>
+    <addaction name="show_editdistance_action"/>
     <addaction name="menuSHA"/>
     <addaction name="menuStatistic"/>
    </widget>
@@ -331,57 +331,57 @@
    <addaction name="menuAnalyze"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionOpen_Records">
+  <action name="open_records_action">
    <property name="text">
     <string>&amp;Open Records</string>
    </property>
   </action>
-  <action name="actionQuit">
+  <action name="quit_action">
    <property name="text">
     <string>&amp;Quit</string>
    </property>
   </action>
-  <action name="actionToggleLight">
+  <action name="toogle_light_action">
    <property name="text">
     <string>&amp;Light</string>
    </property>
   </action>
-  <action name="actionToggleDark">
+  <action name="toogle_dark_action">
    <property name="text">
     <string>&amp;Dark</string>
    </property>
   </action>
-  <action name="actionRelativeDate">
+  <action name="toggle_relativedate_action">
    <property name="text">
     <string>&amp;Relative</string>
    </property>
   </action>
-  <action name="actionRealDate">
+  <action name="toggle_realdate_action">
    <property name="text">
     <string>R&amp;eal</string>
    </property>
   </action>
-  <action name="actionShow_Editdistance">
+  <action name="show_editdistance_action">
    <property name="text">
     <string>&amp;Show Editdistance</string>
    </property>
   </action>
-  <action name="actionShow_SHA">
+  <action name="show_sha_action">
    <property name="text">
     <string>&amp;Show SHA</string>
    </property>
   </action>
-  <action name="actionHide_SHA">
+  <action name="hide_sha_action">
    <property name="text">
     <string>&amp;Hide SHA</string>
    </property>
   </action>
-  <action name="actionShow_stats">
+  <action name="show_stats_action">
    <property name="text">
     <string>&amp;Show stats</string>
    </property>
   </action>
-  <action name="actionHide_stats">
+  <action name="hide_stats_action">
    <property name="text">
     <string>&amp;Hide stats</string>
    </property>

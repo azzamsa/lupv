@@ -15,15 +15,22 @@ Path concept ::
 Naming Variables
 ----------------
 
-Naming variable for instances of Qt Widget
+Naming variable for instances of Qt Widget.
 
-- QTreewidget = foo (e.g foo_files)
-- QPlainTextEdit = foo_text (e.g diff_text)
-- QButton = foo_button (e.g close_button)
-- QLabel = foo_label (e.g logo_label)
+Common things are abbreviated:
 
-We don't prefixes and suffixes the variable name with the widget name,
-e.g `foo_TreeWidget` or `bar_text_edit`. It will become painful to
-refactor when Qt API changes. See `Designing Qt-Style C++ APIs
-<https://doc.qt.io/archives/qq/qq13-apis.html>`_ and `Naming convention
-for Qt widgets <https://stackoverflow.com/a/404244/6000005>`_ for more information.
+- QButton = foo_button (e.g close_btn)
+- QLabel = foo_label (e.g logo_lbl)
+
+I prefer to suffixes them with 'widget' to make me differentiate
+faster between `local-global/widget` variable.
+
+- QPlainTextEdit = foo_text (e.g file_content_widget)
+
+But I don't suffixes 'widget' for names that already represent it:
+
+- QTreewidget = (e.g log_tree)
+- splitter
+- menubar
+- statusbar
+- toolbar

@@ -6,19 +6,24 @@ Analyze your student's records with Lupv
    :maxdepth: 2
    :caption: Contents:
 
-   controllers/controller.rst
-   controllers/student_controller.rst
-   models/model.rst
-   models/logs.rst
-   models/records.rst
-   views/main_view.rst
-   views/editdistance_view.rst
+The Developer Convention
+------------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   dev/convention.rst
 
 
+The Code Documentation
+----------------------
 
-Indices and tables
-==================
+.. toctree::
+   :maxdepth: 2
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   classes/controllers/controller.rst
+   classes/controllers/student_controller.rst
+   classes/models/logs.rst
+   classes/models/records.rst
+   classes/views/main_view.rst
+   classes/views/editdistance_view.rst

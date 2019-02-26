@@ -60,7 +60,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         css = """
         color: white;
         font-size: 12px;
-        border-radius: 20px;
+        border-radius: 12px;
         qproperty-alignment: AlignCenter;
         min-height: 25px;
         min-width: 250px;

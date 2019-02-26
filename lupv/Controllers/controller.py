@@ -27,8 +27,9 @@ class Controller(QObject):
         dirs = os.listdir(path)
         invalid_dirs = []
         for d in dirs:
-            if not os.path.isdir(join(path, d, ".git")):
-                invalid_dirs.append(d)
+            if d != "lupv-notes":
+                if not os.path.isdir(join(path, d, ".git")):
+                    invalid_dirs.append(d)
 
         return invalid_dirs
 
@@ -37,10 +38,12 @@ class Controller(QObject):
         dirs = os.listdir(record_path)
         student_dirs = []
         for d in dirs:
-            if os.path.isdir(join(record_path, d, ".git")):
-                student_dirs.append(d)
-            else:
-                print("skipped" + d + ". Task not valid.")
+            if d != "lupv-notes":
+                if os.path.isdir(join(record_path, d, ".git")):
+                    student_dirs.append(d)
+                else:
+                    # TODO use log
+                    print("skipped " + d + ". Task not valid.")
         return student_dirs
 
     def get_files(self, student_path):

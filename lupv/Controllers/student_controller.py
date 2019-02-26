@@ -1,6 +1,7 @@
 import git
 import editdistance as edlib
 from os.path import join
+import pathlib
 
 from PyQt5.QtCore import QObject
 
@@ -128,3 +129,11 @@ class StudentController(QObject):
         editdistance.append(records_ax)
         editdistance.append(editdistance_ax)
         return editdistance
+
+    def create_lupvnotes_dir(self):
+        """Create lupv-notes directory."""
+        pathlib.Path(self._record_path + '/lupv-notes').mkdir(parents=True, exist_ok=True)
+
+    def get_graph_path(self):
+        graph_path = join(self._record_path, "lupv-notes", self._student_dir + '.png')
+        return graph_path

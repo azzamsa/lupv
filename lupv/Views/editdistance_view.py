@@ -52,6 +52,7 @@ class EditDistanceView(QWidget):
         self.canvas.draw()
 
         if savep:
-            image_path = self._student_ctrl.get_student_path() + ".png"
+            self._student_ctrl.create_lupvnotes_dir()
+            image_path = self._student_ctrl.get_graph_path()
             plt.savefig(image_path)
             QMessageBox.information(self, "", "Graph saved to {}".format(image_path))

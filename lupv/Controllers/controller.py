@@ -88,7 +88,7 @@ class Controller(QObject):
         records = self.get_records(student_path)
 
         last_rec_dt = records[0].committed_datetime
-        last_rec_time.append(str(last_rec_dt).split("+")[0])
+        last_rec_time.append("{:%a, %d %b %Y, %H:%M:%S}".format(last_rec_dt))
 
         dt = pendulum.instance(last_rec_dt)
         last_rec_time.append(dt.diff_for_humans())
@@ -101,7 +101,7 @@ class Controller(QObject):
         records = self.get_records(student_path)
 
         first_rec_dt = records[-1].committed_datetime
-        first_rec_time.append(str(first_rec_dt).split("+")[0])
+        first_rec_time.append("{:%a, %d %b %Y, %H:%M:%S}".format(first_rec_dt))
 
         dt = pendulum.instance(first_rec_dt)
         first_rec_time.append(dt.diff_for_humans())
@@ -123,11 +123,11 @@ class Controller(QObject):
         if humanize:
             dt_type = 1
 
-        for d in student_dirs:
-            name = str(d).split("-")[0]
-            nim = str(d).split("-")[1]
-            student_path = join(record_path, d)
+        for student in student_dirs:
+            student_path = join(record_path, student)
 
+            name = str(student).split("-")[0]
+            nim = str(student).split("-")[1]
             work_duration = self.calc_work_duration(student_path)
             record_amounts = self.count_records(student_path)
             first_rec = self.get_first_rec_time(student_path)

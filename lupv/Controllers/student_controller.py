@@ -71,7 +71,7 @@ class StudentController(QObject):
             relative_datetime = self._controller.humanize_dateime(
                 rec.committed_datetime
             )
-            datetime = str(rec.committed_datetime).split("+")[0]
+            datetime = '{:%a, %d %b %Y, %H:%M:%S}'.format(rec.committed_datetime)
             sha = rec.hexsha
 
             if selected_file:

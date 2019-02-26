@@ -37,6 +37,7 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.quit_action.setShortcut(QKeySequence("Ctrl+Q"))
 
         self.main_table.clicked.connect(self.show_student_view)
+        self.main_table.setToolTip("Click me to analyze")
         self.toggle_realdate_action.triggered.connect(
             lambda: self.display_records(self.record_path, humanize=False)
         )

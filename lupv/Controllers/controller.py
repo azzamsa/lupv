@@ -50,19 +50,18 @@ class Controller(QObject):
                 files.append(d)
         return files
 
-    def initialize_repo(self, student_path):
+    def get_student_repo(self, student_path):
         student_repo = git.Repo(student_path)
         return student_repo
 
     def get_records(self, student_path):
         """Return list of records from individual directory."""
-        student_repo = self.initialize_repo(student_path)
+        student_repo = self.get_student_repo(student_path)
         records = list(student_repo.iter_commits("master"))
         return records
 
-    def calc_work_duration(self, student_path):
+    def calc_work_duration(self, records):
         """Calculate duration between last and first."""
-        records = self.get_records(student_path)
         duration = []
 
         # last - first
@@ -76,15 +75,13 @@ class Controller(QObject):
 
         return duration
 
-    def count_records(self, student_path):
+    def count_records(self, records):
         """Count the total amount of records."""
-        records = self.get_records(student_path)
         return len(records)
 
-    def get_last_rec_time(self, student_path):
+    def get_last_rec_time(self, records):
         """Take the last record."""
         last_rec_time = []
-        records = self.get_records(student_path)
 
         last_rec_dt = records[0].committed_datetime
         last_rec_time.append("{:%a, %d %b %Y, %H:%M:%S}".format(last_rec_dt))
@@ -94,10 +91,9 @@ class Controller(QObject):
 
         return last_rec_time
 
-    def get_first_rec_time(self, student_path):
+    def get_first_rec_time(self, records):
         """Take the first record."""
         first_rec_time = []
-        records = self.get_records(student_path)
 
         first_rec_dt = records[-1].committed_datetime
         first_rec_time.append("{:%a, %d %b %Y, %H:%M:%S}".format(first_rec_dt))
@@ -107,42 +103,42 @@ class Controller(QObject):
 
         return first_rec_time
 
-    def get_first_rec_sha(self, student_path):
+    def get_first_rec_sha(self, records):
         """Take the first SHA record."""
-        records = self.get_records(student_path)
         return records[-1].hexsha
 
     def read_records(self, record_path, humanize=True):
         """Read records from individual dirs then return them as
         `Records` object."""
         student_dirs = self.get_student_dirs(record_path)
-        records = []
-        dt_type = 0
+        student_records = []
+        datetime_type = 0
 
         if humanize:
-            dt_type = 1
+            datetime_type = 1
 
         for student in student_dirs:
             student_path = join(record_path, student)
+            records = self.get_records(student_path)
 
             name = str(student).split("-")[0]
             nim = str(student).split("-")[1]
-            work_duration = self.calc_work_duration(student_path)
-            record_amounts = self.count_records(student_path)
-            first_rec = self.get_first_rec_time(student_path)
-            last_record = self.get_last_rec_time(student_path)
+            work_duration = self.calc_work_duration(records)
+            record_amounts = self.count_records(records)
+            first_rec = self.get_first_rec_time(records)
+            last_record = self.get_last_rec_time(records)
 
             record = Records(
                 name,
                 nim,
-                work_duration[dt_type],
+                work_duration[datetime_type],
                 record_amounts,
-                first_rec[dt_type],
-                last_record[dt_type],
+                first_rec[datetime_type],
+                last_record[datetime_type],
             )
-            records.append(record)
+            student_records.append(record)
 
-        return records
+        return student_records
 
     def humanize_dateime(self, datetime):
         """Convert date time to relative version."""
@@ -164,7 +160,7 @@ class Controller(QObject):
 
         for student in student_dirs:
             student_path = join(record_path, student)
-            student_repo = self.initialize_repo(student_path)
+            student_repo = self.get_student_repo(student_path)
             records = self.get_records(student_path)
 
             for rec in records:

@@ -6,6 +6,7 @@ from os.path import join
 from PyQt5.QtCore import QObject
 
 from Model.records import Records
+from Model.suspects import Suspects
 
 
 class Controller(QObject):
@@ -55,10 +56,14 @@ class Controller(QObject):
                 files.append(d)
         return files
 
+    def initialize_repo(self, student_path):
+        student_repo = git.Repo(student_path)
+        return student_repo
+
     def get_records(self, student_path):
         """Return list of records from individual directory."""
-        repo = git.Repo(student_path)
-        records = list(repo.iter_commits("master"))
+        student_repo = self.initialize_repo(student_path)
+        records = list(student_repo.iter_commits("master"))
         return records
 
     def calc_work_duration(self, student_path):
@@ -150,3 +155,35 @@ class Controller(QObject):
         dt = pendulum.instance(datetime)
         human_time = dt.diff_for_humans()
         return human_time
+
+    def is_file_in_commit(self, student_repo, filename, sha):
+        """Check if filename in current record exist."""
+        files = student_repo.git.show("--pretty=" "", "--name-only", sha)
+        if filename in files:
+            return True
+        else:
+            return False
+
+    def get_suspect(self, record_path, insertions_limit, filename):
+        suspects = []
+        student_dirs = self.get_student_dirs(record_path)
+
+        for student in student_dirs:
+            student_path = join(record_path, student)
+            student_repo = self.initialize_repo(student_path)
+            records = self.get_records(student_path)
+
+            for rec in records:
+                file_existp = self.is_file_in_commit(
+                    student_repo, filename, rec.hexsha
+                )
+                if file_existp:
+                    insertions = rec.stats.files[filename]["insertions"]
+                    if insertions > insertions_limit:
+                        name = str(student).split("-")[0]
+                        nim = str(student).split("-")[1]
+                        date = "{:%a, %d %b %Y, %H:%M:%S}".format(rec.committed_datetime)
+                        suspect = Suspects(name, nim, filename, insertions, date)
+                        suspects.append(suspect)
+
+        return suspects

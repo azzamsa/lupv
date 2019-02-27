@@ -1,7 +1,17 @@
 import random
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QMessageBox
+
+from PyQt5.QtWidgets import (
+    QWidget,
+    QPushButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QMessageBox,
+    QStyle,
+)
+
+from Views import icons
 
 
 class EditDistanceView(QWidget):
@@ -14,9 +24,14 @@ class EditDistanceView(QWidget):
         self.figure = plt.figure()
         self.canvas = FigureCanvas(self.figure)
 
-        self.close_btn = QPushButton("OK")
+        close_icon = icons.style(QStyle.SP_DialogCancelButton)
+        save_icon = icons.style(QStyle.SP_DialogSaveButton)
+
+        self.close_btn = QPushButton("Close")
+        self.close_btn.setIcon(close_icon)
         self.close_btn.clicked.connect(self.close)
         self.save_btn = QPushButton("Save Graph")
+        self.save_btn.setIcon(save_icon)
         self.save_btn.clicked.connect(lambda: self.draw_editdistance(True))
 
         btn_layout = QHBoxLayout()

@@ -1,5 +1,5 @@
 from Resources.theme import breeze_resources
-from collections import OrderedDict
+from Views.standard import MyDict
 
 from PyQt5.QtWidgets import (
     QMainWindow,
@@ -9,20 +9,16 @@ from PyQt5.QtWidgets import (
     QLabel,
     QMessageBox,
     QTreeWidgetItem,
+    QStyle,
 )
 from PyQt5.QtCore import QFile, QTextStream, Qt
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
 
+from Views import icons
 from Views.main_window import Ui_MainWindow
 from Views.dialog_view import SuspectDialog
 from Controllers.student_controller import StudentController
 from Views.editdistance_view import EditDistanceView
-
-
-class MyDict(OrderedDict):
-    def __missing__(self, key):
-        val = self[key] = MyDict()
-        return val
 
 
 class MainView(QMainWindow, Ui_MainWindow):
@@ -32,6 +28,8 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # mainview actions
+        open_icon = icons.style(QStyle.SP_DialogOpenButton)
+        self.open_records_action.setIcon(open_icon)
         self.open_records_action.triggered.connect(self.open_records)
         self.open_records_action.setShortcut(QKeySequence("Ctrl+O"))
         self.quit_action.triggered.connect(self.quit_app)

@@ -174,15 +174,15 @@ class Controller(QObject):
             records = self.get_records(student_path)
 
             for rec in records:
-                file_existp = self.is_file_in_commit(
-                    student_repo, filename, rec.hexsha
-                )
+                file_existp = self.is_file_in_commit(student_repo, filename, rec.hexsha)
                 if file_existp:
                     insertions = rec.stats.files[filename]["insertions"]
                     if insertions > insertions_limit:
                         name = str(student).split("-")[0]
                         nim = str(student).split("-")[1]
-                        date = "{:%a, %d %b %Y, %H:%M:%S}".format(rec.committed_datetime)
+                        date = "{:%a, %d %b %Y, %H:%M:%S}".format(
+                            rec.committed_datetime
+                        )
                         suspect = Suspects(name, nim, filename, insertions, date)
                         suspects.append(suspect)
 

@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItem,
     QStyle,
 )
+
 from PyQt5.QtCore import QFile, QTextStream, Qt
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
 

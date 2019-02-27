@@ -66,7 +66,7 @@ class StudentController(QObject):
             sha = rec.hexsha
 
             if selected_file:
-                file_existp = self.is_file_exist(selected_file, rec.hexsha)
+                file_existp = self._controller.is_file_in_commit(selected_file, rec.hexsha)
                 if file_existp:
                     insertions = rec.stats.files[selected_file]["insertions"]
                     deletions = rec.stats.files[selected_file]["deletions"]
@@ -82,7 +82,7 @@ class StudentController(QObject):
     def read_file_content(self, selected_file, sha):
         "Read the content of current file state"
         student_repo = self.get_student_repo()
-        file_existp = self.is_file_exist(selected_file, sha)
+        file_existp = self._controller.is_file_in_commit(selected_file, sha)
         if file_existp:
             file_content = student_repo.git.show("{}:{}".format(sha, selected_file))
             return file_content

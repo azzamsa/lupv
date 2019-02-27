@@ -50,15 +50,6 @@ class StudentController(QObject):
         focused_window = student_repo.git.show("{}:{}".format(sha, foc_win_path))
         return focused_window
 
-    def is_file_exist(self, filename, sha):
-        """Check if filename in current record exist."""
-        student_repo = self.get_student_repo()
-        files = student_repo.git.show("--pretty=" "", "--name-only", sha)
-        if filename in files:
-            return True
-        else:
-            return False
-
     def read_logs(self, selected_file=None):
         """Read log form student directory."""
         student_path = self.get_student_path()
@@ -71,7 +62,7 @@ class StudentController(QObject):
             relative_datetime = self._controller.humanize_dateime(
                 rec.committed_datetime
             )
-            datetime = '{:%a, %d %b %Y, %H:%M:%S}'.format(rec.committed_datetime)
+            datetime = "{:%a, %d %b %Y, %H:%M:%S}".format(rec.committed_datetime)
             sha = rec.hexsha
 
             if selected_file:
@@ -106,7 +97,8 @@ class StudentController(QObject):
         student_repo = self.get_student_repo()
 
         student_path = self.get_student_path()
-        records = self._controller.get_records(student_path)
+        student_repo = git.Repo(student_path)
+        records = list(student_repo.iter_commits("master"))
         last_record_sha = records[0].hexsha
 
         if selected_file:
@@ -115,7 +107,9 @@ class StudentController(QObject):
             )
 
             for record in records:
-                file_existp = self.is_file_exist(selected_file, record.hexsha)
+                file_existp = self._controller.is_file_in_commit(
+                    student_repo, selected_file, record.hexsha
+                )
                 if file_existp:
                     current_file = student_repo.git.show(
                         "{}:{}".format(record.hexsha, selected_file)
@@ -132,8 +126,10 @@ class StudentController(QObject):
 
     def create_lupvnotes_dir(self):
         """Create lupv-notes directory."""
-        pathlib.Path(self._record_path + '/lupv-notes').mkdir(parents=True, exist_ok=True)
+        pathlib.Path(self._record_path + "/lupv-notes").mkdir(
+            parents=True, exist_ok=True
+        )
 
     def get_graph_path(self):
-        graph_path = join(self._record_path, "lupv-notes", self._student_dir + '.png')
+        graph_path = join(self._record_path, "lupv-notes", self._student_dir + ".png")
         return graph_path

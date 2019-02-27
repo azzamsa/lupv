@@ -13,12 +13,6 @@ class Controller(QObject):
     def __init__(self):
         super().__init__()
 
-        # self._model = model
-
-    # def save_record_path(self, record_path):
-    #     "save task path to model"
-    #     self._model.set_record_path(record_path)
-
     def validate_path(self, path):
         """Validate chosen path.
 

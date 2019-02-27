@@ -53,6 +53,7 @@ class StudentController(QObject):
     def read_logs(self, selected_file=None):
         """Read log form student directory."""
         student_path = self.get_student_path()
+        student_repo = self.get_student_repo()
         records = self._controller.get_records(student_path)
         insertions = 0
         deletions = 0
@@ -66,7 +67,9 @@ class StudentController(QObject):
             sha = rec.hexsha
 
             if selected_file:
-                file_existp = self._controller.is_file_in_commit(selected_file, rec.hexsha)
+                file_existp = self._controller.is_file_in_commit(
+                    student_repo, selected_file, rec.hexsha
+                )
                 if file_existp:
                     insertions = rec.stats.files[selected_file]["insertions"]
                     deletions = rec.stats.files[selected_file]["deletions"]
@@ -82,7 +85,7 @@ class StudentController(QObject):
     def read_file_content(self, selected_file, sha):
         "Read the content of current file state"
         student_repo = self.get_student_repo()
-        file_existp = self._controller.is_file_in_commit(selected_file, sha)
+        file_existp = self._controller.is_file_in_commit(student_repo, selected_file, sha)
         if file_existp:
             file_content = student_repo.git.show("{}:{}".format(sha, selected_file))
             return file_content
@@ -95,10 +98,9 @@ class StudentController(QObject):
         editdistance_ax = []
 
         student_repo = self.get_student_repo()
-
         student_path = self.get_student_path()
-        student_repo = git.Repo(student_path)
-        records = list(student_repo.iter_commits("master"))
+        records = self._controller.get_records(student_path)
+
         last_record_sha = records[0].hexsha
 
         if selected_file:

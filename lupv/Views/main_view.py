@@ -192,16 +192,16 @@ class MainView(QMainWindow):
     def show_student_view(self):
         """Show Student Page and do initial things."""
 
-        ed_icon = "../lupv/Resources/img/chart-line.svg"
-        self.show_editdistance_action.setIcon(QIcon(ed_icon))
-        self.show_editdistance_action.setIconSize(QSize(16, 16))
-        self.show_editdistance_action.clicked.connect(self.show_editdistance_view)
-
         record_path = self.record_path
         student_dir = self.get_selected_student()
         self._student_ctrl = StudentController(
             self._controller, record_path, student_dir
         )
+
+        ed_icon = "../lupv/Resources/img/chart-line.svg"
+        self.show_editdistance_action.setIcon(QIcon(ed_icon))
+        self.show_editdistance_action.setIconSize(QSize(16, 16))
+        self.show_editdistance_action.clicked.connect(self.show_editdistance_view)
 
         self.log_tree.itemSelectionChanged.connect(self.log_selection_changed)
 
@@ -209,8 +209,10 @@ class MainView(QMainWindow):
         self.stats_check.stateChanged.connect(
             lambda: self.log_appearance_changed("stats")
         )
+
         self.sha_check.setToolTip("Show/hide SHA value")
         self.sha_check.stateChanged.connect(lambda: self.log_appearance_changed("sha"))
+
         self.log_realdate_rbtn.setToolTip("Use Real DateTime format")
         self.log_realdate_rbtn.toggled.connect(
             lambda: self.log_appearance_changed("dateformat")
@@ -230,56 +232,16 @@ class MainView(QMainWindow):
         self.log_tree.hideColumn(4)
 
         # init functions
+        self.clear_widgets()
         self.display_logs(False)
-        self.display_files()
+        self.supply_filename()
         self.stackedWidget.setCurrentIndex(1)
-
-    def log_appearance_changed(self, btn_name):
-        # named column for easier reading
-        self.reldate_col = 0
-        self.datetime_col = 1
-        self.sha_col = 2
-        self.insertions_col = 3
-        self.deletions_col = 4
-
-        if btn_name == "stats":
-            if self.stats_check.isChecked():
-                selected_file = self.get_selected_file()
-                if selected_file:
-                    self.display_logs(True)
-                    self.log_tree.showColumn(self.insertions_col)
-                    self.log_tree.showColumn(self.deletions_col)
-                    self.log_tree.resizeColumnToContents(self.insertions_col)
-                    self.log_tree.resizeColumnToContents(self.deletions_col)
-                else:
-                    QMessageBox.warning(self, "", "please choose a file")
-            else:
-                self.log_tree.hideColumn(self.insertions_col)
-                self.log_tree.hideColumn(self.deletions_col)
-                self.log_tree.resizeColumnToContents(self.datetime_col)
-                self.log_tree.resizeColumnToContents(self.sha_col)
-        elif btn_name == "sha":
-            if self.sha_check.isChecked():
-                self.log_tree.showColumn(self.sha_col)
-                self.log_tree.resizeColumnToContents(self.sha_col)
-            else:
-                self.log_tree.hideColumn(self.sha_col)
-                for col in range(5):
-                    if col != 2:
-                        self.log_tree.resizeColumnToContents(col)
-        elif btn_name == "dateformat":
-            if self.log_realdate_rbtn.isChecked():
-                self.log_tree.hideColumn(0)
-                self.log_tree.showColumn(1)
-            else:
-                self.log_tree.hideColumn(1)
-                self.log_tree.showColumn(0)
 
     def clear_widgets(self):
         """Clear all widget contents."""
         self.file_content_widget.clear()
         self.log_tree.clear()
-        # self.file_tree.clear()
+        self.filename_combo.clear()
         self.windows_tree.clear()
 
     def get_selected_sha(self):
@@ -343,11 +305,9 @@ class MainView(QMainWindow):
             else:
                 self.file_content_widget.setPlainText(file_content)
 
-    def display_files(self):
+    def supply_filename(self):
         """Display file to file_QTreeWidget."""
-        # self.file_tree.clear()
-        self.filename_combo.clear()
-
+        # self.filename_combo.clear()
         student_dir = self._student_ctrl.get_student_path()
         files = self._controller.get_files(student_dir)
         files.insert(0, "No File Selected")
@@ -387,6 +347,47 @@ class MainView(QMainWindow):
             self.display_file_content(sha)
             self.display_windows(sha)
             self.display_auth_info(sha)
+
+    def log_appearance_changed(self, btn_name):
+        # named column for easier reading
+        self.reldate_col = 0
+        self.datetime_col = 1
+        self.sha_col = 2
+        self.insertions_col = 3
+        self.deletions_col = 4
+
+        if btn_name == "stats":
+            if self.stats_check.isChecked():
+                selected_file = self.get_selected_file()
+                if selected_file:
+                    self.display_logs(True)
+                    self.log_tree.showColumn(self.insertions_col)
+                    self.log_tree.showColumn(self.deletions_col)
+                    self.log_tree.resizeColumnToContents(self.insertions_col)
+                    self.log_tree.resizeColumnToContents(self.deletions_col)
+                else:
+                    QMessageBox.warning(self, "", "please choose a file")
+            else:
+                self.log_tree.hideColumn(self.insertions_col)
+                self.log_tree.hideColumn(self.deletions_col)
+                self.log_tree.resizeColumnToContents(self.datetime_col)
+                self.log_tree.resizeColumnToContents(self.sha_col)
+        elif btn_name == "sha":
+            if self.sha_check.isChecked():
+                self.log_tree.showColumn(self.sha_col)
+                self.log_tree.resizeColumnToContents(self.sha_col)
+            else:
+                self.log_tree.hideColumn(self.sha_col)
+                for col in range(5):
+                    if col != 2:
+                        self.log_tree.resizeColumnToContents(col)
+        elif btn_name == "dateformat":
+            if self.log_realdate_rbtn.isChecked():
+                self.log_tree.hideColumn(0)
+                self.log_tree.showColumn(1)
+            else:
+                self.log_tree.hideColumn(1)
+                self.log_tree.showColumn(0)
 
     #
     # EditDistance View

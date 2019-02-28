@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Lupv</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -156,6 +156,9 @@
           </item>
           <item>
            <widget class="QTableWidget" name="main_table">
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
             <column>
              <property name="text">
               <string>Name</string>
@@ -464,6 +467,9 @@
              </widget>
             </widget>
             <widget class="QTreeWidget" name="log_tree">
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
              <column>
               <property name="text">
                <string>Relative Date</string>
@@ -506,7 +512,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget">
             <property name="currentIndex">
-             <number>0</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="tab">
              <attribute name="title">
@@ -540,10 +546,10 @@
                     <item>
                      <layout class="QVBoxLayout" name="verticalLayout_6">
                       <item>
-                       <widget class="QSpinBox" name="insertion_limit_spin"/>
+                       <widget class="QSpinBox" name="insertions_limit_spin"/>
                       </item>
                       <item>
-                       <widget class="QComboBox" name="filename_combo_2"/>
+                       <widget class="QComboBox" name="suspect_filename_combo"/>
                       </item>
                      </layout>
                     </item>
@@ -562,7 +568,27 @@
                  <widget class="QTreeWidget" name="suspects_tree">
                   <column>
                    <property name="text">
-                    <string>Suspects</string>
+                    <string>Name</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Nim</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Filename</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Line Insertions</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Date</string>
                    </property>
                   </column>
                  </widget>
@@ -603,7 +629,22 @@
                  <widget class="QTreeWidget" name="windows_search_tree">
                   <column>
                    <property name="text">
-                    <string notr="true">1</string>
+                    <string>Windows Name</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string notr="true">Name</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Nim</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Record DateTime</string>
                    </property>
                   </column>
                  </widget>
@@ -630,7 +671,22 @@
                  <widget class="QTreeWidget" name="group_by_ip_tree">
                   <column>
                    <property name="text">
-                    <string notr="true">1</string>
+                    <string notr="true">IP</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Name</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string notr="true">Nim</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Record DateTime</string>
                    </property>
                   </column>
                  </widget>

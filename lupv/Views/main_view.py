@@ -58,8 +58,12 @@ class MainView(QMainWindow):
         light = "../lupv/Resources/theme/light.qss"
         self.dark_theme_action.triggered.connect(lambda: self.toggle_theme(dark))
         self.light_theme_action.triggered.connect(lambda: self.toggle_theme(light))
-        self.toggle_theme(light)  # default theme
 
+        # Search View
+        self.analyze_suspects_btn.clicked.connect(self.display_suspects)
+
+        # default
+        self.toggle_theme(light)
         self.stackedWidget.setCurrentIndex(0)
         self.show()
 
@@ -132,45 +136,6 @@ class MainView(QMainWindow):
         self.main_table.verticalScrollBar().setValue(0)
         self.main_table.resizeColumnsToContents()
         self.main_table.setVisible(True)
-
-    # def prompt_suspect_dialog(self):
-    #     """Prompt dialog for suspect parameter."""
-    #     suspect_dlg = SuspectDialog()
-    #     accepted = suspect_dlg.exec_()
-    #     if accepted:
-    #         filename = suspect_dlg.filename_widget.text()
-    #         insertions_limit = suspect_dlg.insertion_limit_widget.text()
-    #         if insertions_limit and filename:
-    #             self.display_suspects(insertions_limit, filename)
-    #         else:
-    #             QMessageBox.warning(self, "", "Please supply a value")
-    #             self.prompt_suspect_dialog()
-
-    # def display_suspects(self, insertions_limit, filename):
-    #     """Display suspect result."""
-    #     suspects = self._controller.get_suspect(
-    #         self.record_path, int(insertions_limit), str(filename)
-    #     )
-    #     ordered_suspects = MyDict()
-
-    #     for suspect in suspects:
-    #         ordered_suspects[suspect.name]["name"] = suspect.name
-    #         ordered_suspects[suspect.name]["nim"] = suspect.nim
-    #         ordered_suspects[suspect.name]["filename"] = suspect.filename
-    #         ordered_suspects[suspect.name]["insertions"] = suspect.insertions
-    #         ordered_suspects[suspect.name]["date"] = suspect.date
-
-    #     for row_num, key_name in enumerate(ordered_suspects):
-    #         self.suspect_table.insertRow(row_num)
-    #         for col_num, col_key in enumerate(ordered_suspects[key_name]):
-    #             tbl_item = QTableWidgetItem(str(ordered_suspects[key_name][col_key]))
-    #             self.suspect_table.setItem(row_num, col_num, tbl_item)
-
-    #     self.suspect_table.setVisible(False)
-    #     self.suspect_table.verticalScrollBar().setValue(0)
-    #     self.suspect_table.resizeColumnsToContents()
-    #     self.suspect_table.setVisible(True)
-    #     self.stackedWidget.setCurrentIndex(2)
 
     def get_selected_student(self):
         """Return selected student from main table"""
@@ -386,3 +351,27 @@ class MainView(QMainWindow):
                 self.editdistance_view.show()
         else:
             QMessageBox.warning(self, "", "Please choose a file")
+
+    #
+    # Search View
+    #
+
+    def display_suspects(self):
+        # filename = str(self.filename_combo.currentText())
+        insertions_limit = str(self.insertions_limit_spin.value())
+        filename = "tugas-pkn.md"
+
+        suspects = self._controller.get_suspect(
+            self.record_path, int(insertions_limit), str(filename)
+        )
+        for suspect in suspects:
+            QTreeWidgetItem(
+                self.suspects_tree,
+                [
+                    suspect.name,
+                    str(suspect.nim),
+                    suspect.filename,
+                    str(suspect.insertions),
+                    str(suspect.date),
+                ],
+            )

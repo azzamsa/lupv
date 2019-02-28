@@ -16,7 +16,6 @@ from PyQt5.QtGui import QKeySequence, QBrush, QColor, QIcon
 from PyQt5.uic import loadUi
 
 from standard import icons
-from Views.dialog_view import SuspectDialog
 from Controllers.student_controller import StudentController
 from Views.editdistance_view import EditDistanceView
 
@@ -24,7 +23,7 @@ from Views.editdistance_view import EditDistanceView
 class MainView(QMainWindow):
     def __init__(self, controller):
         super().__init__()
-        main_window = "../lupv/Resources/ui/main_window_2.ui"
+        main_window = "../lupv/Resources/ui/main_window.ui"
         loadUi(main_window, self)
         self._controller = controller
 
@@ -134,44 +133,44 @@ class MainView(QMainWindow):
         self.main_table.resizeColumnsToContents()
         self.main_table.setVisible(True)
 
-    def prompt_suspect_dialog(self):
-        """Prompt dialog for suspect parameter."""
-        suspect_dlg = SuspectDialog()
-        accepted = suspect_dlg.exec_()
-        if accepted:
-            filename = suspect_dlg.filename_widget.text()
-            insertions_limit = suspect_dlg.insertion_limit_widget.text()
-            if insertions_limit and filename:
-                self.display_suspects(insertions_limit, filename)
-            else:
-                QMessageBox.warning(self, "", "Please supply a value")
-                self.prompt_suspect_dialog()
+    # def prompt_suspect_dialog(self):
+    #     """Prompt dialog for suspect parameter."""
+    #     suspect_dlg = SuspectDialog()
+    #     accepted = suspect_dlg.exec_()
+    #     if accepted:
+    #         filename = suspect_dlg.filename_widget.text()
+    #         insertions_limit = suspect_dlg.insertion_limit_widget.text()
+    #         if insertions_limit and filename:
+    #             self.display_suspects(insertions_limit, filename)
+    #         else:
+    #             QMessageBox.warning(self, "", "Please supply a value")
+    #             self.prompt_suspect_dialog()
 
-    def display_suspects(self, insertions_limit, filename):
-        """Display suspect result."""
-        suspects = self._controller.get_suspect(
-            self.record_path, int(insertions_limit), str(filename)
-        )
-        ordered_suspects = MyDict()
+    # def display_suspects(self, insertions_limit, filename):
+    #     """Display suspect result."""
+    #     suspects = self._controller.get_suspect(
+    #         self.record_path, int(insertions_limit), str(filename)
+    #     )
+    #     ordered_suspects = MyDict()
 
-        for suspect in suspects:
-            ordered_suspects[suspect.name]["name"] = suspect.name
-            ordered_suspects[suspect.name]["nim"] = suspect.nim
-            ordered_suspects[suspect.name]["filename"] = suspect.filename
-            ordered_suspects[suspect.name]["insertions"] = suspect.insertions
-            ordered_suspects[suspect.name]["date"] = suspect.date
+    #     for suspect in suspects:
+    #         ordered_suspects[suspect.name]["name"] = suspect.name
+    #         ordered_suspects[suspect.name]["nim"] = suspect.nim
+    #         ordered_suspects[suspect.name]["filename"] = suspect.filename
+    #         ordered_suspects[suspect.name]["insertions"] = suspect.insertions
+    #         ordered_suspects[suspect.name]["date"] = suspect.date
 
-        for row_num, key_name in enumerate(ordered_suspects):
-            self.suspect_table.insertRow(row_num)
-            for col_num, col_key in enumerate(ordered_suspects[key_name]):
-                tbl_item = QTableWidgetItem(str(ordered_suspects[key_name][col_key]))
-                self.suspect_table.setItem(row_num, col_num, tbl_item)
+    #     for row_num, key_name in enumerate(ordered_suspects):
+    #         self.suspect_table.insertRow(row_num)
+    #         for col_num, col_key in enumerate(ordered_suspects[key_name]):
+    #             tbl_item = QTableWidgetItem(str(ordered_suspects[key_name][col_key]))
+    #             self.suspect_table.setItem(row_num, col_num, tbl_item)
 
-        self.suspect_table.setVisible(False)
-        self.suspect_table.verticalScrollBar().setValue(0)
-        self.suspect_table.resizeColumnsToContents()
-        self.suspect_table.setVisible(True)
-        self.stackedWidget.setCurrentIndex(2)
+    #     self.suspect_table.setVisible(False)
+    #     self.suspect_table.verticalScrollBar().setValue(0)
+    #     self.suspect_table.resizeColumnsToContents()
+    #     self.suspect_table.setVisible(True)
+    #     self.stackedWidget.setCurrentIndex(2)
 
     def get_selected_student(self):
         """Return selected student from main table"""

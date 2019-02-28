@@ -117,7 +117,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -211,83 +211,47 @@
                  <property name="title">
                   <string>File Contens</string>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_14">
+                 <layout class="QVBoxLayout" name="verticalLayout_15">
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_3">
+                   <layout class="QVBoxLayout" name="verticalLayout_14">
                     <item>
-                     <widget class="QRadioButton" name="diff_mode_rbtn">
-                      <property name="text">
-                       <string>&amp;diff</string>
-                      </property>
-                     </widget>
+                     <layout class="QHBoxLayout" name="horizontalLayout_3">
+                      <item>
+                       <widget class="QRadioButton" name="diff_mode_rbtn">
+                        <property name="text">
+                         <string>&amp;Diff Mode</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QRadioButton" name="show_mode_rbtn">
+                        <property name="text">
+                         <string>Show Mode</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
                     </item>
                     <item>
-                     <widget class="QRadioButton" name="show_mode_rbtn">
-                      <property name="text">
-                       <string>show</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_15">
-                    <item>
-                     <widget class="QLabel" name="label_5">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="text">
-                       <string>File:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="filename_combo">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="minimumSize">
-                       <size>
-                        <width>100</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>100</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="baseSize">
-                       <size>
-                        <width>0</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="horizontalSpacer">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeType">
-                       <enum>QSizePolicy::Minimum</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
+                     <layout class="QHBoxLayout" name="horizontalLayout_15">
+                      <item>
+                       <widget class="QLabel" name="label_4">
+                        <property name="text">
+                         <string>Filename:</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QComboBox" name="filename_combo">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
                     </item>
                    </layout>
                   </item>
@@ -295,9 +259,18 @@
                 </widget>
                </item>
                <item>
-                <widget class="QGroupBox" name="groupBox_4">
+                <widget class="QGroupBox" name="log_appearance_box">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="title">
                   <string>Log Appearance</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>false</bool>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_16">
                   <item>
@@ -354,6 +327,18 @@
               <enum>Qt::Vertical</enum>
              </property>
              <widget class="QGroupBox" name="groupBox">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>100</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>100</height>
+               </size>
+              </property>
               <property name="title">
                <string>GroupBox</string>
               </property>
@@ -423,7 +408,7 @@
                    <item>
                     <layout class="QVBoxLayout" name="verticalLayout_21">
                      <item>
-                      <widget class="QLabel" name="ip_adress_lbl">
+                      <widget class="QLabel" name="ip_lbl">
                        <property name="text">
                         <string/>
                        </property>
@@ -445,13 +430,38 @@
               </layout>
              </widget>
              <widget class="QTreeWidget" name="windows_tree">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>100</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <column>
                <property name="text">
                 <string notr="true">WIndows</string>
                </property>
               </column>
              </widget>
-             <widget class="QPlainTextEdit" name="file_content_text"/>
+             <widget class="QPlainTextEdit" name="file_content_widget">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>400</height>
+               </size>
+              </property>
+             </widget>
             </widget>
             <widget class="QTreeWidget" name="log_tree">
              <column>
@@ -466,6 +476,11 @@
              </column>
              <column>
               <property name="text">
+               <string>SHA</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
                <string>Insertions</string>
               </property>
              </column>
@@ -474,16 +489,11 @@
                <string>Deletions</string>
               </property>
              </column>
-             <column>
-              <property name="text">
-               <string>SHA</string>
-              </property>
-             </column>
             </widget>
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QPushButton" name="show_editditance_action">
+           <widget class="QPushButton" name="show_editdistance_action">
             <property name="text">
              <string>Show Editdistance</string>
             </property>
@@ -514,14 +524,14 @@
                       <item>
                        <widget class="QLabel" name="label">
                         <property name="text">
-                         <string>Insetions Limit</string>
+                         <string>Insetions Limit:</string>
                         </property>
                        </widget>
                       </item>
                       <item>
                        <widget class="QLabel" name="label_2">
                         <property name="text">
-                         <string>Filename</string>
+                         <string>Filename:</string>
                         </property>
                        </widget>
                       </item>
@@ -530,29 +540,29 @@
                     <item>
                      <layout class="QVBoxLayout" name="verticalLayout_6">
                       <item>
-                       <widget class="QSpinBox" name="insertion_limit_widget"/>
+                       <widget class="QSpinBox" name="insertion_limit_spin"/>
                       </item>
                       <item>
-                       <widget class="QComboBox" name="filename_widget"/>
+                       <widget class="QComboBox" name="filename_combo_2"/>
                       </item>
                      </layout>
                     </item>
                    </layout>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="pushButton">
+                   <widget class="QPushButton" name="analyze_suspects_btn">
                     <property name="text">
-                     <string>PushButton</string>
+                     <string>Analyze Suspects</string>
                     </property>
                    </widget>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QTreeWidget" name="treeWidget_3">
+                 <widget class="QTreeWidget" name="suspects_tree">
                   <column>
                    <property name="text">
-                    <string notr="true">1</string>
+                    <string>Suspects</string>
                    </property>
                   </column>
                  </widget>
@@ -573,7 +583,7 @@
                   <item>
                    <widget class="QLabel" name="label_3">
                     <property name="text">
-                     <string>Windows Name</string>
+                     <string>Windows Name:</string>
                     </property>
                    </widget>
                   </item>
@@ -581,16 +591,16 @@
                    <widget class="QLineEdit" name="windows_name_widget"/>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="pushButton_2">
+                   <widget class="QPushButton" name="windows_search_btn">
                     <property name="text">
-                     <string>PushButton</string>
+                     <string>Search</string>
                     </property>
                    </widget>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QTreeWidget" name="treeWidget_4">
+                 <widget class="QTreeWidget" name="windows_search_tree">
                   <column>
                    <property name="text">
                     <string notr="true">1</string>
@@ -610,14 +620,14 @@
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_11">
                 <item>
-                 <widget class="QPushButton" name="gropu_ip_btn">
+                 <widget class="QPushButton" name="group_by_ip_btn">
                   <property name="text">
-                   <string>Group IP</string>
+                   <string>Group by IP Address</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QTreeWidget" name="treeWidget_5">
+                 <widget class="QTreeWidget" name="group_by_ip_tree">
                   <column>
                    <property name="text">
                     <string notr="true">1</string>

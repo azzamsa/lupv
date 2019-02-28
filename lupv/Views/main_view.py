@@ -1,34 +1,49 @@
 from Resources.theme import breeze_resources
-from Views.standard import MyDict
+from standard.standard import MyDict
 
 from PyQt5.QtWidgets import (
     QMainWindow,
     QFileDialog,
     QTableWidgetItem,
     QApplication,
-    QLabel,
     QMessageBox,
     QTreeWidgetItem,
     QStyle,
 )
 
-from PyQt5.QtCore import QFile, QTextStream, Qt
-from PyQt5.QtGui import QKeySequence, QBrush, QColor
+from PyQt5.QtCore import QFile, QTextStream, QSize
+from PyQt5.QtGui import QKeySequence, QBrush, QColor, QIcon
+from PyQt5.uic import loadUi
 
-from Views import icons
-from Views.main_window import Ui_MainWindow
+from standard import icons
 from Views.dialog_view import SuspectDialog
 from Controllers.student_controller import StudentController
 from Views.editdistance_view import EditDistanceView
 
 
-class MainView(QMainWindow, Ui_MainWindow):
+class MainView(QMainWindow):
     def __init__(self, controller):
         super().__init__()
+        main_window = "../lupv/Resources/ui/main_window_2.ui"
+        loadUi(main_window, self)
         self._controller = controller
-        self.setupUi(self)
 
-        # mainview actions
+        # Sidebar
+        page1_icon = "../lupv/Resources/img/lup.svg"
+        self.page1_btn.setIcon(QIcon(page1_icon))
+        self.page1_btn.setIconSize(QSize(64, 64))
+        page2_icon = "../lupv/Resources/img/history.svg"
+        self.page2_btn.setIcon(QIcon(page2_icon))
+        self.page2_btn.setIconSize(QSize(64, 64))
+        page3_icon = "../lupv/Resources/img/search.svg"
+        self.page3_btn.setIcon(QIcon(page3_icon))
+        self.page2_btn.setIconSize(QSize(64, 64))
+
+        self.page1_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
+        self.page2_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(1))
+        self.page3_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(2))
+
+        # MainView actions
         open_icon = icons.style(QStyle.SP_DialogOpenButton)
         self.open_records_action.setIcon(open_icon)
         self.open_records_action.triggered.connect(self.open_records)
@@ -38,45 +53,15 @@ class MainView(QMainWindow, Ui_MainWindow):
 
         self.main_table.clicked.connect(self.show_student_view)
         self.main_table.setToolTip("Click me to analyze")
-        self.toggle_realdate_action.triggered.connect(
-            lambda: self.display_records(self.record_path, humanize=False)
-        )
-        self.toggle_relativedate_action.triggered.connect(
-            lambda: self.display_records(self.record_path, humanize=True)
-        )
-        self.toggle_realdate_action.setEnabled(False)  # default
-        self.toggle_relativedate_action.setEnabled(False)
 
-        self.stackedWidget.setCurrentIndex(0)
-        self.enable_actions_menu(page=0)
-
-        self.analyze_suspect_action.triggered.connect(self.prompt_suspect_dialog)
-        self.to_mainview_btn2.clicked.connect(
-            lambda: self.stackedWidget.setCurrentIndex(0)
-        )
         # Toggle theme
         dark = "../lupv/Resources/theme/dark.qss"
         light = "../lupv/Resources/theme/light.qss"
-        self.toogle_dark_action.triggered.connect(lambda: self.toggle_theme(dark))
-        self.toogle_light_action.triggered.connect(lambda: self.toggle_theme(light))
+        self.dark_theme_action.triggered.connect(lambda: self.toggle_theme(dark))
+        self.light_theme_action.triggered.connect(lambda: self.toggle_theme(light))
         self.toggle_theme(light)  # default theme
 
-        css = """
-        color: white;
-        font-size: 12px;
-        border-radius: 12px;
-        qproperty-alignment: AlignCenter;
-        min-height: 25px;
-        min-width: 250px;
-        background: #1d2c3a;
-        """
-
-        self.main_table.setVisible(False)
-        self.welcome_lbl = QLabel()
-        self.welcome_lbl.setText("Please open records to start analyzing")
-        self.welcome_lbl.setStyleSheet(css)
-        self.verticalLayout.addWidget(self.welcome_lbl, alignment=Qt.AlignCenter)
-
+        self.stackedWidget.setCurrentIndex(0)
         self.show()
 
     def quit_app(self):
@@ -123,9 +108,6 @@ class MainView(QMainWindow, Ui_MainWindow):
         self.record_path = path
         self.display_records(path)
 
-        self.toggle_realdate_action.setEnabled(True)
-        self.toggle_relativedate_action.setEnabled(True)
-
     def display_records(self, path, humanize=True):
         """Populate records."""
         records = self._controller.read_records(path, humanize)
@@ -146,8 +128,6 @@ class MainView(QMainWindow, Ui_MainWindow):
             for col_num, col_key in enumerate(ord_records[key_name]):
                 tbl_item = QTableWidgetItem(str(ord_records[key_name][col_key]))
                 self.main_table.setItem(row_num, col_num, tbl_item)
-
-        self.welcome_lbl.setVisible(False)
 
         self.main_table.setVisible(False)
         self.main_table.verticalScrollBar().setValue(0)
@@ -206,23 +186,7 @@ class MainView(QMainWindow, Ui_MainWindow):
 
     def show_student_view(self):
         """Show Student Page and do initial things."""
-        # named column for easier reading
-        self.reldate_col = 0
-        self.datetime_col = 1
-        self.sha_col = 2
-        self.insertions_col = 3
-        self.deletions_col = 4
-
-        self.to_mainview_btn.clicked.connect(
-            lambda: self.stackedWidget.setCurrentIndex(0)
-        )
-        self.show_editdistance_action.triggered.connect(self.show_editdistance_view)
-        self.show_sha_action.triggered.connect(lambda: self.toggle_sha(toogle=True))
-        self.hide_sha_action.triggered.connect(lambda: self.toggle_sha(toogle=False))
-        self.show_stats_action.triggered.connect(lambda: self.toogle_stats(toogle=True))
-        self.hide_stats_action.triggered.connect(
-            lambda: self.toogle_stats(toogle=False)
-        )
+        self.show_editdistance_action.clicked.connect(self.show_editdistance_view)
 
         record_path = self.record_path
         student_dir = self.get_selected_student()
@@ -230,43 +194,74 @@ class MainView(QMainWindow, Ui_MainWindow):
             self._controller, record_path, student_dir
         )
 
-        self.log_tree.itemSelectionChanged.connect(self.selection_changed)
-        self.clear_widgets()
-        self.enable_actions_menu(page=1)
+        self.log_tree.itemSelectionChanged.connect(self.log_selection_changed)
+        self.stats_check.stateChanged.connect(
+            lambda: self.log_appearance_changed("stats")
+        )
+        self.sha_check.stateChanged.connect(lambda: self.log_appearance_changed("sha"))
+        self.log_realdate_rbtn.toggled.connect(
+            lambda: self.log_appearance_changed("dateformat")
+        )
+        self.log_reldate_rbtn.toggled.connect(
+            lambda: self.log_appearance_changed("dateformat")
+        )
 
+        # default state
+        self.log_tree.hideColumn(2)
+        self.log_tree.hideColumn(3)
+        self.log_tree.hideColumn(4)
+
+        # init functions
         self.display_logs(False)
         self.display_files()
         self.stackedWidget.setCurrentIndex(1)
 
-    def enable_actions_menu(self, page):
-        if page == 0:
-            # main page actions
-            self.toggle_realdate_action.setEnabled(True)
-            self.toggle_relativedate_action.setEnabled(True)
+    def log_appearance_changed(self, btn_name):
+        # named column for easier reading
+        self.reldate_col = 0
+        self.datetime_col = 1
+        self.sha_col = 2
+        self.insertions_col = 3
+        self.deletions_col = 4
 
-            # student page actions
-            self.hide_sha_action.setEnabled(False)
-            self.show_sha_action.setEnabled(False)
-            self.show_stats_action.setEnabled(False)
-            self.hide_stats_action.setEnabled(False)
-            self.show_editdistance_action.setEnabled(False)
-        elif page == 1:
-            # main page actions
-            self.toggle_realdate_action.setEnabled(False)
-            self.toggle_relativedate_action.setEnabled(False)
-
-            # student page actions
-            self.hide_sha_action.setEnabled(True)
-            self.show_sha_action.setEnabled(True)
-            self.show_stats_action.setEnabled(True)
-            self.hide_stats_action.setEnabled(True)
-            self.show_editdistance_action.setEnabled(True)
+        if btn_name == "stats":
+            if self.stats_check.isChecked():
+                selected_file = self.get_selected_file()
+                if selected_file:
+                    self.display_logs(True)
+                    self.log_tree.showColumn(self.insertions_col)
+                    self.log_tree.showColumn(self.deletions_col)
+                    self.log_tree.resizeColumnToContents(self.insertions_col)
+                    self.log_tree.resizeColumnToContents(self.deletions_col)
+                else:
+                    QMessageBox.warning(self, "", "please choose a file")
+            else:
+                self.log_tree.hideColumn(self.insertions_col)
+                self.log_tree.hideColumn(self.deletions_col)
+                self.log_tree.resizeColumnToContents(self.datetime_col)
+                self.log_tree.resizeColumnToContents(self.sha_col)
+        elif btn_name == "sha":
+            if self.sha_check.isChecked():
+                self.log_tree.showColumn(self.sha_col)
+                self.log_tree.resizeColumnToContents(self.sha_col)
+            else:
+                self.log_tree.hideColumn(self.sha_col)
+                for col in range(5):
+                    if col != 2:
+                        self.log_tree.resizeColumnToContents(col)
+        elif btn_name == "dateformat":
+            if self.log_realdate_rbtn.isChecked():
+                self.log_tree.hideColumn(0)
+                self.log_tree.showColumn(1)
+            else:
+                self.log_tree.hideColumn(1)
+                self.log_tree.showColumn(0)
 
     def clear_widgets(self):
         """Clear all widget contents."""
         self.file_content_widget.clear()
         self.log_tree.clear()
-        self.file_tree.clear()
+        # self.file_tree.clear()
         self.windows_tree.clear()
 
     def get_selected_sha(self):
@@ -281,39 +276,26 @@ class MainView(QMainWindow, Ui_MainWindow):
         """Display log to log_QTreeWidget."""
         self.log_tree.clear()
 
-        self.log_tree.hideColumn(self.sha_col)
-        self.log_tree.hideColumn(self.insertions_col)
-        self.log_tree.hideColumn(self.deletions_col)
-
         selected_file = self.get_selected_file()
         logs = self._student_ctrl.read_logs(selected_file)
 
         if complete:
-            if selected_file:
-                self.log_tree.clear()
-                for l in logs:
-                    QTreeWidgetItem(
-                        self.log_tree,
-                        [
-                            str(l.relative_datetime),
-                            str(l.datetime),
-                            str(l.sha),
-                            "{} {line}".format(
-                                l.add_stats,
-                                line="Line" if l.add_stats == 0 else "Lines",
-                            ),
-                            "{} {line}".format(
-                                l.del_stats,
-                                line="Line" if l.del_stats == 0 else "Lines",
-                            ),
-                        ],
-                    )
-                self.log_tree.showColumn(self.insertions_col)
-                self.log_tree.showColumn(self.deletions_col)
-                self.log_tree.resizeColumnToContents(self.insertions_col)
-                self.log_tree.resizeColumnToContents(self.deletions_col)
-            else:
-                QMessageBox.warning(self, "", "please choose a file")
+            self.log_tree.clear()
+            for l in logs:
+                QTreeWidgetItem(
+                    self.log_tree,
+                    [
+                        str(l.relative_datetime),
+                        str(l.datetime),
+                        str(l.sha),
+                        "{} {line}".format(
+                            l.add_stats, line="Line" if l.add_stats == 0 else "Lines"
+                        ),
+                        "{} {line}".format(
+                            l.del_stats, line="Line" if l.del_stats == 0 else "Lines"
+                        ),
+                    ],
+                )
         else:
             for l in logs:
                 QTreeWidgetItem(
@@ -345,18 +327,19 @@ class MainView(QMainWindow, Ui_MainWindow):
 
     def display_files(self):
         """Display file to file_QTreeWidget."""
-        self.file_tree.clear()
+        # self.file_tree.clear()
+        self.filename_combo.clear()
+
         student_dir = self._student_ctrl.get_student_path()
         files = self._controller.get_files(student_dir)
-        for f in files:
-            QTreeWidgetItem(self.file_tree, [f])
+        files.insert(0, "No File Selected")
+        self.filename_combo.addItems(files)
 
     def get_selected_file(self):
         """Return selected file in file_QTreeWidget."""
-        items = self.file_tree.selectedItems()
-        if items:
-            selected_file = items[0].text(0)
-            return selected_file
+        filename = str(self.filename_combo.currentText())
+        if filename != "No File Selected":
+            return filename
 
     def display_windows(self, sha):
         """Display all windows and focused window from records."""
@@ -379,33 +362,13 @@ class MainView(QMainWindow, Ui_MainWindow):
             self.machine_lbl.setText(auth_info[1])
             self.ip_lbl.setText(auth_info[2])
 
-    def selection_changed(self):
+    def log_selection_changed(self):
         """Actions invoked when selection in log_QTreeWidget changed."""
         sha = self.get_selected_sha()
         if sha:
             self.display_file_content(sha)
             self.display_windows(sha)
             self.display_auth_info(sha)
-
-    def toggle_sha(self, toogle=False):
-        """Toggle the appearance of SHA columns."""
-        if toogle:
-            self.log_tree.showColumn(self.sha_col)
-        else:
-            self.log_tree.hideColumn(self.sha_col)
-        for col in range(5):
-            if col != 2:
-                self.log_tree.resizeColumnToContents(col)
-
-    def toogle_stats(self, toogle=False):
-        """Toggle the appearance of stats columns."""
-        if toogle:
-            self.display_logs(True)
-        else:
-            self.log_tree.hideColumn(self.insertions_col)
-            self.log_tree.hideColumn(self.deletions_col)
-            self.log_tree.resizeColumnToContents(self.datetime_col)
-            self.log_tree.resizeColumnToContents(self.sha_col)
 
     #
     # EditDistance View

@@ -117,7 +117,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -514,7 +514,7 @@
             <property name="currentIndex">
              <number>0</number>
             </property>
-            <widget class="QWidget" name="tab">
+            <widget class="QWidget" name="suspects_tab">
              <attribute name="title">
               <string>Suspects</string>
              </attribute>
@@ -549,7 +549,11 @@
                        <widget class="QSpinBox" name="insertions_limit_spin"/>
                       </item>
                       <item>
-                       <widget class="QComboBox" name="suspect_filename_combo"/>
+                       <widget class="QComboBox" name="suspect_filename_combo">
+                        <property name="editable">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
                       </item>
                      </layout>
                     </item>
@@ -619,7 +623,7 @@
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="tab_3">
+            <widget class="QWidget" name="windows_tab">
              <attribute name="title">
               <string>Windows</string>
              </attribute>
@@ -675,7 +679,7 @@
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="tab_2">
+            <widget class="QWidget" name="ip_tab">
              <attribute name="title">
               <string>IP Address</string>
              </attribute>

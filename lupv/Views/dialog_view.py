@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QDialog, QStyle
 from Views.suspect_dialog import Ui_Dialog
-from Views import icons
+from standard import icons
 
 
 class SuspectDialog(QDialog, Ui_Dialog):

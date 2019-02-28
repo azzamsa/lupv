@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
     QStyle,
 )
 
-from Views import icons
+from standard import icons
 
 
 class EditDistanceView(QWidget):

@@ -29,14 +29,21 @@ class MainView(QMainWindow):
 
         # Sidebar
         page1_icon = "../lupv/Resources/img/lup.svg"
+        page2_icon = "../lupv/Resources/img/history-dim.svg"
+        page3_icon = "../lupv/Resources/img/search-dim.svg"
         self.page1_btn.setIcon(QIcon(page1_icon))
-        self.page1_btn.setIconSize(QSize(64, 64))
-        page2_icon = "../lupv/Resources/img/history.svg"
+        self.page1_btn.setIconSize(QSize(69, 69))
+        self.page1_btn.setToolTip("Go to Main Window")
+
         self.page2_btn.setIcon(QIcon(page2_icon))
         self.page2_btn.setIconSize(QSize(64, 64))
-        page3_icon = "../lupv/Resources/img/search.svg"
+        self.page2_btn.setToolTip("Go to Snapshot Window")
+        self.page2_btn.setEnabled(False)
+
         self.page3_btn.setIcon(QIcon(page3_icon))
-        self.page2_btn.setIconSize(QSize(64, 64))
+        self.page3_btn.setIconSize(QSize(64, 64))
+        self.page3_btn.setToolTip("Go to Search Window")
+        self.page3_btn.setEnabled(False)
 
         self.page1_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
         self.page2_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(1))
@@ -50,17 +57,38 @@ class MainView(QMainWindow):
         self.quit_action.triggered.connect(self.quit_app)
         self.quit_action.setShortcut(QKeySequence("Ctrl+Q"))
 
-        self.main_table.clicked.connect(self.show_student_view)
-        self.main_table.setToolTip("Click me to analyze")
-
-        # Toggle theme
         dark = "../lupv/Resources/theme/dark.qss"
         light = "../lupv/Resources/theme/light.qss"
         self.dark_theme_action.triggered.connect(lambda: self.toggle_theme(dark))
         self.light_theme_action.triggered.connect(lambda: self.toggle_theme(light))
 
+        self.main_table.clicked.connect(self.show_student_view)
+        self.main_table.setToolTip("Click me to analyze")
+
+        self.main_realdate_rbtn.setToolTip("Use Real DateTime format")
+        self.main_reldate_rbtn.setToolTip("Use Relative DateTime format")
+
         # Search View
         self.analyze_suspects_btn.clicked.connect(self.display_suspects)
+
+        search_icon = "../lupv/Resources/img/account-search-outline.svg"
+        self.analyze_suspects_btn.setIcon(QIcon(search_icon))
+        self.analyze_suspects_btn.setIconSize(QSize(24, 24))
+        self.analyze_suspects_btn.setToolTip(
+            "Search for Suspect.\nThis might take a while"
+        )
+
+        self.windows_search_btn.setIcon(QIcon(search_icon))
+        self.windows_search_btn.setIconSize(QSize(16, 16))
+        self.windows_search_btn.setToolTip(
+            "Search window by name.\nThis might take a while"
+        )
+
+        self.group_by_ip_btn.setIcon(QIcon(search_icon))
+        self.group_by_ip_btn.setIconSize(QSize(16, 16))
+        self.group_by_ip_btn.setToolTip(
+            "Group students by Ip Address.\nThis might take a while"
+        )
 
         # default
         self.toggle_theme(light)
@@ -137,6 +165,19 @@ class MainView(QMainWindow):
         self.main_table.resizeColumnsToContents()
         self.main_table.setVisible(True)
 
+        self.toogle_sidebar()
+
+    def toogle_sidebar(self):
+        page2_icon = "../lupv/Resources/img/history.svg"
+        page3_icon = "../lupv/Resources/img/search.svg"
+        self.page2_btn.setIcon(QIcon(page2_icon))
+        self.page2_btn.setIconSize(QSize(64, 64))
+        self.page2_btn.setEnabled(True)
+
+        self.page3_btn.setIcon(QIcon(page3_icon))
+        self.page3_btn.setIconSize(QSize(64, 64))
+        self.page3_btn.setEnabled(True)
+
     def get_selected_student(self):
         """Return selected student from main table"""
         name = self.main_table.item(self.main_table.currentRow(), 0).text()
@@ -150,6 +191,10 @@ class MainView(QMainWindow):
 
     def show_student_view(self):
         """Show Student Page and do initial things."""
+
+        ed_icon = "../lupv/Resources/img/chart-line.svg"
+        self.show_editdistance_action.setIcon(QIcon(ed_icon))
+        self.show_editdistance_action.setIconSize(QSize(16, 16))
         self.show_editdistance_action.clicked.connect(self.show_editdistance_view)
 
         record_path = self.record_path
@@ -159,16 +204,25 @@ class MainView(QMainWindow):
         )
 
         self.log_tree.itemSelectionChanged.connect(self.log_selection_changed)
+
+        self.stats_check.setToolTip("Show/hide insertions deletions lines")
         self.stats_check.stateChanged.connect(
             lambda: self.log_appearance_changed("stats")
         )
+        self.sha_check.setToolTip("Show/hide SHA value")
         self.sha_check.stateChanged.connect(lambda: self.log_appearance_changed("sha"))
+        self.log_realdate_rbtn.setToolTip("Use Real DateTime format")
         self.log_realdate_rbtn.toggled.connect(
             lambda: self.log_appearance_changed("dateformat")
         )
+        self.log_reldate_rbtn.setToolTip("Use Relative DateTime format")
         self.log_reldate_rbtn.toggled.connect(
             lambda: self.log_appearance_changed("dateformat")
         )
+
+        self.diff_mode_rbtn.setToolTip("Use diff mode for file contents")
+        self.show_mode_rbtn.setToolTip("Use show mode for file contents")
+        self.filename_combo.setToolTip("Filename to track")
 
         # default state
         self.log_tree.hideColumn(2)

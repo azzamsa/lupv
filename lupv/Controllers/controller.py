@@ -177,3 +177,16 @@ class Controller(QObject):
                         suspects.append(suspect)
 
         return suspects
+
+    #
+    # Search
+    #
+
+    def get_student_sample(self, record_path):
+        students = self.get_student_dirs(record_path)
+        student_sample_path = join(record_path, students[0])
+        return student_sample_path
+
+    def get_sample_file(self, student_sample_path):
+        files = self.get_files(student_sample_path)
+        return files

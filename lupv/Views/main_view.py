@@ -1,5 +1,5 @@
 from Resources.theme import breeze_resources
-from standard.standard import MyDict
+from standard.standard import MyDict, MyComboBox
 
 from PyQt5.QtWidgets import (
     QMainWindow,
@@ -27,7 +27,9 @@ class MainView(QMainWindow):
         loadUi(main_window, self)
         self._controller = controller
 
+        #
         # Sidebar
+        #
         page1_icon = "../lupv/Resources/img/lup.svg"
         page2_icon = "../lupv/Resources/img/history-dim.svg"
         page3_icon = "../lupv/Resources/img/search-dim.svg"
@@ -49,7 +51,9 @@ class MainView(QMainWindow):
         self.page2_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(1))
         self.page3_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(2))
 
+        #
         # MainView actions
+        #
         open_icon = icons.style(QStyle.SP_DialogOpenButton)
         self.open_records_action.setIcon(open_icon)
         self.open_records_action.triggered.connect(self.open_records)
@@ -68,8 +72,15 @@ class MainView(QMainWindow):
         self.main_realdate_rbtn.setToolTip("Use Real DateTime format")
         self.main_reldate_rbtn.setToolTip("Use Relative DateTime format")
 
+        #
         # Search View
+        #
         self.analyze_suspects_btn.clicked.connect(self.display_suspects)
+
+        self.suspect_filename_combo = MyComboBox()
+        self.suspect_filename_combo.setEditable(True)
+        self.suspect_filename_combo.popupAboutToBeShown.connect(self.suggest_filename)
+        self.verticalLayout_6.addWidget(self.suspect_filename_combo)
 
         search_icon = "../lupv/Resources/img/account-search-outline.svg"
         self.analyze_suspects_btn.setIcon(QIcon(search_icon))
@@ -136,7 +147,7 @@ class MainView(QMainWindow):
             if not self.is_valid_path(path):
                 return None
 
-        self.record_path = path
+        self._record_path = path
         self.display_records(path)
 
     def display_records(self, path, humanize=True):
@@ -191,8 +202,7 @@ class MainView(QMainWindow):
 
     def show_student_view(self):
         """Show Student Page and do initial things."""
-
-        record_path = self.record_path
+        record_path = self._record_path
         student_dir = self.get_selected_student()
         self._student_ctrl = StudentController(
             self._controller, record_path, student_dir
@@ -411,22 +421,57 @@ class MainView(QMainWindow):
     # Search View
     #
 
+    def suggest_filename(self):
+        student_sample = self._controller.get_student_sample(self._record_path)
+        files = self._controller.get_sample_file(student_sample)
+        self.suspect_filename_combo.clear()
+        self.suspect_filename_combo.addItems(files)
+
     def display_suspects(self):
-        # filename = str(self.filename_combo.currentText())
+        # FIXME why many records excluded
+        self.suspects_tree.clear()
+        rootd = {}
+        rootd_left = {}
         insertions_limit = str(self.insertions_limit_spin.value())
         filename = "tugas-pkn.md"
-
         suspects = self._controller.get_suspect(
-            self.record_path, int(insertions_limit), str(filename)
+            self._record_path, int(insertions_limit), str(filename)
         )
+
         for suspect in suspects:
+            print("top level : {}".format(suspect.name))
+            key = "{}-{}".format(suspect.name, suspect.nim)
+            if key in rootd:
+                QTreeWidgetItem(
+                    rootd[key],
+                    [
+                        suspect.name,
+                        str(suspect.nim),
+                        suspect.filename,
+                        str(suspect.insertions),
+                        str(suspect.date),
+                    ],
+                )
+                print("masuk if {}".format(suspect.name))
+            else:
+                root = QTreeWidgetItem(
+                    self.suspects_tree,
+                    [str("{} - {}".format(suspect.name, suspect.nim))],
+                )
+                rootd["{}-{}".format(suspect.name, suspect.nim)] = root
+                rootd_left["{}-{}".format(suspect.name, suspect.nim)] = suspect
+                print("masuk else {}".format(suspect.name))
+
+        # rootd_left
+        for s in rootd_left:
+            suspect_sisa = rootd_left[s]
             QTreeWidgetItem(
-                self.suspects_tree,
+                rootd["{}-{}".format(suspect_sisa.name, suspect_sisa.nim)],
                 [
-                    suspect.name,
-                    str(suspect.nim),
-                    suspect.filename,
-                    str(suspect.insertions),
-                    str(suspect.date),
+                    suspect_sisa.name,
+                    str(suspect_sisa.nim),
+                    suspect_sisa.filename,
+                    str(suspect_sisa.insertions),
+                    str(suspect_sisa.date),
                 ],
             )

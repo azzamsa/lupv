@@ -548,13 +548,6 @@
                       <item>
                        <widget class="QSpinBox" name="insertions_limit_spin"/>
                       </item>
-                      <item>
-                       <widget class="QComboBox" name="suspect_filename_combo">
-                        <property name="editable">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
                      </layout>
                     </item>
                    </layout>

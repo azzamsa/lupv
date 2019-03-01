@@ -300,7 +300,7 @@ class MainView(QMainWindow):
                     [str(l.relative_datetime), str(l.datetime), str(l.sha)],
                 )
 
-        self.log_tree.resizeColumnToContents(0)
+        resize_column(self.log_tree)
 
     def display_file_content(self, sha):
         """Display diff to diff_QPlainTextEdit."""
@@ -365,38 +365,23 @@ class MainView(QMainWindow):
             self.display_auth_info(sha)
 
     def log_appearance_changed(self, btn_name):
-        # named column for easier reading
-        self.reldate_col = 0
-        self.datetime_col = 1
-        self.sha_col = 2
-        self.insertions_col = 3
-        self.deletions_col = 4
-
         if btn_name == "stats":
             if self.stats_check.isChecked():
                 selected_file = self.get_selected_file()
                 if selected_file:
                     self.display_logs(True)
-                    self.log_tree.showColumn(self.insertions_col)
-                    self.log_tree.showColumn(self.deletions_col)
-                    self.log_tree.resizeColumnToContents(self.insertions_col)
-                    self.log_tree.resizeColumnToContents(self.deletions_col)
+                    self.log_tree.showColumn(3)
+                    self.log_tree.showColumn(4)
                 else:
                     QMessageBox.warning(self, "", "please choose a file")
             else:
-                self.log_tree.hideColumn(self.insertions_col)
-                self.log_tree.hideColumn(self.deletions_col)
-                self.log_tree.resizeColumnToContents(self.datetime_col)
-                self.log_tree.resizeColumnToContents(self.sha_col)
+                self.log_tree.hideColumn(3)
+                self.log_tree.hideColumn(4)
         elif btn_name == "sha":
             if self.sha_check.isChecked():
-                self.log_tree.showColumn(self.sha_col)
-                self.log_tree.resizeColumnToContents(self.sha_col)
+                self.log_tree.showColumn(2)
             else:
-                self.log_tree.hideColumn(self.sha_col)
-                for col in range(5):
-                    if col != 2:
-                        self.log_tree.resizeColumnToContents(col)
+                self.log_tree.hideColumn(2)
         elif btn_name == "dateformat":
             if self.log_realdate_rbtn.isChecked():
                 self.log_tree.hideColumn(0)
@@ -404,6 +389,7 @@ class MainView(QMainWindow):
             else:
                 self.log_tree.hideColumn(1)
                 self.log_tree.showColumn(0)
+        resize_column(self.log_tree)
 
     #
     # EditDistance View

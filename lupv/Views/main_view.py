@@ -1,5 +1,5 @@
 from Resources.theme import breeze_resources
-from standard.standard import MyDict, MyComboBox
+from standard.standard import MyDict, MyComboBox, bold, resize_column
 
 from PyQt5.QtWidgets import (
     QMainWindow,
@@ -445,7 +445,11 @@ class MainView(QMainWindow):
         # track parents column
         parents = {}
         for key in suspects_parentchild.keys():
-            parent = QTreeWidgetItem(self.suspects_tree, [key])
+            parent = QTreeWidgetItem(
+                self.suspects_tree,
+                ["{} [{}]".format(key, len(suspects_parentchild[key]))],
+            )
+            bold(parent)
             for suspect in suspects_parentchild[key]:
                 QTreeWidgetItem(
                     parent,
@@ -457,3 +461,4 @@ class MainView(QMainWindow):
                         str(suspect.date),
                     ],
                 )
+        resize_column(self.suspects_tree)

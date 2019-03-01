@@ -237,6 +237,7 @@ class MainView(QMainWindow):
         self.filename_combo.setToolTip("Filename to track")
 
         # default state
+        self.log_tree.hideColumn(1)
         self.log_tree.hideColumn(2)
         self.log_tree.hideColumn(3)
         self.log_tree.hideColumn(4)
@@ -278,11 +279,15 @@ class MainView(QMainWindow):
                         str(l.relative_datetime),
                         str(l.datetime),
                         str(l.sha),
-                        "{} {line}".format(
-                            l.add_stats, line="Line" if l.add_stats == 0 else "Lines"
+                        "{line}".format(
+                            line="No record"
+                            if l.add_stats == 0
+                            else "{} Lines".format(l.add_stats)
                         ),
-                        "{} {line}".format(
-                            l.del_stats, line="Line" if l.del_stats == 0 else "Lines"
+                        "{line}".format(
+                            line="No record"
+                            if l.del_stats == 0
+                            else "{} Lines".format(l.add_stats)
                         ),
                     ],
                 )
@@ -294,7 +299,6 @@ class MainView(QMainWindow):
                 )
 
         self.log_tree.resizeColumnToContents(0)
-        self.log_tree.resizeColumnToContents(1)
 
     def display_file_content(self, sha):
         """Display diff to diff_QPlainTextEdit."""

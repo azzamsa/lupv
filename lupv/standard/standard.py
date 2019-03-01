@@ -1,5 +1,8 @@
 from collections import OrderedDict
-from PyQt5 import QtCore, QtWidgets
+
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QComboBox, QHeaderView
+from PyQt5.QtGui import QFont
 
 
 class MyDict(OrderedDict):
@@ -8,9 +11,19 @@ class MyDict(OrderedDict):
         return val
 
 
-class MyComboBox(QtWidgets.QComboBox):
-    popupAboutToBeShown = QtCore.pyqtSignal()
+class MyComboBox(QComboBox):
+    popupAboutToBeShown = pyqtSignal()
 
     def showPopup(self):
         self.popupAboutToBeShown.emit()
         super(MyComboBox, self).showPopup()
+
+
+def bold(item):
+    bold = QFont()
+    bold.setWeight(QFont.Bold)
+    item.setFont(0, bold)
+
+
+def resize_column(widget):
+    widget.header().setSectionResizeMode(QHeaderView.ResizeToContents)

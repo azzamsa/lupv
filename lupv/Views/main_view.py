@@ -152,7 +152,6 @@ class MainView(QMainWindow):
 
     def display_records(self, path, humanize=True):
         """Populate records."""
-        # FIXME python 3.6 dict ordered
         records = self._controller.read_records(path, humanize)
         ord_records = MyDict()  # ordered records
 
@@ -266,13 +265,12 @@ class MainView(QMainWindow):
 
     def display_logs(self, complete=False):
         """Display log to log_QTreeWidget."""
-        # FIXME without complete:
         self.log_tree.clear()
 
         selected_file = self.get_selected_file()
         logs = self._student_ctrl.read_logs(selected_file)
 
-        if complete:
+        if complete:  # can't show stats without selected_file
             self.log_tree.clear()
             for l in logs:
                 QTreeWidgetItem(

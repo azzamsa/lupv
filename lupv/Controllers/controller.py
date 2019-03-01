@@ -2,6 +2,8 @@ import os
 import git
 import pendulum
 from os.path import join
+from collections import defaultdict
+
 
 from PyQt5.QtCore import QObject
 
@@ -154,7 +156,7 @@ class Controller(QObject):
         else:
             return False
 
-    def get_suspect(self, record_path, insertions_limit, filename):
+    def get_suspects(self, record_path, insertions_limit, filename):
         suspects = []
         student_dirs = self.get_student_dirs(record_path)
 
@@ -190,3 +192,11 @@ class Controller(QObject):
     def get_sample_file(self, student_sample_path):
         files = self.get_files(student_sample_path)
         return files
+
+    def construct_parentchild(self, suspects):
+        suspect_parentchild = defaultdict(list)
+        # construct keys
+        for suspect in suspects:
+            key = "{}-{}".format(suspect.name, suspect.nim)
+            suspect_parentchild[key].append(suspect)
+        return suspect_parentchild

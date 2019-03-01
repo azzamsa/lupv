@@ -152,6 +152,7 @@ class MainView(QMainWindow):
 
     def display_records(self, path, humanize=True):
         """Populate records."""
+        # FIXME python 3.6 dict ordered
         records = self._controller.read_records(path, humanize)
         ord_records = MyDict()  # ordered records
 
@@ -265,6 +266,7 @@ class MainView(QMainWindow):
 
     def display_logs(self, complete=False):
         """Display log to log_QTreeWidget."""
+        # FIXME without complete:
         self.log_tree.clear()
 
         selected_file = self.get_selected_file()
@@ -432,22 +434,21 @@ class MainView(QMainWindow):
         self.suspect_filename_combo.addItems(files)
 
     def display_suspects(self):
-        # FIXME why many records excluded
         self.suspects_tree.clear()
-        rootd = {}
-        rootd_left = {}
         insertions_limit = str(self.insertions_limit_spin.value())
         filename = "tugas-pkn.md"
-        suspects = self._controller.get_suspect(
+        suspects = self._controller.get_suspects(
             self._record_path, int(insertions_limit), str(filename)
         )
+        suspects_parentchild = self._controller.construct_parentchild(suspects)
 
-        for suspect in suspects:
-            print("top level : {}".format(suspect.name))
-            key = "{}-{}".format(suspect.name, suspect.nim)
-            if key in rootd:
+        # track parents column
+        parents = {}
+        for key in suspects_parentchild.keys():
+            parent = QTreeWidgetItem(self.suspects_tree, [key])
+            for suspect in suspects_parentchild[key]:
                 QTreeWidgetItem(
-                    rootd[key],
+                    parent,
                     [
                         suspect.name,
                         str(suspect.nim),
@@ -456,26 +457,3 @@ class MainView(QMainWindow):
                         str(suspect.date),
                     ],
                 )
-                print("masuk if {}".format(suspect.name))
-            else:
-                root = QTreeWidgetItem(
-                    self.suspects_tree,
-                    [str("{} - {}".format(suspect.name, suspect.nim))],
-                )
-                rootd["{}-{}".format(suspect.name, suspect.nim)] = root
-                rootd_left["{}-{}".format(suspect.name, suspect.nim)] = suspect
-                print("masuk else {}".format(suspect.name))
-
-        # rootd_left
-        for s in rootd_left:
-            suspect_sisa = rootd_left[s]
-            QTreeWidgetItem(
-                rootd["{}-{}".format(suspect_sisa.name, suspect_sisa.nim)],
-                [
-                    suspect_sisa.name,
-                    str(suspect_sisa.nim),
-                    suspect_sisa.filename,
-                    str(suspect_sisa.insertions),
-                    str(suspect_sisa.date),
-                ],
-            )

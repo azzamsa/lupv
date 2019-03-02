@@ -9,3 +9,12 @@ class Suspects(QObject):
         self.filename = filename
         self.insertions = insertions
         self.date = date
+
+
+class IpGroup(QObject):
+    def __init__(self, ip, name, nim, date):
+        super().__init__()
+        self.ip = ip
+        self.name = name
+        self.nim = nim
+        self.date = date

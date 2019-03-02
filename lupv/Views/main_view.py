@@ -104,6 +104,7 @@ class MainView(QMainWindow):
             "Search window by name.\nThis might take a while"
         )
 
+        self.group_by_ip_btn.clicked.connect(self.display_gropy_by_ip)
         self.group_by_ip_btn.setIcon(QIcon(search_icon))
         self.group_by_ip_btn.setIconSize(QSize(16, 16))
         self.group_by_ip_btn.setToolTip(
@@ -451,3 +452,26 @@ class MainView(QMainWindow):
                     ],
                 )
         resize_column(self.suspects_tree)
+
+    def display_gropy_by_ip(self):
+        self.group_by_ip_tree.clear()
+        student_group = self._controller.group_by_ip(self._record_path)
+
+        # track parents column
+        parents = {}
+        for key in student_group.keys():
+            parent = QTreeWidgetItem(
+                self.group_by_ip_tree, ["{} [{}]".format(key, len(student_group[key]))]
+            )
+            bold(parent)
+            for student in student_group[key]:
+                QTreeWidgetItem(
+                    parent,
+                    [
+                        student.ip,
+                        student.name,
+                        str(student.nim),
+                        str(student.date),
+                    ],
+                )
+        resize_column(self.group_by_ip_tree)

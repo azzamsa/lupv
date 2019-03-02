@@ -8,7 +8,8 @@ from collections import defaultdict
 from PyQt5.QtCore import QObject
 
 from Model.records import Records
-from Model.suspects import Suspects
+from Model.search import Suspects
+from Model.search import IpGroup
 
 
 class Controller(QObject):
@@ -191,3 +192,26 @@ class Controller(QObject):
             key = "{}-{}".format(suspect.name, suspect.nim)
             suspect_parentchild[key].append(suspect)
         return suspect_parentchild
+
+    def group_by_ip(self, record_path):
+        ip_parentchild = defaultdict(list)
+        student_dirs = self.get_student_dirs(record_path)
+
+        for student in student_dirs:
+            student_path = join(record_path, student)
+            student_repo = self.get_student_repo(student_path)
+            records = self.get_records(student_path)
+
+            for rec in records:
+                auth_path = join(".watchers", "auth_info")
+                auth_file = student_repo.git.show("{}:{}".format(rec.hexsha, auth_path))
+                ip = auth_file.splitlines()[2]
+
+                key = "{}".format(ip)
+                name = str(student).split("-")[0]
+                nim = str(student).split("-")[1]
+                date = "{:%a, %d %b %Y, %H:%M:%S}".format(rec.committed_datetime)
+                ip_group = IpGroup(ip, name, nim, date)
+                ip_parentchild[key].append(ip_group)
+
+        return ip_parentchild

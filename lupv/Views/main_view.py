@@ -171,7 +171,6 @@ class MainView(QMainWindow):
             for col_num, record_item in enumerate(record.__dict__.items()):
                 if type(record_item[1]) is list:
                     item = record_item[1][datetime_type]
-                    print(record_item)
                 else:
                     item = record_item[1]
                 tbl_item = QTableWidgetItem(str(item))

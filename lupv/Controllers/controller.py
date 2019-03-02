@@ -193,8 +193,8 @@ class Controller(QObject):
             suspect_parentchild[key].append(suspect)
         return suspect_parentchild
 
-    def group_by_ip(self, record_path):
-        ip_parentchild = defaultdict(list)
+    def read_ips(self, record_path):
+        student_and_ip = []
         student_dirs = self.get_student_dirs(record_path)
 
         for student in student_dirs:
@@ -207,11 +207,28 @@ class Controller(QObject):
                 auth_file = student_repo.git.show("{}:{}".format(rec.hexsha, auth_path))
                 ip = auth_file.splitlines()[2]
 
-                key = "{}".format(ip)
                 name = str(student).split("-")[0]
                 nim = str(student).split("-")[1]
                 date = "{:%a, %d %b %Y, %H:%M:%S}".format(rec.committed_datetime)
                 ip_group = IpGroup(ip, name, nim, date)
-                ip_parentchild[key].append(ip_group)
+                student_and_ip.append(ip_group)
 
-        return ip_parentchild
+        return student_and_ip
+
+    def group_by_ip(self, student_and_ip):
+        # construct ip : students
+        student_group = defaultdict(list)
+        for student in student_and_ip:
+            ip = "{}".format(student.ip)
+            student_group[ip].append(student)
+
+        ip_student_students = {}
+        # construct ip : student : students
+        for key in student_group.keys():
+            models = student_group[key]
+            student_students = defaultdict(list)
+            for model in models:
+                student_key = "{}-{}".format(model.name, model.nim)
+                student_students[student_key].append(model)
+            ip_student_students[key] = student_students
+        return ip_student_students

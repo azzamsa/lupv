@@ -455,23 +455,28 @@ class MainView(QMainWindow):
 
     def display_gropy_by_ip(self):
         self.group_by_ip_tree.clear()
-        student_group = self._controller.group_by_ip(self._record_path)
+        student_and_ip = self._controller.read_ips(self._record_path)
+        ip_student_students = self._controller.group_by_ip(student_and_ip)
 
-        # track parents column
-        parents = {}
-        for key in student_group.keys():
+        for key in ip_student_students.keys():
             parent = QTreeWidgetItem(
-                self.group_by_ip_tree, ["{} [{}]".format(key, len(student_group[key]))]
+                self.group_by_ip_tree,
+                ["{} [{}]".format(key, len(ip_student_students[key]))],
             )
             bold(parent)
-            for student in student_group[key]:
-                QTreeWidgetItem(
+            for student in ip_student_students[key].keys():
+                child = QTreeWidgetItem(
                     parent,
-                    [
-                        student.ip,
-                        student.name,
-                        str(student.nim),
-                        str(student.date),
-                    ],
+                    ["{} [{}]".format(student, len(ip_student_students[key][student]))],
                 )
+                for students in ip_student_students[key][student]:
+                    QTreeWidgetItem(
+                        child,
+                        [
+                            str(students.ip),
+                            students.name,
+                            str(students.nim),
+                            students.date,
+                        ],
+                    )
         resize_column(self.group_by_ip_tree)

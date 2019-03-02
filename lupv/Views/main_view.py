@@ -98,6 +98,7 @@ class MainView(QMainWindow):
             "Search for Suspect.\nThis might take a while"
         )
 
+        self.windows_search_btn.clicked.connect(self.display_window_search)
         self.windows_search_btn.setIcon(QIcon(search_icon))
         self.windows_search_btn.setIconSize(QSize(16, 16))
         self.windows_search_btn.setToolTip(
@@ -432,8 +433,6 @@ class MainView(QMainWindow):
         )
         suspects_parentchild = self._controller.construct_parentchild(suspects)
 
-        # track parents column
-        parents = {}
         for key in suspects_parentchild.keys():
             parent = QTreeWidgetItem(
                 self.suspects_tree,
@@ -480,3 +479,20 @@ class MainView(QMainWindow):
                         ],
                     )
         resize_column(self.group_by_ip_tree)
+
+    def display_window_search(self):
+        self.windows_search_tree.clear()
+        search_key = self.windows_searchkey_widget.text()
+        student_windows = self._controller.read_windows(self._record_path, search_key)
+
+        for student_window in student_windows:
+            QTreeWidgetItem(
+                self.windows_search_tree,
+                [
+                    student_window.window_name,
+                    student_window.name,
+                    str(student_window.nim),
+                    student_window.date,
+                ],
+            )
+        resize_column(self.windows_search_tree)

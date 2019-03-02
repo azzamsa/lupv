@@ -18,3 +18,12 @@ class IpGroup(QObject):
         self.name = name
         self.nim = nim
         self.date = date
+
+
+class StudentWindow(QObject):
+    def __init__(self, window_name, name, nim, date):
+        super().__init__()
+        self.window_name = window_name
+        self.name = name
+        self.nim = nim
+        self.date = date

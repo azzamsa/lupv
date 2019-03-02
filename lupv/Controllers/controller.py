@@ -10,6 +10,7 @@ from PyQt5.QtCore import QObject
 from Model.records import Records
 from Model.search import Suspects
 from Model.search import IpGroup
+from Model.search import StudentWindow
 
 
 class Controller(QObject):
@@ -232,3 +233,36 @@ class Controller(QObject):
                 student_students[student_key].append(model)
             ip_student_students[key] = student_students
         return ip_student_students
+
+    def idx_of_substring(self, mylist, substring):
+        for idx, string in enumerate(mylist):
+            if substring in string:
+                return idx
+        return -1
+
+    def read_windows(self, record_path, search_key):
+        student_windows = []
+        student_dirs = self.get_student_dirs(record_path)
+
+        for student in student_dirs:
+            student_path = join(record_path, student)
+            student_repo = self.get_student_repo(student_path)
+            records = self.get_records(student_path)
+
+            for rec in records:
+                all_win_path = join(".watchers", "all_windows")
+                diff = student_repo.git.show("{}:{}".format(rec.hexsha, all_win_path))
+                windows = diff.splitlines()
+                windows_lower = [item.lower() for item in windows]
+
+                found = self.idx_of_substring(windows_lower, search_key)
+                if found:
+                    window_name = windows[found]
+                    name = str(student).split("-")[0]
+                    nim = str(student).split("-")[1]
+                    date = "{:%a, %d %b %Y, %H:%M:%S}".format(rec.committed_datetime)
+
+                    student_window = StudentWindow(window_name, name, nim, date)
+                student_windows.append(student_window)
+
+        return student_windows

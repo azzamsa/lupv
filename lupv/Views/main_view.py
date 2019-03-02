@@ -1,5 +1,5 @@
 from Resources.theme import breeze_resources
-from standard.standard import MyDict, MyComboBox, bold, resize_column
+from standard.standard import MyComboBox, bold, resize_column
 
 from PyQt5.QtWidgets import (
     QMainWindow,
@@ -153,22 +153,13 @@ class MainView(QMainWindow):
     def display_records(self, path, humanize=True):
         """Populate records."""
         records = self._controller.read_records(path, humanize)
-        ord_records = MyDict()  # ordered records
-
-        for record in records:
-            ord_records[record.name]["name"] = record.name
-            ord_records[record.name]["nim"] = record.nim
-            ord_records[record.name]["record_amounts"] = record.record_amounts
-            ord_records[record.name]["work_duration"] = record.work_duration
-            ord_records[record.name]["first_record"] = record.first_record
-            ord_records[record.name]["last_record"] = record.last_record
 
         self.main_table.setRowCount(0)
 
-        for row_num, key_name in enumerate(ord_records):
+        for row_num, record in enumerate(records):
             self.main_table.insertRow(row_num)
-            for col_num, col_key in enumerate(ord_records[key_name]):
-                tbl_item = QTableWidgetItem(str(ord_records[key_name][col_key]))
+            for col_num, record_item in enumerate(record.__dict__.items()):
+                tbl_item = QTableWidgetItem(str(record_item[1]))
                 self.main_table.setItem(row_num, col_num, tbl_item)
 
         self.main_table.setVisible(False)

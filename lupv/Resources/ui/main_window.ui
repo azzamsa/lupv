@@ -171,12 +171,12 @@
             </column>
             <column>
              <property name="text">
-              <string>Total Records</string>
+              <string>Work Duration</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>Work Duration</string>
+              <string>Total Records</string>
              </property>
             </column>
             <column>

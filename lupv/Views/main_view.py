@@ -26,6 +26,8 @@ class MainView(QMainWindow):
         main_window = "../lupv/Resources/ui/main_window.ui"
         loadUi(main_window, self)
         self._controller = controller
+        self._record_path = ""
+        self._records = None
 
         #
         # Sidebar
@@ -71,6 +73,13 @@ class MainView(QMainWindow):
 
         self.main_realdate_rbtn.setToolTip("Use Real DateTime format")
         self.main_reldate_rbtn.setToolTip("Use Relative DateTime format")
+
+        self.main_realdate_rbtn.toggled.connect(
+            lambda: self.display_records(datetime_type=0)
+        )
+        self.main_reldate_rbtn.toggled.connect(
+            lambda: self.display_records(datetime_type=1)
+        )
 
         #
         # Search View
@@ -148,18 +157,24 @@ class MainView(QMainWindow):
                 return None
 
         self._record_path = path
-        self.display_records(path)
+        self.display_records()
 
-    def display_records(self, path, humanize=True):
+    def display_records(self, datetime_type=1):
         """Populate records."""
-        records = self._controller.read_records(path, humanize)
+        if self._records is None:
+            self._records = self._controller.read_records(self._record_path)
 
         self.main_table.setRowCount(0)
 
-        for row_num, record in enumerate(records):
+        for row_num, record in enumerate(self._records):
             self.main_table.insertRow(row_num)
             for col_num, record_item in enumerate(record.__dict__.items()):
-                tbl_item = QTableWidgetItem(str(record_item[1]))
+                if type(record_item[1]) is list:
+                    item = record_item[1][datetime_type]
+                    print(record_item)
+                else:
+                    item = record_item[1]
+                tbl_item = QTableWidgetItem(str(item))
                 self.main_table.setItem(row_num, col_num, tbl_item)
 
         self.main_table.setVisible(False)
@@ -325,7 +340,7 @@ class MainView(QMainWindow):
             return filename
 
     def display_windows(self, sha):
-        """Display all windows and focused window from records."""
+        """Display all windows and focused window from self.records."""
         self.windows_tree.clear()
 
         focused_window = self._student_ctrl.read_focused_window(sha)
@@ -334,11 +349,11 @@ class MainView(QMainWindow):
         focused_row.setForeground(0, QBrush(QColor("#41CD52")))
         windows = self._student_ctrl.read_all_windows(sha)
         for window in windows:
-            if window != focused_window:
+            if windoself.w != focused_window:
                 QTreeWidgetItem(self.windows_tree, [window])
 
     def display_auth_info(self, sha):
-        """Display auth information from records."""
+        """Display auth information from self.records."""
         auth_info = self._student_ctrl.read_auth_info(sha)
         if auth_info:
             self.name_lbl.setText(auth_info[0])

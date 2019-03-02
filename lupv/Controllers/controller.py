@@ -109,15 +109,11 @@ class Controller(QObject):
         """Take the first SHA record."""
         return records[-1].hexsha
 
-    def read_records(self, record_path, humanize=True):
+    def read_records(self, record_path):
         """Read records from individual dirs then return them as
         `Records` object."""
         student_dirs = self.get_student_dirs(record_path)
         student_records = []
-        datetime_type = 0
-
-        if humanize:
-            datetime_type = 1
 
         for student in student_dirs:
             student_path = join(record_path, student)
@@ -127,16 +123,11 @@ class Controller(QObject):
             nim = str(student).split("-")[1]
             work_duration = self.calc_work_duration(records)
             record_amounts = self.count_records(records)
-            first_rec = self.get_first_rec_time(records)
+            first_record = self.get_first_rec_time(records)
             last_record = self.get_last_rec_time(records)
 
             record = Records(
-                name,
-                nim,
-                work_duration[datetime_type],
-                record_amounts,
-                first_rec[datetime_type],
-                last_record[datetime_type],
+                name, nim, work_duration, record_amounts, first_record, last_record
             )
             student_records.append(record)
 

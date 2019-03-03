@@ -336,7 +336,13 @@ class MainView(QMainWindow):
 
     def display_file_content(self, sha):
         """Display diff to diff_QPlainTextEdit."""
+        # FIXME unmatched stats count and diff
         self.file_content_widget.clear()
+
+        if self.diff_mode_rbtn.isChecked():
+            mode = "diff"
+        else:
+            mode = "show"
 
         selected_file = self.get_selected_file()
         no_file_selected_msg = "No file selected, Please select one"
@@ -347,11 +353,16 @@ class MainView(QMainWindow):
         if not selected_file:
             self.file_content_widget.setPlainText(no_file_selected_msg)
         else:
-            file_content = self._student_ctrl.read_file_content(selected_file, sha)
+            file_content = self._student_ctrl.read_file_content(
+                selected_file, sha, mode
+            )
             if file_content == "":
                 self.file_content_widget.setPlainText(no_file_rec_msg)
             else:
-                self.file_content_widget.setPlainText(file_content)
+                if mode == "show":
+                    self.file_content_widget.setPlainText(file_content)
+                else:
+                    self.file_content_widget.appendHtml(file_content)
 
     def supply_filename(self):
         """Display file to file_QTreeWidget."""
@@ -459,7 +470,7 @@ class MainView(QMainWindow):
         suspects = self._controller.get_suspects(
             self._record_path, int(insertions_limit), str(filename)
         )
-        suspects_parentchild = self._controller.construct_parentchild(suspects)
+        Suspects_parentchild = self._controller.construct_parentchild(suspects)
 
         for key in suspects_parentchild.keys():
             parent = QTreeWidgetItem(

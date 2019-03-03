@@ -2,6 +2,7 @@ import git
 import editdistance as edlib
 from os.path import join
 import pathlib
+import re
 
 from PyQt5.QtCore import QObject
 
@@ -82,15 +83,47 @@ class StudentController(QObject):
 
         return logs
 
-    def read_file_content(self, selected_file, sha):
+    def read_file_content(self, selected_file, sha, mode):
         "Read the content of current file state"
         student_repo = self.get_student_repo()
         file_existp = self._controller.is_file_in_commit(
             student_repo, selected_file, sha
         )
         if file_existp:
-            file_content = student_repo.git.show("{}:{}".format(sha, selected_file))
+            if mode == "show":
+                file_content = student_repo.git.show("{}:{}".format(sha, selected_file))
+            else:
+                dirty_diff = student_repo.git.diff("HEAD", sha, selected_file)
+                diff_body = self.take_diff_body(dirty_diff)
+                file_content = self.wrap_with_html(diff_body)
+
             return file_content
+
+    def take_diff_body(self, diff):
+        lines = diff.splitlines()
+        diff_body = lines[5:]
+        return "\n".join(diff_body)
+
+    def wrap_with_html(self, diff):
+        colored_diff = []
+        lines = diff.splitlines()
+        for line in lines:
+            if line.startswith("-"):
+                colored_line = """
+                <span style='color:red;white-space:pre;'>{}</span>
+                """.format(
+                    line
+                )
+            elif line.startswith("+"):
+                colored_line = """
+                <span style='color:green;white-space:pre;'>{}</span>
+                """.format(
+                    line
+                )
+            else:
+                colored_line = line
+            colored_diff.append(colored_line)
+        return "<br/>".join(colored_diff)
 
     def calc_editdistance_ax(self, selected_file):
         """Calculate EditDistance axis."""

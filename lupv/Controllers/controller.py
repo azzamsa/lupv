@@ -123,13 +123,21 @@ class Controller(QObject):
 
             name = str(student).split("-")[0]
             nim = str(student).split("-")[1]
+            total_records = self.count_records(records)
             work_duration = self.calc_work_duration(records)
-            record_amounts = self.count_records(records)
             first_record = self.get_first_rec_time(records)
             last_record = self.get_last_rec_time(records)
 
             record = Records(
-                name, nim, work_duration, record_amounts, first_record, last_record
+                name,
+                nim,
+                total_records,
+                work_duration[0],
+                first_record[0],
+                last_record[0],
+                work_duration[1],
+                first_record[1],
+                last_record[1],
             )
             student_records.append(record)
 

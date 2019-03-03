@@ -171,12 +171,27 @@
             </column>
             <column>
              <property name="text">
+              <string>Total Records</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
               <string>Work Duration</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>Total Records</string>
+              <string>First Record</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Last Record</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Work Duration</string>
              </property>
             </column>
             <column>
@@ -512,7 +527,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget">
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="suspects_tab">
              <attribute name="title">

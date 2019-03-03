@@ -9,9 +9,10 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QTreeWidgetItem,
     QStyle,
+    QLabel,
 )
 
-from PyQt5.QtCore import QFile, QTextStream, QSize
+from PyQt5.QtCore import QFile, QTextStream, QSize, Qt
 from PyQt5.QtGui import QKeySequence, QBrush, QColor, QIcon
 from PyQt5.uic import loadUi
 
@@ -75,10 +76,10 @@ class MainView(QMainWindow):
         self.main_reldate_rbtn.setToolTip("Use Relative DateTime format")
 
         self.main_realdate_rbtn.toggled.connect(
-            lambda: self.display_records(datetime_type=0)
+            lambda: self.change_table_appearance("real")
         )
         self.main_reldate_rbtn.toggled.connect(
-            lambda: self.display_records(datetime_type=1)
+            lambda: self.change_table_appearance("rel")
         )
 
         #
@@ -93,9 +94,7 @@ class MainView(QMainWindow):
         self.log_tree.itemSelectionChanged.connect(self.log_selection_changed)
 
         self.stats_check.setToolTip("Show/hide insertions deletions lines")
-        self.stats_check.clicked.connect(
-            lambda: self.log_appearance_changed("stats")
-        )
+        self.stats_check.clicked.connect(lambda: self.log_appearance_changed("stats"))
 
         self.sha_check.setToolTip("Show/hide SHA value")
         self.sha_check.clicked.connect(lambda: self.log_appearance_changed("sha"))
@@ -145,6 +144,15 @@ class MainView(QMainWindow):
         )
 
         # default
+        self.stackedWidget.setVisible(False)
+        self.widget.setVisible(False)
+        self.welcome_lbl = QLabel()
+        self.welcome_lbl.setText("Please open records to start analyzing")
+        self.welcome_lbl.setStyleSheet("font-size: 20px;")
+        self.welcome_lbl.setAlignment(Qt.AlignCenter)
+        self.verticalLayout.addWidget(self.welcome_lbl)
+        self.horizontalLayout.addWidget(self.welcome_lbl)
+
         self.toggle_theme(light)
         self.stackedWidget.setCurrentIndex(0)
         self.show()
@@ -193,21 +201,16 @@ class MainView(QMainWindow):
         self._record_path = path
         self.display_records()
 
-    def display_records(self, datetime_type=1):
+    def display_records(self):
         """Populate records."""
-        if self._records is None:
-            self._records = self._controller.read_records(self._record_path)
+        records = self._controller.read_records(self._record_path)
 
         self.main_table.setRowCount(0)
 
-        for row_num, record in enumerate(self._records):
+        for row_num, record in enumerate(records):
             self.main_table.insertRow(row_num)
             for col_num, record_item in enumerate(record.__dict__.items()):
-                if type(record_item[1]) is list:
-                    item = record_item[1][datetime_type]
-                else:
-                    item = record_item[1]
-                tbl_item = QTableWidgetItem(str(item))
+                tbl_item = QTableWidgetItem(str(record_item[1]))
                 self.main_table.setItem(row_num, col_num, tbl_item)
 
         self.main_table.setVisible(False)
@@ -215,7 +218,26 @@ class MainView(QMainWindow):
         self.main_table.resizeColumnsToContents()
         self.main_table.setVisible(True)
 
+        self.change_table_appearance("rel")  # default
+        self.main_reldate_rbtn.setChecked(True)
+        self.main_realdate_rbtn.setChecked(False)
+
+        self.welcome_lbl.setVisible(False)
+        self.stackedWidget.setVisible(True)
+        self.widget.setVisible(True)
         self.toogle_sidebar()
+
+    def change_table_appearance(self, btn_name):
+        if btn_name == "real":
+            for col in range(3, 6):
+                self.main_table.setColumnHidden(col, False)
+            for col in range(6, 9):
+                self.main_table.setColumnHidden(col, True)
+        else:
+            for col in range(3, 6):
+                self.main_table.setColumnHidden(col, True)
+            for col in range(6, 9):
+                self.main_table.setColumnHidden(col, False)
 
     def toogle_sidebar(self):
         page2_icon = "../lupv/Resources/img/history.svg"

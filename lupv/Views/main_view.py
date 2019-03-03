@@ -82,6 +82,38 @@ class MainView(QMainWindow):
         )
 
         #
+        # Log view
+        #
+
+        ed_icon = "../lupv/Resources/img/chart-line.svg"
+        self.show_editdistance_action.setIcon(QIcon(ed_icon))
+        self.show_editdistance_action.setIconSize(QSize(16, 16))
+        self.show_editdistance_action.clicked.connect(self.show_editdistance_view)
+
+        self.log_tree.itemSelectionChanged.connect(self.log_selection_changed)
+
+        self.stats_check.setToolTip("Show/hide insertions deletions lines")
+        self.stats_check.clicked.connect(
+            lambda: self.log_appearance_changed("stats")
+        )
+
+        self.sha_check.setToolTip("Show/hide SHA value")
+        self.sha_check.clicked.connect(lambda: self.log_appearance_changed("sha"))
+
+        self.log_realdate_rbtn.setToolTip("Use Real DateTime format")
+        self.log_realdate_rbtn.toggled.connect(
+            lambda: self.log_appearance_changed("dateformat")
+        )
+        self.log_reldate_rbtn.setToolTip("Use Relative DateTime format")
+        self.log_reldate_rbtn.toggled.connect(
+            lambda: self.log_appearance_changed("dateformat")
+        )
+
+        self.diff_mode_rbtn.setToolTip("Use diff mode for file contents")
+        self.show_mode_rbtn.setToolTip("Use show mode for file contents")
+        self.filename_combo.setToolTip("Filename to track")
+
+        #
         # Search View
         #
         self.analyze_suspects_btn.clicked.connect(self.display_suspects)
@@ -209,45 +241,18 @@ class MainView(QMainWindow):
 
     def show_student_view(self):
         """Show Student Page and do initial things."""
-        record_path = self._record_path
         student_dir = self.get_selected_student()
         self._student_ctrl = StudentController(
-            self._controller, record_path, student_dir
+            self._controller, self._record_path, student_dir
         )
-
-        ed_icon = "../lupv/Resources/img/chart-line.svg"
-        self.show_editdistance_action.setIcon(QIcon(ed_icon))
-        self.show_editdistance_action.setIconSize(QSize(16, 16))
-        self.show_editdistance_action.clicked.connect(self.show_editdistance_view)
-
-        self.log_tree.itemSelectionChanged.connect(self.log_selection_changed)
-
-        self.stats_check.setToolTip("Show/hide insertions deletions lines")
-        self.stats_check.stateChanged.connect(
-            lambda: self.log_appearance_changed("stats")
-        )
-
-        self.sha_check.setToolTip("Show/hide SHA value")
-        self.sha_check.stateChanged.connect(lambda: self.log_appearance_changed("sha"))
-
-        self.log_realdate_rbtn.setToolTip("Use Real DateTime format")
-        self.log_realdate_rbtn.toggled.connect(
-            lambda: self.log_appearance_changed("dateformat")
-        )
-        self.log_reldate_rbtn.setToolTip("Use Relative DateTime format")
-        self.log_reldate_rbtn.toggled.connect(
-            lambda: self.log_appearance_changed("dateformat")
-        )
-
-        self.diff_mode_rbtn.setToolTip("Use diff mode for file contents")
-        self.show_mode_rbtn.setToolTip("Use show mode for file contents")
-        self.filename_combo.setToolTip("Filename to track")
 
         # default state
         self.log_tree.hideColumn(1)
         self.log_tree.hideColumn(2)
         self.log_tree.hideColumn(3)
         self.log_tree.hideColumn(4)
+        self.sha_check.setChecked(False)
+        self.stats_check.setChecked(False)
 
         # init functions
         self.clear_widgets()
@@ -350,7 +355,7 @@ class MainView(QMainWindow):
         focused_row.setForeground(0, QBrush(QColor("#41CD52")))
         windows = self._student_ctrl.read_all_windows(sha)
         for window in windows:
-            if windoself.w != focused_window:
+            if window != focused_window:
                 QTreeWidgetItem(self.windows_tree, [window])
 
     def display_auth_info(self, sha):
@@ -379,6 +384,7 @@ class MainView(QMainWindow):
                     self.log_tree.showColumn(4)
                 else:
                     QMessageBox.warning(self, "", "please choose a file")
+                    self.stats_check.setChecked(False)
             else:
                 self.log_tree.hideColumn(3)
                 self.log_tree.hideColumn(4)

@@ -273,12 +273,12 @@ class MainView(QMainWindow):
         )
 
         # default state
-        self.log_tree.hideColumn(1)
-        self.log_tree.hideColumn(2)
-        self.log_tree.hideColumn(3)
-        self.log_tree.hideColumn(4)
+        for col in [0, 2, 3, 4]:
+            self.log_tree.hideColumn(col)
+        self.log_realdate_rbtn.setChecked(True)
         self.sha_check.setChecked(False)
         self.stats_check.setChecked(False)
+        self.show_mode_rbtn.setChecked(True)
 
         # init functions
         self.clear_widgets()
@@ -461,37 +461,63 @@ class MainView(QMainWindow):
     #
 
     def suggest_filename(self):
+        self.suspect_filename_combo.clear()
+
         student_sample = self._controller.get_student_sample(self._record_path)
         files = self._controller.get_sample_file(student_sample)
-        self.suspect_filename_combo.clear()
+        files.insert(0, "No File Selected")
         self.suspect_filename_combo.addItems(files)
 
     def display_suspects(self):
         self.suspects_tree.clear()
         insertions_limit = str(self.insertions_limit_spin.value())
-        filename = "tugas-pkn.md"
+        filename = self.suspect_filename_combo.currentText()
+
+        if int(insertions_limit) == 0:
+            QMessageBox.warning(
+                self,
+                "",
+                "please set limit higer than {}\nAbove 10 is recommended".format(
+                    insertions_limit
+                ),
+            )
+            return None
+        if filename == "No File Selected" or not filename:
+            QMessageBox.warning(self, "", "please select a file")
+            return None
+
         suspects = self._controller.get_suspects(
             self._record_path, int(insertions_limit), str(filename)
         )
         suspects_parentchild = self._controller.construct_parentchild(suspects)
 
-        for key in suspects_parentchild.keys():
-            parent = QTreeWidgetItem(
-                self.suspects_tree,
-                ["{} [{}]".format(key, len(suspects_parentchild[key]))],
-            )
-            bold(parent)
-            for suspect in suspects_parentchild[key]:
-                QTreeWidgetItem(
-                    parent,
-                    [
-                        suspect.name,
-                        str(suspect.nim),
-                        suspect.filename,
-                        str(suspect.insertions),
-                        str(suspect.date),
-                    ],
+        if len(suspects_parentchild.keys()) > 0:
+            for key in suspects_parentchild.keys():
+                parent = QTreeWidgetItem(
+                    self.suspects_tree,
+                    ["{} [{}]".format(key, len(suspects_parentchild[key]))],
                 )
+                bold(parent)
+                for suspect in suspects_parentchild[key]:
+                    QTreeWidgetItem(
+                        parent,
+                        [
+                            suspect.name,
+                            str(suspect.nim),
+                            suspect.filename,
+                            str(suspect.insertions),
+                            str(suspect.date),
+                        ],
+                    )
+        else:
+            for col in range(1, 5):
+                self.suspects_tree.hideColumn(col)
+            self.suspects_tree.headerItem().setText(0, "")
+
+            QTreeWidgetItem(
+                self.suspects_tree,
+                ['No suspect found, for "{}" insertion limit'.format(insertions_limit)],
+            )
         resize_column(self.suspects_tree)
 
     def display_gropy_by_ip(self):
@@ -499,42 +525,67 @@ class MainView(QMainWindow):
         student_and_ip = self._controller.read_ips(self._record_path)
         ip_student_students = self._controller.group_by_ip(student_and_ip)
 
-        for key in ip_student_students.keys():
-            parent = QTreeWidgetItem(
-                self.group_by_ip_tree,
-                ["{} [{}]".format(key, len(ip_student_students[key]))],
-            )
-            bold(parent)
-            for student in ip_student_students[key].keys():
-                child = QTreeWidgetItem(
-                    parent,
-                    ["{} [{}]".format(student, len(ip_student_students[key][student]))],
+        if len(ip_student_students.keys()) > 0:
+            for key in ip_student_students.keys():
+                parent = QTreeWidgetItem(
+                    self.group_by_ip_tree,
+                    ["{} [{}]".format(key, len(ip_student_students[key]))],
                 )
-                for students in ip_student_students[key][student]:
-                    QTreeWidgetItem(
-                        child,
+                bold(parent)
+                for student in ip_student_students[key].keys():
+                    child = QTreeWidgetItem(
+                        parent,
                         [
-                            str(students.ip),
-                            students.name,
-                            str(students.nim),
-                            students.date,
+                            "{} [{}]".format(
+                                student, len(ip_student_students[key][student])
+                            )
                         ],
                     )
+                    for students in ip_student_students[key][student]:
+                        QTreeWidgetItem(
+                            child,
+                            [
+                                str(students.ip),
+                                students.name,
+                                str(students.nim),
+                                students.date,
+                            ],
+                        )
+        else:
+            for col in range(1, 4):
+                self.group_by_ip_tree.hideColumn(col)
+            self.group_by_ip_tree.headerItem().setText(0, "")
+
+            QTreeWidgetItem(self.group_by_ip_tree, ["No IP address found"])
         resize_column(self.group_by_ip_tree)
 
     def display_window_search(self):
         self.windows_search_tree.clear()
         search_key = self.windows_searchkey_widget.text()
+        if not search_key:
+            QMessageBox.warning(self, "", "please supply the window name")
+            return None  # magic line `break` alias.
+
         student_windows = self._controller.read_windows(self._record_path, search_key)
 
-        for student_window in student_windows:
+        if student_windows:
+            for student_window in student_windows:
+                QTreeWidgetItem(
+                    self.windows_search_tree,
+                    [
+                        student_window.window_name,
+                        student_window.name,
+                        str(student_window.nim),
+                        student_window.date,
+                    ],
+                )
+        else:
+            for col in range(1, 5):
+                self.windows_search_tree.hideColumn(col)
+            self.windows_search_tree.headerItem().setText(0, "")
+
             QTreeWidgetItem(
                 self.windows_search_tree,
-                [
-                    student_window.window_name,
-                    student_window.name,
-                    str(student_window.nim),
-                    student_window.date,
-                ],
+                ['No windows name for "{}" found'.format(search_key)],
             )
         resize_column(self.windows_search_tree)

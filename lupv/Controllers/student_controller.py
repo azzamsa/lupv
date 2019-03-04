@@ -93,7 +93,7 @@ class StudentController(QObject):
             if mode == "show":
                 file_content = student_repo.git.show("{}:{}".format(sha, selected_file))
             else:
-                dirty_diff = student_repo.git.diff("HEAD", sha, selected_file)
+                dirty_diff = student_repo.git.show(sha, selected_file)
                 diff_body = self.take_diff_body(dirty_diff)
                 file_content = self.wrap_with_html(diff_body)
 
@@ -101,7 +101,7 @@ class StudentController(QObject):
 
     def take_diff_body(self, diff):
         lines = diff.splitlines()
-        diff_body = lines[5:]
+        diff_body = lines[11:]
         return "\n".join(diff_body)
 
     def wrap_with_html(self, diff):

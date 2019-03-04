@@ -350,7 +350,7 @@ class MainView(QMainWindow):
 
         selected_file = self.get_selected_file()
         no_file_selected_msg = "No file selected, Please select one"
-        no_file_rec_msg = "No availibale record for {} in this period".format(
+        no_file_rec_msg = "No availibale record for \"{}\" in this period".format(
             selected_file
         )
 
@@ -360,7 +360,7 @@ class MainView(QMainWindow):
             file_content = self._student_ctrl.read_file_content(
                 selected_file, sha, mode
             )
-            if file_content == "":
+            if file_content == "" or file_content is None:
                 self.file_content_widget.setPlainText(no_file_rec_msg)
             else:
                 if mode == "show":

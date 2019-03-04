@@ -325,7 +325,7 @@ class MainView(QMainWindow):
                         "{line}".format(
                             line="No record"
                             if l.del_stats == 0
-                            else "{} Lines".format(l.add_stats)
+                            else "{} Lines".format(l.del_stats)
                         ),
                     ],
                 )
@@ -340,7 +340,6 @@ class MainView(QMainWindow):
 
     def display_file_content(self, sha):
         """Display diff to diff_QPlainTextEdit."""
-        # FIXME unmatched stats count and diff
         self.file_content_widget.clear()
 
         if self.diff_mode_rbtn.isChecked():

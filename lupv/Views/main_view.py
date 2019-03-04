@@ -133,6 +133,7 @@ class MainView(QMainWindow):
             "Search for Suspect.\nThis might take a while"
         )
 
+        self.windows_searchkey_widget.returnPressed.connect(self.display_window_search)
         self.windows_search_btn.clicked.connect(self.display_window_search)
         self.windows_search_btn.setIcon(QIcon(search_icon))
         self.windows_search_btn.setIconSize(QSize(16, 16))

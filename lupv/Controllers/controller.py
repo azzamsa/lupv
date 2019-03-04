@@ -243,12 +243,16 @@ class Controller(QObject):
         return ip_student_students
 
     def idx_of_substring(self, mylist, substring):
+        indexs = []
         for idx, string in enumerate(mylist):
             if substring in string:
-                return idx
-        return -1
+                # return idx
+                indexs.append(idx)
+        # return -1
+        return indexs
 
     def read_windows(self, record_path, search_key):
+        student_window = None
         student_windows = []
         student_dirs = self.get_student_dirs(record_path)
 
@@ -271,6 +275,6 @@ class Controller(QObject):
                     date = "{:%a, %d %b %Y, %H:%M:%S}".format(rec.committed_datetime)
 
                     student_window = StudentWindow(window_name, name, nim, date)
-                student_windows.append(student_window)
+                    student_windows.append(student_window)
 
         return student_windows

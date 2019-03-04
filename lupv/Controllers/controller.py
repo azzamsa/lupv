@@ -243,13 +243,9 @@ class Controller(QObject):
         return ip_student_students
 
     def idx_of_substring(self, mylist, substring):
-        indexs = []
         for idx, string in enumerate(mylist):
             if substring in string:
-                # return idx
-                indexs.append(idx)
-        # return -1
-        return indexs
+                return idx
 
     def read_windows(self, record_path, search_key):
         student_window = None

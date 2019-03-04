@@ -117,7 +117,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -533,110 +533,93 @@
              <attribute name="title">
               <string>Suspects</string>
              </attribute>
-             <layout class="QVBoxLayout" name="verticalLayout_8">
+             <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_7">
+               <layout class="QHBoxLayout" name="horizontalLayout_16">
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <layout class="QHBoxLayout" name="horizontalLayout_4">
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_4">
-                    <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_5">
-                      <item>
-                       <widget class="QLabel" name="label">
-                        <property name="text">
-                         <string>Insetions Limit:</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLabel" name="label_2">
-                        <property name="text">
-                         <string>Filename:</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_6">
-                      <item>
-                       <widget class="QSpinBox" name="insertions_limit_spin"/>
-                      </item>
-                     </layout>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="analyze_suspects_btn">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
+                   <widget class="QLabel" name="label">
                     <property name="text">
-                     <string>Search</string>
+                     <string>Insetions Limit:</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
+                   <widget class="QSpinBox" name="insertions_limit_spin">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
                     </property>
-                    <property name="sizeType">
-                     <enum>QSizePolicy::Preferred</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
+                   </widget>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QTreeWidget" name="suspects_tree">
+                 <layout class="QHBoxLayout" name="horizontalLayout_5">
+                  <item>
+                   <widget class="QLabel" name="label_2">
+                    <property name="text">
+                     <string>Filename:</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="analyze_suspects_btn">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
-                  <attribute name="headerStretchLastSection">
-                   <bool>false</bool>
-                  </attribute>
-                  <column>
-                   <property name="text">
-                    <string>Name</string>
-                   </property>
-                  </column>
-                  <column>
-                   <property name="text">
-                    <string>Nim</string>
-                   </property>
-                  </column>
-                  <column>
-                   <property name="text">
-                    <string>Filename</string>
-                   </property>
-                  </column>
-                  <column>
-                   <property name="text">
-                    <string>Line Insertions</string>
-                   </property>
-                  </column>
-                  <column>
-                   <property name="text">
-                    <string>Date</string>
-                   </property>
-                  </column>
+                  <property name="text">
+                   <string>Search</string>
+                  </property>
                  </widget>
                 </item>
                </layout>
+              </item>
+              <item>
+               <widget class="QTreeWidget" name="suspects_tree">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <attribute name="headerStretchLastSection">
+                 <bool>false</bool>
+                </attribute>
+                <column>
+                 <property name="text">
+                  <string>Name</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Nim</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Filename</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Line Insertions</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Date</string>
+                 </property>
+                </column>
+               </widget>
               </item>
              </layout>
             </widget>

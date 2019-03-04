@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItem,
     QStyle,
     QLabel,
+    QSizePolicy,
 )
 
 from PyQt5.QtCore import QFile, QTextStream, QSize, Qt
@@ -119,12 +120,15 @@ class MainView(QMainWindow):
 
         self.suspect_filename_combo = MyComboBox()
         self.suspect_filename_combo.setEditable(True)
+        self.suspect_filename_combo.setSizePolicy(
+            QSizePolicy.MinimumExpanding, QSizePolicy.Preferred
+        )
         self.suspect_filename_combo.popupAboutToBeShown.connect(self.suggest_filename)
-        self.verticalLayout_6.addWidget(self.suspect_filename_combo)
+        self.horizontalLayout_5.addWidget(self.suspect_filename_combo)
 
         search_icon = "../lupv/Resources/img/account-search-outline.svg"
         self.analyze_suspects_btn.setIcon(QIcon(search_icon))
-        self.analyze_suspects_btn.setIconSize(QSize(24, 24))
+        self.analyze_suspects_btn.setIconSize(QSize(16, 16))
         self.analyze_suspects_btn.setToolTip(
             "Search for Suspect.\nThis might take a while"
         )
@@ -470,7 +474,7 @@ class MainView(QMainWindow):
         suspects = self._controller.get_suspects(
             self._record_path, int(insertions_limit), str(filename)
         )
-        Suspects_parentchild = self._controller.construct_parentchild(suspects)
+        suspects_parentchild = self._controller.construct_parentchild(suspects)
 
         for key in suspects_parentchild.keys():
             parent = QTreeWidgetItem(

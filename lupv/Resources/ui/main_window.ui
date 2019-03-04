@@ -117,7 +117,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -235,16 +235,16 @@
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_3">
                       <item>
-                       <widget class="QRadioButton" name="diff_mode_rbtn">
+                       <widget class="QRadioButton" name="show_mode_rbtn">
                         <property name="text">
-                         <string>&amp;Diff Mode</string>
+                         <string>Show Mode</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="QRadioButton" name="show_mode_rbtn">
+                       <widget class="QRadioButton" name="diff_mode_rbtn">
                         <property name="text">
-                         <string>Show Mode</string>
+                         <string>&amp;Diff Mode</string>
                         </property>
                        </widget>
                       </item>
@@ -294,13 +294,6 @@
                   <item>
                    <layout class="QVBoxLayout" name="verticalLayout_4">
                     <item>
-                     <widget class="QCheckBox" name="stats_check">
-                      <property name="text">
-                       <string>Line Insertion Deletion</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_10">
                       <item>
                        <widget class="QRadioButton" name="log_realdate_rbtn">
@@ -312,11 +305,18 @@
                       <item>
                        <widget class="QRadioButton" name="log_reldate_rbtn">
                         <property name="text">
-                         <string>Relative &amp;Date</string>
+                         <string>Re&amp;lative Date</string>
                         </property>
                        </widget>
                       </item>
                      </layout>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="stats_check">
+                      <property name="text">
+                       <string>Line Insertion and Deletion</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QCheckBox" name="sha_check">
@@ -527,7 +527,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget">
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="suspects_tab">
              <attribute name="title">
@@ -541,7 +541,7 @@
                   <item>
                    <widget class="QLabel" name="label">
                     <property name="text">
-                     <string>Insetions Limit:</string>
+                     <string>Line Insetions Limit:</string>
                     </property>
                    </widget>
                   </item>
@@ -640,7 +640,11 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="windows_searchkey_widget"/>
+                   <widget class="QLineEdit" name="windows_searchkey_widget">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="QPushButton" name="windows_search_btn">

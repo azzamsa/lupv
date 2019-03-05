@@ -3,7 +3,9 @@ import git
 import pendulum
 from os.path import join
 from collections import defaultdict
-
+import editdistance as edlib
+import pathlib
+import yaml
 
 from PyQt5.QtCore import QObject
 
@@ -11,6 +13,7 @@ from Model.records import Records
 from Model.search import Suspects
 from Model.search import IpGroup
 from Model.search import StudentWindow
+from Model.search import StudentEditDistance
 
 
 class Controller(QObject):
@@ -274,3 +277,70 @@ class Controller(QObject):
                     student_windows.append(student_window)
 
         return student_windows
+
+    def read_editdistance(self, record_path, filename):
+        students = []
+        records_count = 0
+        student_dirs = self.get_student_dirs(record_path)
+
+        for student in student_dirs:
+            student_path = join(record_path, student)
+            student_repo = self.get_student_repo(student_path)
+            records = self.get_records(student_path)
+            last_record_sha = records[0].hexsha
+
+            editdistance_ax = []
+            records_ax = []
+            if filename:
+                last_file = student_repo.git.show(
+                    "{}:{}".format(last_record_sha, filename)
+                )
+
+                for record in records:
+                    file_existp = self.is_file_in_commit(
+                        student_repo, filename, record.hexsha
+                    )
+                    if file_existp:
+                        current_file = student_repo.git.show(
+                            "{}:{}".format(record.hexsha, filename)
+                        )
+                        ed = edlib.eval(last_file, current_file)
+                        editdistance_ax.append(ed)
+
+                        records_count += 1
+                        records_ax.append(records_count)
+
+            name = str(student).split("-")[0]
+            nim = str(student).split("-")[1]
+            student_ed = StudentEditDistance(
+                name, nim, editdistance_ax, records_ax, filename
+            )
+            students.append(student_ed)
+
+        return students
+
+    def create_lupvnotes_dir(self, record_path):
+        """Create lupv-notes directory."""
+        pathlib.Path(record_path + "/lupv-notes").mkdir(parents=True, exist_ok=True)
+
+    def get_editdistance_path(self, record_path, task_name):
+        graph_path = join(record_path, "lupv-notes", task_name + "-editdistance.lup")
+        return graph_path
+
+    def export_editdistance(self, students, save_path):
+        students_ed = {}
+        for student in students:
+            student_key = "{}-{}".format(student.name, student.nim)
+            students_ed[student_key] = dict(
+                editdistance_ax=list(student.editdistance_ax),
+                records_a=list(student.records_ax),
+                task_name=student.task_name,
+            )
+
+        with open(save_path, "w") as outfile:
+            yaml.dump(students_ed, outfile)
+
+    def read_editdistance_file(self, filename):
+        with open(filename, "r") as infile:
+            student_ed = yaml.safe_load(infile)
+        return student_ed

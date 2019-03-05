@@ -1,5 +1,8 @@
 from Resources.theme import breeze_resources
 from standard.standard import MyComboBox, bold, resize_column
+import random
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 from PyQt5.QtWidgets import (
     QMainWindow,
@@ -31,6 +34,7 @@ class MainView(QMainWindow):
         self._controller = controller
         self._record_path = ""
         self._records = None
+        self._loaded_student_ed = None
 
         #
         # Sidebar
@@ -149,6 +153,53 @@ class MainView(QMainWindow):
             "Group students by Ip Address.\nThis might take a while"
         )
 
+        self.load_editdistance_action.triggered.connect(self.load_yaml)
+        self.export_editdistance_action.triggered.connect(self.export_editdistance)
+        self.compare_editdistance_btn.clicked.connect(
+            self.display_compared_editdistance
+        )
+
+        # editdistance paged
+        self.prev_student_name_combo = MyComboBox()
+        self.prev_student_name_combo.setEditable(True)
+        self.prev_student_name_combo.setSizePolicy(
+            QSizePolicy.Preferred, QSizePolicy.Preferred
+        )
+        self.prev_student_name_combo.popupAboutToBeShown.connect(
+            self.suggest_prev_editdistance_fields
+        )
+        self.horizontalLayout_18.addWidget(self.prev_student_name_combo)
+
+        self.prev_filename_combo = MyComboBox()
+        self.prev_filename_combo.setEditable(True)
+        self.prev_filename_combo.setSizePolicy(
+            QSizePolicy.Preferred, QSizePolicy.Preferred
+        )
+        self.prev_filename_combo.popupAboutToBeShown.connect(
+            self.suggest_prev_editdistance_fields
+        )
+        self.horizontalLayout_19.addWidget(self.prev_filename_combo)
+
+        self.cur_student_name_combo = MyComboBox()
+        self.cur_student_name_combo.setEditable(True)
+        self.cur_student_name_combo.setSizePolicy(
+            QSizePolicy.Preferred, QSizePolicy.Preferred
+        )
+        self.cur_student_name_combo.popupAboutToBeShown.connect(
+            self.suggest_cur_editdistance_fields
+        )
+        self.horizontalLayout_21.addWidget(self.cur_student_name_combo)
+
+        self.cur_filename_combo = MyComboBox()
+        self.cur_filename_combo.setEditable(True)
+        self.cur_filename_combo.setSizePolicy(
+            QSizePolicy.Preferred, QSizePolicy.Preferred
+        )
+        self.cur_filename_combo.popupAboutToBeShown.connect(
+            self.suggest_cur_editdistance_fields
+        )
+        self.horizontalLayout_20.addWidget(self.cur_filename_combo)
+
         #  spinner
         hour_icon = "../lupv/Resources/img/hourglass.svg"
         hour_pixmap = QPixmap(hour_icon)
@@ -192,6 +243,11 @@ class MainView(QMainWindow):
         """Prompts dialog to choose record directory."""
         options = QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
         return QFileDialog.getExistingDirectory(self, caption=caption, options=options)
+
+    def choosefile_dialog(self, caption):
+        """Prompts dialog to choose record directory."""
+        # options = QFileDialog.ShowF | QFileDialog.DontResolveSymlinks
+        return QFileDialog.getOpenFileName(self, caption=caption)
 
     def is_valid_path(self, path):
         """Check validity of given path."""
@@ -371,7 +427,7 @@ class MainView(QMainWindow):
 
         selected_file = self.get_selected_file()
         no_file_selected_msg = "No file selected, Please select one"
-        no_file_rec_msg = "No availibale record for \"{}\" in this period".format(
+        no_file_rec_msg = 'No availibale record for "{}" in this period'.format(
             selected_file
         )
 
@@ -629,3 +685,100 @@ class MainView(QMainWindow):
             )
         resize_column(self.windows_search_tree)
         self.toggle_spinner("ready")
+
+    def export_editdistance(self):
+        self.toggle_spinner("work")
+        qApp.processEvents()
+
+        self._controller.create_lupvnotes_dir(self._record_path)
+        filename = self._controller.get_editdistance_path(
+            self._record_path, "tugas-pkn"
+        )
+        students_ed = self._controller.read_editdistance(
+            self._record_path, "tugas-pkn.md"
+        )
+        self._controller.export_editdistance(students_ed, filename)
+
+        self.toggle_spinner("ready")
+
+    def get_random_color(self):
+        random_color = (
+            random.uniform(0, 1),
+            random.uniform(0, 1),
+            random.uniform(0, 1),
+        )
+        return random_color
+
+    def load_yaml(self):
+        filename = self.choosefile_dialog("Select File")
+        if not filename[0]:
+            return None
+        self._loaded_student_ed = self._controller.read_editdistance_file(filename[0])
+
+    def suggest_prev_editdistance_fields(self):
+        if self._loaded_student_ed:
+            self.prev_student_name_combo.clear()
+            # suggested_name.insert(0, "No Name Selected")
+            prev_students = list(self._loaded_student_ed.keys())
+            self.prev_student_name_combo.addItems(prev_students)
+            student_sample = list(self._loaded_student_ed.keys())[0]
+            suggested_filename = self._loaded_student_ed[student_sample]["task_name"]
+            self.prev_filename_combo.clear()
+            self.prev_filename_combo.addItem(suggested_filename)
+        else:
+            QMessageBox.warning(self, "", "Please load editdistance file first")
+
+    def suggest_cur_editdistance_fields(self):
+        student_sample = self._controller.get_student_sample(self._record_path)
+        files = self._controller.get_sample_file(student_sample)
+        files.insert(0, "No File Selected")
+        cur_students = self._controller.get_student_dirs(self._record_path)
+        self.cur_student_name_combo.clear()
+        self.cur_student_name_combo.addItems(cur_students)
+        self.cur_filename_combo.clear()
+        self.cur_filename_combo.addItems(files)
+
+    def display_compared_editdistance(self):
+        if not all((
+            self.prev_student_name_combo,
+            self.prev_filename_combo,
+            self.cur_student_name_combo,
+            self.cur_filename_combo)
+        ):
+            QMessageBox.warning(self, "", "Please fill all the fields")
+            return None
+
+        prev_student_name = self.prev_student_name_combo.currentText()
+        prev_filename = self.prev_filename_combo.currentText()
+        cur_student_name = self.cur_student_name_combo.currentText()
+        cur_filename = self.cur_filename_combo.currentText()
+
+        prev_records_ax = self._loaded_student_ed[prev_student_name]["records_a"]
+        prev_editdistance_ax = self._loaded_student_ed[prev_student_name][
+            "editdistance_ax"
+        ]
+        cur_editdistance_ax = self._student_ctrl.calc_editdistance_ax(cur_filename)
+
+        self.figure = plt.figure()
+        self.canvas = FigureCanvas(self.figure)
+        self.widget_2.setVisible(False)
+        self.verticalLayout_22.addWidget(self.canvas)
+
+        ax = self.figure.add_subplot(111)
+        ax.plot(
+            cur_editdistance_ax[1],
+            cur_editdistance_ax[0],
+            label=cur_student_name,
+        )
+        ax.plot(
+            prev_editdistance_ax,
+            prev_records_ax,
+            label=prev_student_name,
+        )
+        ax.legend()
+
+        plt.title("{} .. {}".format(cur_student_name, prev_student_name))
+        plt.xlabel("Records count")
+        plt.ylabel("Edit distance from final sumbission")
+
+        self.canvas.draw()

@@ -11,10 +11,11 @@ from PyQt5.QtWidgets import (
     QStyle,
     QLabel,
     QSizePolicy,
+    qApp,
 )
 
 from PyQt5.QtCore import QFile, QTextStream, QSize, Qt
-from PyQt5.QtGui import QKeySequence, QBrush, QColor, QIcon
+from PyQt5.QtGui import QKeySequence, QBrush, QColor, QIcon, QPixmap
 from PyQt5.uic import loadUi
 
 from standard import icons
@@ -147,19 +148,31 @@ class MainView(QMainWindow):
             "Group students by Ip Address.\nThis might take a while"
         )
 
+        #  spinner
+        hour_icon = "../lupv/Resources/img/hourglass.svg"
+        hour_pixmap = QPixmap(hour_icon)
+        self.spinner_lbl.setPixmap(hour_pixmap)
+
         # default
         self.stackedWidget.setVisible(False)
         self.widget.setVisible(False)
+        self.spinner_stack.setCurrentIndex(0)
         self.welcome_lbl = QLabel()
         self.welcome_lbl.setText("Please open records to start analyzing")
         self.welcome_lbl.setStyleSheet("font-size: 20px;")
         self.welcome_lbl.setAlignment(Qt.AlignCenter)
         self.verticalLayout.addWidget(self.welcome_lbl)
-        self.horizontalLayout.addWidget(self.welcome_lbl)
+        self.horizontalLayout_2.addWidget(self.welcome_lbl)
 
         self.toggle_theme(light)
         self.stackedWidget.setCurrentIndex(0)
         self.show()
+
+    def toggle_spinner(self, toggle):
+        if toggle == "work":
+            self.spinner_stack.setCurrentIndex(1)
+        else:
+            self.spinner_stack.setCurrentIndex(0)
 
     def quit_app(self):
         """Quit application."""
@@ -202,8 +215,12 @@ class MainView(QMainWindow):
             if not self.is_valid_path(path):
                 return None
 
+        self.toggle_spinner("work")
+        qApp.processEvents()
+
         self._record_path = path
         self.display_records()
+        self.toggle_spinner("ready")
 
     def display_records(self):
         """Populate records."""
@@ -303,6 +320,9 @@ class MainView(QMainWindow):
 
     def display_logs(self, complete=False):
         """Display log to log_QTreeWidget."""
+        self.toggle_spinner("work")
+        qApp.processEvents()
+
         self.log_tree.clear()
 
         selected_file = self.get_selected_file()
@@ -337,6 +357,7 @@ class MainView(QMainWindow):
                 )
 
         resize_column(self.log_tree)
+        self.toggle_spinner("ready")
 
     def display_file_content(self, sha):
         """Display diff to diff_QPlainTextEdit."""
@@ -446,13 +467,19 @@ class MainView(QMainWindow):
         """Open EditDistance Window"""
         student_dir = self.get_selected_student()
         selected_file = self.get_selected_file()
+
         if selected_file:
+            self.toggle_spinner("work")
+            qApp.processEvents()
+
             editdistance_ax = self._student_ctrl.calc_editdistance_ax(selected_file)
             if editdistance_ax:
                 self.editdistance_view = EditDistanceView(
                     editdistance_ax, self._student_ctrl, student_dir
                 )
                 self.editdistance_view.show()
+
+                self.toggle_spinner("ready")
         else:
             QMessageBox.warning(self, "", "Please choose a file")
 
@@ -485,6 +512,9 @@ class MainView(QMainWindow):
         if filename == "No File Selected" or not filename:
             QMessageBox.warning(self, "", "please select a file")
             return None
+
+        self.toggle_spinner("work")
+        qApp.processEvents()
 
         suspects = self._controller.get_suspects(
             self._record_path, int(insertions_limit), str(filename)
@@ -519,8 +549,12 @@ class MainView(QMainWindow):
                 ['No suspect found, for "{}" insertion limit'.format(insertions_limit)],
             )
         resize_column(self.suspects_tree)
+        self.toggle_spinner("ready")
 
     def display_gropy_by_ip(self):
+        self.toggle_spinner("work")
+        qApp.processEvents()
+
         self.group_by_ip_tree.clear()
         student_and_ip = self._controller.read_ips(self._record_path)
         ip_student_students = self._controller.group_by_ip(student_and_ip)
@@ -558,8 +592,12 @@ class MainView(QMainWindow):
 
             QTreeWidgetItem(self.group_by_ip_tree, ["No IP address found"])
         resize_column(self.group_by_ip_tree)
+        self.toggle_spinner("ready")
 
     def display_window_search(self):
+        self.toggle_spinner("work")
+        qApp.processEvents()
+
         self.windows_search_tree.clear()
         search_key = self.windows_searchkey_widget.text()
         if not search_key:
@@ -589,3 +627,4 @@ class MainView(QMainWindow):
                 ['No windows name for "{}" found'.format(search_key)],
             )
         resize_column(self.windows_search_tree)
+        self.toggle_spinner("ready")

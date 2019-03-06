@@ -168,7 +168,7 @@
               </column>
               <column>
                <property name="text">
-                <string>Nim</string>
+                <string>Student ID</string>
                </property>
               </column>
               <column>
@@ -178,7 +178,7 @@
               </column>
               <column>
                <property name="text">
-                <string>Work Duration</string>
+                <string>First Record</string>
                </property>
               </column>
               <column>
@@ -193,17 +193,17 @@
               </column>
               <column>
                <property name="text">
+                <string>Last Record</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
                 <string>Work Duration</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>First Record</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Last Record</string>
+                <string>Work Duration</string>
                </property>
               </column>
              </widget>

@@ -1,4 +1,4 @@
-import random
+from os.path import join
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
@@ -15,10 +15,10 @@ from standard import icons
 
 
 class EditDistanceView(QWidget):
-    def __init__(self, editdistance_ax, student_ctrl, student_dir):
+    def __init__(self, editdistance, record_path, student_dir):
         super().__init__()
-        self._editdistance_ax = editdistance_ax
-        self._student_ctrl = student_ctrl
+        self._editdistances_ax, self._records_ax = editdistance
+        self._record_path = record_path
         self._student_dir = student_dir
 
         self.figure = plt.figure()
@@ -26,7 +26,6 @@ class EditDistanceView(QWidget):
 
         close_icon = icons.style(QStyle.SP_DialogCancelButton)
         save_icon = icons.style(QStyle.SP_DialogSaveButton)
-
         self.close_btn = QPushButton("Close")
         self.close_btn.setIcon(close_icon)
         self.close_btn.clicked.connect(self.close)
@@ -47,27 +46,19 @@ class EditDistanceView(QWidget):
 
     def draw_editdistance(self, savep=None):
         self.figure.clear()
-
         ax = self.figure.add_subplot(111)
-        records_ax = self._editdistance_ax[0]
-        editdistance_ax = self._editdistance_ax[1]
-        random_color = (
-            random.uniform(0, 1),
-            random.uniform(0, 1),
-            random.uniform(0, 1),
-        )
-        ax.plot(records_ax, editdistance_ax, color=random_color)
+        ax.plot(self._records_ax, self._editdistances_ax)
 
-        name = self._student_dir.split("-")[0]
-        nim = self._student_dir.split("-")[1]
-        plt.title("{} {}".format(name, nim))
+        name, student_id = [self._student_dir.split("-")[x] for x in [0, 1]]
+        plt.title("{} {}".format(name, student_id))
         plt.xlabel("Records count")
         plt.ylabel("Edit distance from final sumbission")
 
         self.canvas.draw()
 
         if savep:
-            self._student_ctrl.create_lupvnotes_dir()
-            image_path = self._student_ctrl.get_graph_path()
+            image_path = join(
+                self._record_path, "lupv-notes", self._student_dir + ".png"
+            )
             plt.savefig(image_path)
             QMessageBox.information(self, "", "Graph saved to {}".format(image_path))

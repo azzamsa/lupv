@@ -2,38 +2,38 @@ import os
 import git
 import pendulum
 from os.path import join
-from collections import defaultdict
-import editdistance as edlib
 import pathlib
-import yaml
+import editdistance as edlib
+
 
 from PyQt5.QtCore import QObject
 
 from Model.records import Records
-from Model.search import Suspects
-from Model.search import IpGroup
-from Model.search import StudentWindow
-from Model.search import StudentEditDistance
 
 
 class Controller(QObject):
     def __init__(self):
         super().__init__()
+        self._record_path = ""
 
-    def validate_path(self, path):
-        """Validate chosen path.
+    def create_lupvnotes_dir(self, record_path):
+        """Create lupv-notes directory."""
+        pathlib.Path(record_path + "/lupv-notes").mkdir(parents=True, exist_ok=True)
 
-        This is necessary because invalid path will break `read_records` and
+    def is_student_dir(self, path):
+        """Check if path contain valid student directory.
+
+        This is necessary because invalid directory will break `read_records` and
         make application crash.
         """
         dirs = os.listdir(path)
-        invalid_dirs = []
+        invalid_student_dirs = []
         for d in dirs:
             if d != "lupv-notes":
                 if not os.path.isdir(join(path, d, ".git")):
-                    invalid_dirs.append(d)
+                    invalid_student_dirs.append(d)
 
-        return invalid_dirs
+        return invalid_student_dirs
 
     def get_student_dirs(self, record_path):
         "Return list of student directories"
@@ -45,11 +45,11 @@ class Controller(QObject):
                     student_dirs.append(d)
                 else:
                     # TODO use log
-                    print("skipped " + d + ". Task not valid.")
+                    print("skipped " + d + ". Invalid student directory.")
         return student_dirs
 
     def get_files(self, student_path):
-        """Return list of files inside student directory."""
+        """Return files in student directory."""
         dirs = os.listdir(student_path)
         files = []
         for d in dirs:
@@ -57,290 +57,135 @@ class Controller(QObject):
                 files.append(d)
         return files
 
-    def get_student_repo(self, student_path):
-        student_repo = git.Repo(student_path)
-        return student_repo
+    def initialize_repo(self, path):
+        """Initialize student repo."""
+        repo = git.Repo(path)
+        return repo
 
     def get_records(self, student_path):
-        """Return list of records from individual directory."""
-        student_repo = self.get_student_repo(student_path)
+        """Return records from student directory."""
+        student_repo = git.Repo(student_path)
         records = list(student_repo.iter_commits("master"))
         return records
 
-    def calc_work_duration(self, records):
-        """Calculate duration between last and first."""
-        duration = []
+    def relativize_datetime(self, datetime):
+        """Convert datetime into its relative version."""
+        dt = pendulum.instance(datetime)
+        relative_time = dt.diff_for_humans()
+        return relative_time
 
-        # last - first
-        delta = records[0].committed_datetime - records[-1].committed_datetime
-        duration.append(str(delta))
+    def get_first_record_time(self, first_record_dt):
+        """Take the first record time."""
+        first_record_time = "{:%a, %d %b %Y, %H:%M:%S}".format(first_record_dt)
+        first_record_relativetime = self.relativize_datetime(first_record_dt)
+        return first_record_time, first_record_relativetime
 
-        dt_last = pendulum.instance(records[0].committed_datetime)
-        dt_first = pendulum.instance(records[-1].committed_datetime)
-        dt_delta = dt_last - dt_first
-        duration.append(dt_delta.in_words(locale="en"))
+    def get_last_record_time(self, last_record_dt):
+        """Take the last record time."""
+        last_record_time = "{:%a, %d %b %Y, %H:%M:%S}".format(last_record_dt)
+        last_record_relativetime = self.relativize_datetime(last_record_dt)
+        return last_record_time, last_record_relativetime
 
-        return duration
-
-    def count_records(self, records):
-        """Count the total amount of records."""
-        return len(records)
-
-    def get_last_rec_time(self, records):
-        """Take the last record."""
-        last_rec_time = []
-
-        last_rec_dt = records[0].committed_datetime
-        last_rec_time.append("{:%a, %d %b %Y, %H:%M:%S}".format(last_rec_dt))
-
-        dt = pendulum.instance(last_rec_dt)
-        last_rec_time.append(dt.diff_for_humans())
-
-        return last_rec_time
-
-    def get_first_rec_time(self, records):
-        """Take the first record."""
-        first_rec_time = []
-
-        first_rec_dt = records[-1].committed_datetime
-        first_rec_time.append("{:%a, %d %b %Y, %H:%M:%S}".format(first_rec_dt))
-
-        dt = pendulum.instance(first_rec_dt)
-        first_rec_time.append(dt.diff_for_humans())
-
-        return first_rec_time
-
-    def get_first_rec_sha(self, records):
-        """Take the first SHA record."""
-        return records[-1].hexsha
+    def calc_work_duration(self, first_record_dt, last_record_dt):
+        """Calculate duration between last and first record time."""
+        work_duration = str(last_record_dt - first_record_dt)
+        last_dt, first_dt = [
+            pendulum.instance(x) for x in [last_record_dt, first_record_dt]
+        ]
+        work_relative_duration = (last_dt - first_dt).in_words(locale="en")
+        return work_duration, work_relative_duration
 
     def read_records(self, record_path):
-        """Read records from individual dirs then return them as
-        `Records` object."""
+        """Read records from student directories."""
         student_dirs = self.get_student_dirs(record_path)
-        student_records = []
+        self._record_path = record_path
 
         for student in student_dirs:
             student_path = join(record_path, student)
             records = self.get_records(student_path)
+            first_record_dt, last_record_dt = [
+                records[x].committed_datetime for x in [-1, 0]
+            ]
+            name, student_id = [str(student).split("-")[x] for x in [0, 1]]
 
-            name = str(student).split("-")[0]
-            nim = str(student).split("-")[1]
-            total_records = self.count_records(records)
-            work_duration = self.calc_work_duration(records)
-            first_record = self.get_first_rec_time(records)
-            last_record = self.get_last_rec_time(records)
+            total_records = len(records)
+            first_record_time, first_record_relativetime = self.get_first_record_time(
+                first_record_dt
+            )
+            last_record_time, last_record_relativetime = self.get_last_record_time(
+                last_record_dt
+            )
+            work_duration, work_relative_duration = self.calc_work_duration(
+                first_record_dt, last_record_dt
+            )
 
             record = Records(
                 name,
-                nim,
+                student_id,
                 total_records,
-                work_duration[0],
-                first_record[0],
-                last_record[0],
-                work_duration[1],
-                first_record[1],
-                last_record[1],
+                first_record_time,
+                first_record_relativetime,
+                last_record_time,
+                last_record_relativetime,
+                work_duration,
+                work_relative_duration,
             )
-            student_records.append(record)
+            yield record
 
-        return student_records
-
-    def humanize_dateime(self, datetime):
-        """Convert date time to relative version."""
-        dt = pendulum.instance(datetime)
-        human_time = dt.diff_for_humans()
-        return human_time
-
-    def is_file_in_commit(self, student_repo, filename, sha):
+    def is_exists(self, filename, sha, student_repo=None):
         """Check if filename in current record exist."""
         files = student_repo.git.show("--pretty=" "", "--name-only", sha)
         if filename in files:
             return True
-        else:
-            return False
 
-    def get_suspects(self, record_path, insertions_limit, filename):
-        suspects = []
-        student_dirs = self.get_student_dirs(record_path)
+    def read_auth_info(self, sha, student_repo):
+        """Read auth_info from watchers."""
+        auth_path = join(".watchers", "auth_info")
+        auth_file = student_repo.git.show("{}:{}".format(sha, auth_path))
+        auth_info = auth_file.splitlines()
+        return auth_info
 
-        for student in student_dirs:
-            student_path = join(record_path, student)
-            student_repo = self.get_student_repo(student_path)
-            records = self.get_records(student_path)
+    def read_all_windows(self, sha, student_repo):
+        """Read all windows from watchers."""
+        all_win_path = join(".watchers", "all_windows")
+        diff = student_repo.git.show("{}:{}".format(sha, all_win_path))
+        windows = diff.splitlines()
+        return windows
 
-            for rec in records:
-                file_existp = self.is_file_in_commit(student_repo, filename, rec.hexsha)
-                if file_existp:
-                    insertions = rec.stats.files[filename]["insertions"]
-                    if insertions > insertions_limit:
-                        name = str(student).split("-")[0]
-                        nim = str(student).split("-")[1]
-                        date = "{:%a, %d %b %Y, %H:%M:%S}".format(
-                            rec.committed_datetime
-                        )
-                        suspect = Suspects(name, nim, filename, insertions, date)
-                        suspects.append(suspect)
+    def show_file(self, selected_file, sha, student_repo):
+        """Get content of current file state."""
+        current_file = student_repo.git.show("{}:{}".format(sha, selected_file))
+        return current_file
 
-        return suspects
-
-    #
-    # Search
-    #
-
-    def get_student_sample(self, record_path):
-        students = self.get_student_dirs(record_path)
-        student_sample_path = join(record_path, students[0])
-        return student_sample_path
-
-    def get_sample_file(self, student_sample_path):
-        files = self.get_files(student_sample_path)
-        return files
-
-    def construct_parentchild(self, suspects):
-        suspect_parentchild = defaultdict(list)
-        # construct keys
-        for suspect in suspects:
-            key = "{}-{}".format(suspect.name, suspect.nim)
-            suspect_parentchild[key].append(suspect)
-        return suspect_parentchild
-
-    def read_ips(self, record_path):
-        student_and_ip = []
-        student_dirs = self.get_student_dirs(record_path)
-
-        for student in student_dirs:
-            student_path = join(record_path, student)
-            student_repo = self.get_student_repo(student_path)
-            records = self.get_records(student_path)
-
-            for rec in records:
-                auth_path = join(".watchers", "auth_info")
-                auth_file = student_repo.git.show("{}:{}".format(rec.hexsha, auth_path))
-                ip = auth_file.splitlines()[2]
-
-                name = str(student).split("-")[0]
-                nim = str(student).split("-")[1]
-                date = "{:%a, %d %b %Y, %H:%M:%S}".format(rec.committed_datetime)
-                ip_group = IpGroup(ip, name, nim, date)
-                student_and_ip.append(ip_group)
-
-        return student_and_ip
-
-    def group_by_ip(self, student_and_ip):
-        # construct ip : students
-        student_group = defaultdict(list)
-        for student in student_and_ip:
-            ip = "{}".format(student.ip)
-            student_group[ip].append(student)
-
-        ip_student_students = {}
-        # construct ip : student : students
-        for key in student_group.keys():
-            models = student_group[key]
-            student_students = defaultdict(list)
-            for model in models:
-                student_key = "{}-{}".format(model.name, model.nim)
-                student_students[student_key].append(model)
-            ip_student_students[key] = student_students
-        return ip_student_students
-
-    def idx_of_substring(self, mylist, substring):
-        for idx, string in enumerate(mylist):
-            if substring in string:
-                return idx
-
-    def read_windows(self, record_path, search_key):
-        student_window = None
-        student_windows = []
-        student_dirs = self.get_student_dirs(record_path)
-
-        for student in student_dirs:
-            student_path = join(record_path, student)
-            student_repo = self.get_student_repo(student_path)
-            records = self.get_records(student_path)
-
-            for rec in records:
-                all_win_path = join(".watchers", "all_windows")
-                diff = student_repo.git.show("{}:{}".format(rec.hexsha, all_win_path))
-                windows = diff.splitlines()
-                windows_lower = [item.lower() for item in windows]
-
-                found = self.idx_of_substring(windows_lower, search_key)
-                if found:
-                    window_name = windows[found]
-                    name = str(student).split("-")[0]
-                    nim = str(student).split("-")[1]
-                    date = "{:%a, %d %b %Y, %H:%M:%S}".format(rec.committed_datetime)
-
-                    student_window = StudentWindow(window_name, name, nim, date)
-                    student_windows.append(student_window)
-
-        return student_windows
-
-    def read_editdistance(self, record_path, filename):
-        students = []
+    def calc_editdistances(self, selected_file, records, student_repo):
+        """Calculate editdistance and record axis."""
         records_count = 0
-        student_dirs = self.get_student_dirs(record_path)
+        records_ax = []
+        editdistances_ax = []
 
-        for student in student_dirs:
-            student_path = join(record_path, student)
-            student_repo = self.get_student_repo(student_path)
-            records = self.get_records(student_path)
-            last_record_sha = records[0].hexsha
+        # records = self.get_student_records()
+        last_record_sha = records[0].hexsha
+        last_file = self.show_file(selected_file, last_record_sha, student_repo)
 
-            editdistance_ax = []
-            records_ax = []
-            if filename:
-                last_file = student_repo.git.show(
-                    "{}:{}".format(last_record_sha, filename)
+        for record in records:
+            if self.is_exists(selected_file, record.hexsha, student_repo):
+                current_file = self.show_file(
+                    selected_file, record.hexsha, student_repo
                 )
+                editdistance_value = edlib.eval(last_file, current_file)
+                editdistances_ax.append(editdistance_value)
 
-                for record in records:
-                    file_existp = self.is_file_in_commit(
-                        student_repo, filename, record.hexsha
-                    )
-                    if file_existp:
-                        current_file = student_repo.git.show(
-                            "{}:{}".format(record.hexsha, filename)
-                        )
-                        ed = edlib.eval(last_file, current_file)
-                        editdistance_ax.append(ed)
+                records_count += 1
+                records_ax.append(records_count)
 
-                        records_count += 1
-                        records_ax.append(records_count)
+        return editdistances_ax, records_ax
 
-            name = str(student).split("-")[0]
-            nim = str(student).split("-")[1]
-            student_ed = StudentEditDistance(
-                name, nim, editdistance_ax, records_ax, filename
-            )
-            students.append(student_ed)
-
-        return students
-
-    def create_lupvnotes_dir(self, record_path):
-        """Create lupv-notes directory."""
-        pathlib.Path(record_path + "/lupv-notes").mkdir(parents=True, exist_ok=True)
-
-    def get_editdistance_path(self, record_path, task_name):
-        graph_path = join(record_path, "lupv-notes", task_name + "-editdistance.lup")
-        return graph_path
-
-    def export_editdistance(self, students, save_path):
-        students_ed = {}
-        for student in students:
-            student_key = "{}-{}".format(student.name, student.nim)
-            students_ed[student_key] = dict(
-                editdistance_ax=list(student.editdistance_ax),
-                records_a=list(student.records_ax),
-                task_name=student.task_name,
-            )
-
-        with open(save_path, "w") as outfile:
-            yaml.dump(students_ed, outfile)
-
-    def read_editdistance_file(self, filename):
-        with open(filename, "r") as infile:
-            student_ed = yaml.safe_load(infile)
-        return student_ed
+    # ini di search contrioller seharusnya
+    def get_editdistance_values(self, selected_file, student):
+        student_path = join(self._record_path, student)
+        records = self.get_records(student_path)
+        student_repo = self.initialize_repo(student_path)
+        editdistances_ax, records_ax = self.calc_editdistances(
+            selected_file, records, student_repo
+        )
+        return editdistances_ax, records_ax

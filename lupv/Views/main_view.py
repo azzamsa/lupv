@@ -1,6 +1,5 @@
 from Resources.theme import breeze_resources
-from standard.standard import MyComboBox, bold, resize_column
-import random
+from standard.standard import MyComboBox, bold, resize_column, peek
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
@@ -23,6 +22,7 @@ from PyQt5.uic import loadUi
 
 from standard import icons
 from Controllers.student_controller import StudentController
+from Controllers.search_controller import SearchController
 from Views.editdistance_view import EditDistanceView
 
 
@@ -33,7 +33,6 @@ class MainView(QMainWindow):
         loadUi(main_window, self)
         self._controller = controller
         self._record_path = ""
-        self._records = None
         self._loaded_student_ed = None
 
         #
@@ -114,7 +113,9 @@ class MainView(QMainWindow):
             lambda: self.log_appearance_changed("dateformat")
         )
 
+        self.diff_mode_rbtn.clicked.connect(self.log_selection_changed)
         self.diff_mode_rbtn.setToolTip("Use diff mode for file contents")
+        self.show_mode_rbtn.clicked.connect(self.log_selection_changed)
         self.show_mode_rbtn.setToolTip("Use show mode for file contents")
         self.filename_combo.setToolTip("Filename to track")
 
@@ -128,7 +129,9 @@ class MainView(QMainWindow):
         self.suspect_filename_combo.setSizePolicy(
             QSizePolicy.MinimumExpanding, QSizePolicy.Preferred
         )
-        self.suspect_filename_combo.popupAboutToBeShown.connect(self.suggest_filename)
+        self.suspect_filename_combo.popupAboutToBeShown.connect(
+            self.suggest_suspect_filename
+        )
         self.horizontalLayout_5.addWidget(self.suspect_filename_combo)
 
         search_icon = "../lupv/Resources/img/account-search-outline.svg"
@@ -138,22 +141,22 @@ class MainView(QMainWindow):
             "Search for Suspect.\nThis might take a while"
         )
 
-        self.windows_searchkey_widget.returnPressed.connect(self.display_window_search)
-        self.windows_search_btn.clicked.connect(self.display_window_search)
+        self.windows_searchkey_widget.returnPressed.connect(self.display_windows_search)
+        self.windows_search_btn.clicked.connect(self.display_windows_search)
         self.windows_search_btn.setIcon(QIcon(search_icon))
         self.windows_search_btn.setIconSize(QSize(16, 16))
         self.windows_search_btn.setToolTip(
             "Search window by name.\nThis might take a while"
         )
 
-        self.group_by_ip_btn.clicked.connect(self.display_gropy_by_ip)
+        self.group_by_ip_btn.clicked.connect(self.display_ip_groups)
         self.group_by_ip_btn.setIcon(QIcon(search_icon))
         self.group_by_ip_btn.setIconSize(QSize(16, 16))
         self.group_by_ip_btn.setToolTip(
             "Group students by Ip Address.\nThis might take a while"
         )
 
-        self.load_editdistance_action.triggered.connect(self.load_yaml)
+        self.load_editdistance_action.triggered.connect(self.load_editdistance_file)
         self.export_editdistance_action.triggered.connect(self.export_editdistance)
         self.compare_editdistance_btn.clicked.connect(
             self.display_compared_editdistance
@@ -209,6 +212,8 @@ class MainView(QMainWindow):
         self.stackedWidget.setVisible(False)
         self.widget.setVisible(False)
         self.spinner_stack.setCurrentIndex(0)
+        self.load_editdistance_action.setEnabled(False)
+        self.export_editdistance_action.setEnabled(True)
         self.welcome_lbl = QLabel()
         self.welcome_lbl.setText("Please open records to start analyzing")
         self.welcome_lbl.setStyleSheet("font-size: 20px;")
@@ -249,9 +254,9 @@ class MainView(QMainWindow):
         # options = QFileDialog.ShowF | QFileDialog.DontResolveSymlinks
         return QFileDialog.getOpenFileName(self, caption=caption)
 
-    def is_valid_path(self, path):
-        """Check validity of given path."""
-        invalid_dirs = self._controller.validate_path(path)
+    def is_record(self, path):
+        """Check if path is record path."""
+        invalid_dirs = self._controller.is_student_dir(path)
 
         msg = "Not a valid Tasks directory\n"
         details = "\nContains invalid Task:\n{}".format("\n".join(invalid_dirs))
@@ -269,7 +274,7 @@ class MainView(QMainWindow):
         if not path:
             return None
         else:
-            if not self.is_valid_path(path):
+            if not self.is_record(path):
                 return None
 
         self.toggle_spinner("work")
@@ -277,15 +282,16 @@ class MainView(QMainWindow):
 
         self._record_path = path
         self.display_records()
+        self._search_ctrl = SearchController(self._record_path, self._controller)
         self.toggle_spinner("ready")
 
     def display_records(self):
         """Populate records."""
-        records = self._controller.read_records(self._record_path)
-
         self.main_table.setRowCount(0)
 
-        for row_num, record in enumerate(records):
+        for row_num, record in enumerate(
+            self._controller.read_records(self._record_path)
+        ):
             self.main_table.insertRow(row_num)
             for col_num, record_item in enumerate(record.__dict__.items()):
                 tbl_item = QTableWidgetItem(str(record_item[1]))
@@ -300,22 +306,27 @@ class MainView(QMainWindow):
         self.main_reldate_rbtn.setChecked(True)
         self.main_realdate_rbtn.setChecked(False)
 
-        self.welcome_lbl.setVisible(False)
-        self.stackedWidget.setVisible(True)
-        self.widget.setVisible(True)
+        self.toggle_main_widgets()
         self.toogle_sidebar()
 
     def change_table_appearance(self, btn_name):
         if btn_name == "real":
-            for col in range(3, 6):
+            for col in [3, 5, 7]:
                 self.main_table.setColumnHidden(col, False)
-            for col in range(6, 9):
+            for col in [4, 6, 8]:
                 self.main_table.setColumnHidden(col, True)
         else:
-            for col in range(3, 6):
+            for col in [3, 5, 7]:
                 self.main_table.setColumnHidden(col, True)
-            for col in range(6, 9):
+            for col in [4, 6, 8]:
                 self.main_table.setColumnHidden(col, False)
+
+    def toggle_main_widgets(self):
+        self.welcome_lbl.setVisible(False)
+        self.stackedWidget.setVisible(True)
+        self.widget.setVisible(True)
+        self.load_editdistance_action.setEnabled(True)
+        self.export_editdistance_action.setEnabled(True)
 
     def toogle_sidebar(self):
         page2_icon = "../lupv/Resources/img/history.svg"
@@ -331,8 +342,8 @@ class MainView(QMainWindow):
     def get_selected_student(self):
         """Return selected student from main table"""
         name = self.main_table.item(self.main_table.currentRow(), 0).text()
-        nim = self.main_table.item(self.main_table.currentRow(), 1).text()
-        student_dir = name + "-" + nim
+        student_id = self.main_table.item(self.main_table.currentRow(), 1).text()
+        student_dir = "{}-{}".format(name, student_id)
         return student_dir
 
     #
@@ -383,11 +394,10 @@ class MainView(QMainWindow):
         self.log_tree.clear()
 
         selected_file = self.get_selected_file()
-        logs = self._student_ctrl.read_logs(selected_file)
 
         if complete:  # can't show stats without selected_file
             self.log_tree.clear()
-            for l in logs:
+            for l in self._student_ctrl.read_logs(selected_file):
                 QTreeWidgetItem(
                     self.log_tree,
                     [
@@ -407,7 +417,7 @@ class MainView(QMainWindow):
                     ],
                 )
         else:
-            for l in logs:
+            for l in self._student_ctrl.read_logs(selected_file):
                 QTreeWidgetItem(
                     self.log_tree,
                     [str(l.relative_datetime), str(l.datetime), str(l.sha)],
@@ -467,14 +477,14 @@ class MainView(QMainWindow):
         focused_row = QTreeWidgetItem(self.windows_tree, [focused_window])
 
         focused_row.setForeground(0, QBrush(QColor("#41CD52")))
-        windows = self._student_ctrl.read_all_windows(sha)
+        windows = self._student_ctrl.get_all_windows(sha)
         for window in windows:
             if window != focused_window:
                 QTreeWidgetItem(self.windows_tree, [window])
 
     def display_auth_info(self, sha):
         """Display auth information from self.records."""
-        auth_info = self._student_ctrl.read_auth_info(sha)
+        auth_info = self._student_ctrl.get_auth_info(sha)
         if auth_info:
             self.name_lbl.setText(auth_info[0])
             self.machine_lbl.setText(auth_info[1])
@@ -489,32 +499,46 @@ class MainView(QMainWindow):
             self.display_auth_info(sha)
 
     def log_appearance_changed(self, btn_name):
+        """Actions when appearance setting changed."""
         if btn_name == "stats":
-            if self.stats_check.isChecked():
-                selected_file = self.get_selected_file()
-                if selected_file:
-                    self.display_logs(True)
-                    self.log_tree.showColumn(3)
-                    self.log_tree.showColumn(4)
-                else:
-                    QMessageBox.warning(self, "", "please choose a file")
-                    self.stats_check.setChecked(False)
-            else:
-                self.log_tree.hideColumn(3)
-                self.log_tree.hideColumn(4)
+            self.toggle_stats()
         elif btn_name == "sha":
-            if self.sha_check.isChecked():
-                self.log_tree.showColumn(2)
-            else:
-                self.log_tree.hideColumn(2)
-        elif btn_name == "dateformat":
-            if self.log_realdate_rbtn.isChecked():
-                self.log_tree.hideColumn(0)
-                self.log_tree.showColumn(1)
-            else:
-                self.log_tree.hideColumn(1)
-                self.log_tree.showColumn(0)
+            self.toggle_sha()
+        else:
+            self.toggle_dateformat()
         resize_column(self.log_tree)
+
+    def toggle_stats(self):
+        """Togggle insertions deletions columns visibility."""
+        if self.stats_check.isChecked():
+            selected_file = self.get_selected_file()
+            if not selected_file:
+                QMessageBox.warning(self, "", "please choose a file")
+                self.stats_check.setChecked(False)
+                return None
+
+            self.display_logs(True)
+            for col_num in [3, 4]:
+                self.log_tree.showColumn(col_num)
+        else:
+            for col_num in [3, 4]:
+                self.log_tree.hideColumn(3)
+
+    def toggle_sha(self):
+        """Togggle SHA columns visibility."""
+        if self.sha_check.isChecked():
+            self.log_tree.showColumn(2)
+        else:
+            self.log_tree.hideColumn(2)
+
+    def toggle_dateformat(self):
+        """Togggle dateformat columns visibility."""
+        if self.log_realdate_rbtn.isChecked():
+            self.log_tree.showColumn(1)
+            self.log_tree.hideColumn(0)
+        else:
+            self.log_tree.showColumn(0)
+            self.log_tree.hideColumn(1)
 
     #
     # EditDistance View
@@ -525,31 +549,33 @@ class MainView(QMainWindow):
         student_dir = self.get_selected_student()
         selected_file = self.get_selected_file()
 
-        if selected_file:
-            self.toggle_spinner("work")
-            qApp.processEvents()
-
-            editdistance_ax = self._student_ctrl.calc_editdistance_ax(selected_file)
-            if editdistance_ax:
-                self.editdistance_view = EditDistanceView(
-                    editdistance_ax, self._student_ctrl, student_dir
-                )
-                self.editdistance_view.show()
-
-                self.toggle_spinner("ready")
-        else:
+        if not selected_file:
             QMessageBox.warning(self, "", "Please choose a file")
+            return None
+
+        self.toggle_spinner("work")
+        qApp.processEvents()
+
+        editdistances_ax, records_ax = self._student_ctrl.get_editdistance_values(
+            selected_file
+        )
+        if all((editdistances_ax, records_ax)):
+            self.editdistance_view = EditDistanceView(
+                (editdistances_ax, records_ax), self._record_path, student_dir
+            )
+            self.editdistance_view.show()
+
+            self.toggle_spinner("ready")
 
     #
     # Search View
     #
 
-    def suggest_filename(self):
-        self.suspect_filename_combo.clear()
-
-        student_sample = self._controller.get_student_sample(self._record_path)
-        files = self._controller.get_sample_file(student_sample)
+    def suggest_suspect_filename(self):
+        "Suggest filename to display suspect fieleds."
+        files = self._search_ctrl.get_sample_files()
         files.insert(0, "No File Selected")
+        self.suspect_filename_combo.clear()
         self.suspect_filename_combo.addItems(files)
 
     def display_suspects(self):
@@ -557,14 +583,9 @@ class MainView(QMainWindow):
         insertions_limit = str(self.insertions_limit_spin.value())
         filename = self.suspect_filename_combo.currentText()
 
+        msg = "please set limit higer than {}\nAbove 10 is recommended"
         if int(insertions_limit) == 0:
-            QMessageBox.warning(
-                self,
-                "",
-                "please set limit higer than {}\nAbove 10 is recommended".format(
-                    insertions_limit
-                ),
-            )
+            QMessageBox.warning(self, "", msg.format(insertions_limit))
             return None
         if filename == "No File Selected" or not filename:
             QMessageBox.warning(self, "", "please select a file")
@@ -573,24 +594,23 @@ class MainView(QMainWindow):
         self.toggle_spinner("work")
         qApp.processEvents()
 
-        suspects = self._controller.get_suspects(
-            self._record_path, int(insertions_limit), str(filename)
+        suspects_2level = self._search_ctrl.get_suspects(
+            int(insertions_limit), str(filename)
         )
-        suspects_parentchild = self._controller.construct_parentchild(suspects)
 
-        if len(suspects_parentchild.keys()) > 0:
-            for key in suspects_parentchild.keys():
+        if len(suspects_2level.keys()) > 0:
+            for key in suspects_2level.keys():
                 parent = QTreeWidgetItem(
                     self.suspects_tree,
-                    ["{} [{}]".format(key, len(suspects_parentchild[key]))],
+                    ["{} [{}]".format(key, len(suspects_2level[key]))],
                 )
                 bold(parent)
-                for suspect in suspects_parentchild[key]:
+                for suspect in suspects_2level[key]:
                     QTreeWidgetItem(
                         parent,
                         [
                             suspect.name,
-                            str(suspect.nim),
+                            str(suspect.student_id),
                             suspect.filename,
                             str(suspect.insertions),
                             str(suspect.date),
@@ -601,44 +621,36 @@ class MainView(QMainWindow):
                 self.suspects_tree.hideColumn(col)
             self.suspects_tree.headerItem().setText(0, "")
 
-            QTreeWidgetItem(
-                self.suspects_tree,
-                ['No suspect found, for "{}" insertion limit'.format(insertions_limit)],
-            )
+            msg = 'No suspect found, for "{}" insertion limit'
+            QTreeWidgetItem(self.suspects_tree, [msg.format(insertions_limit)])
         resize_column(self.suspects_tree)
         self.toggle_spinner("ready")
 
-    def display_gropy_by_ip(self):
+    def display_ip_groups(self):
         self.toggle_spinner("work")
         qApp.processEvents()
 
         self.group_by_ip_tree.clear()
-        student_and_ip = self._controller.read_ips(self._record_path)
-        ip_student_students = self._controller.group_by_ip(student_and_ip)
+        ip_groups = self._search_ctrl.read_ips()
 
-        if len(ip_student_students.keys()) > 0:
-            for key in ip_student_students.keys():
+        if len(ip_groups.keys()) > 0:
+            for key in ip_groups.keys():
                 parent = QTreeWidgetItem(
-                    self.group_by_ip_tree,
-                    ["{} [{}]".format(key, len(ip_student_students[key]))],
+                    self.group_by_ip_tree, ["{} [{}]".format(key, len(ip_groups[key]))]
                 )
                 bold(parent)
-                for student in ip_student_students[key].keys():
+                for student in ip_groups[key].keys():
                     child = QTreeWidgetItem(
                         parent,
-                        [
-                            "{} [{}]".format(
-                                student, len(ip_student_students[key][student])
-                            )
-                        ],
+                        ["{} [{}]".format(student, len(ip_groups[key][student]))],
                     )
-                    for students in ip_student_students[key][student]:
+                    for students in ip_groups[key][student]:
                         QTreeWidgetItem(
                             child,
                             [
                                 str(students.ip),
                                 students.name,
-                                str(students.nim),
+                                str(students.student_id),
                                 students.date,
                             ],
                         )
@@ -651,7 +663,7 @@ class MainView(QMainWindow):
         resize_column(self.group_by_ip_tree)
         self.toggle_spinner("ready")
 
-    def display_window_search(self):
+    def display_windows_search(self):
         self.toggle_spinner("work")
         qApp.processEvents()
 
@@ -661,17 +673,19 @@ class MainView(QMainWindow):
             QMessageBox.warning(self, "", "please supply the window name")
             return None  # magic line `break` alias.
 
-        student_windows = self._controller.read_windows(self._record_path, search_key)
+        student_windows = peek(self._search_ctrl.read_windows(search_key))
 
+        print(student_windows)
         if student_windows:
-            for student_window in student_windows:
+            first, windows = student_windows
+            for window in windows:
                 QTreeWidgetItem(
                     self.windows_search_tree,
                     [
-                        student_window.window_name,
-                        student_window.name,
-                        str(student_window.nim),
-                        student_window.date,
+                        window.window_name,
+                        window.student_name,
+                        str(window.student_id),
+                        window.date,
                     ],
                 )
         else:
@@ -687,40 +701,29 @@ class MainView(QMainWindow):
         self.toggle_spinner("ready")
 
     def export_editdistance(self):
+        # TODO add dyanamic task_name
         self.toggle_spinner("work")
         qApp.processEvents()
 
         self._controller.create_lupvnotes_dir(self._record_path)
-        filename = self._controller.get_editdistance_path(
-            self._record_path, "tugas-pkn"
-        )
-        students_ed = self._controller.read_editdistance(
-            self._record_path, "tugas-pkn.md"
-        )
-        self._controller.export_editdistance(students_ed, filename)
+        students_ed = self._search_ctrl.read_all_editdistance("tugas-pkn.md")
+        filename = self._search_ctrl.construct_editdistance_path("tugas-pkn")
+        self._search_ctrl.export_editdistance(students_ed, filename)
 
         self.toggle_spinner("ready")
 
-    def get_random_color(self):
-        random_color = (
-            random.uniform(0, 1),
-            random.uniform(0, 1),
-            random.uniform(0, 1),
-        )
-        return random_color
-
-    def load_yaml(self):
+    def load_editdistance_file(self):
         filename = self.choosefile_dialog("Select File")
         if not filename[0]:
             return None
-        self._loaded_student_ed = self._controller.read_editdistance_file(filename[0])
+        self._loaded_student_ed = self._search_ctrl.read_editdistance_file(filename[0])
 
     def suggest_prev_editdistance_fields(self):
         if self._loaded_student_ed:
-            self.prev_student_name_combo.clear()
-            # suggested_name.insert(0, "No Name Selected")
             prev_students = list(self._loaded_student_ed.keys())
+            self.prev_student_name_combo.clear()
             self.prev_student_name_combo.addItems(prev_students)
+
             student_sample = list(self._loaded_student_ed.keys())[0]
             suggested_filename = self._loaded_student_ed[student_sample]["task_name"]
             self.prev_filename_combo.clear()
@@ -729,9 +732,7 @@ class MainView(QMainWindow):
             QMessageBox.warning(self, "", "Please load editdistance file first")
 
     def suggest_cur_editdistance_fields(self):
-        student_sample = self._controller.get_student_sample(self._record_path)
-        files = self._controller.get_sample_file(student_sample)
-        files.insert(0, "No File Selected")
+        files = self._search_ctrl.get_sample_files()
         cur_students = self._controller.get_student_dirs(self._record_path)
         self.cur_student_name_combo.clear()
         self.cur_student_name_combo.addItems(cur_students)
@@ -739,42 +740,38 @@ class MainView(QMainWindow):
         self.cur_filename_combo.addItems(files)
 
     def display_compared_editdistance(self):
-        if not all((
-            self.prev_student_name_combo,
-            self.prev_filename_combo,
-            self.cur_student_name_combo,
-            self.cur_filename_combo)
+        if not all(
+            (
+                self.prev_student_name_combo,
+                self.prev_filename_combo,
+                self.cur_student_name_combo,
+                self.cur_filename_combo,
+            )
         ):
             QMessageBox.warning(self, "", "Please fill all the fields")
             return None
 
         prev_student_name = self.prev_student_name_combo.currentText()
-        prev_filename = self.prev_filename_combo.currentText()
+        prev_records_ax = self._loaded_student_ed[prev_student_name]["records_ax"]
+        prev_editdistances_ax = self._loaded_student_ed[prev_student_name][
+            "editdistances_ax"
+        ]
+
         cur_student_name = self.cur_student_name_combo.currentText()
         cur_filename = self.cur_filename_combo.currentText()
-
-        prev_records_ax = self._loaded_student_ed[prev_student_name]["records_a"]
-        prev_editdistance_ax = self._loaded_student_ed[prev_student_name][
-            "editdistance_ax"
-        ]
-        cur_editdistance_ax = self._student_ctrl.calc_editdistance_ax(cur_filename)
+        cur_editdistances_ax, cur_records_ax = self._controller.get_editdistance_values(
+            cur_filename, cur_student_name
+        )
 
         self.figure = plt.figure()
         self.canvas = FigureCanvas(self.figure)
         self.widget_2.setVisible(False)
         self.verticalLayout_22.addWidget(self.canvas)
 
+        self.figure.clear()
         ax = self.figure.add_subplot(111)
-        ax.plot(
-            cur_editdistance_ax[1],
-            cur_editdistance_ax[0],
-            label=cur_student_name,
-        )
-        ax.plot(
-            prev_editdistance_ax,
-            prev_records_ax,
-            label=prev_student_name,
-        )
+        ax.plot(cur_records_ax, cur_editdistances_ax, label=cur_student_name)
+        ax.plot(prev_records_ax, prev_editdistances_ax, label=prev_student_name)
         ax.legend()
 
         plt.title("{} .. {}".format(cur_student_name, prev_student_name))

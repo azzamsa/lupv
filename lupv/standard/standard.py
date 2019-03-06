@@ -1,3 +1,4 @@
+import itertools
 from collections import OrderedDict
 
 from PyQt5.QtCore import pyqtSignal
@@ -27,3 +28,11 @@ def bold(item):
 
 def resize_column(widget):
     widget.header().setSectionResizeMode(QHeaderView.ResizeToContents)
+
+
+def peek(self, iterable):
+    try:
+        first = next(iterable)
+    except StopIteration:
+        return None
+    return first, itertools.chain([first], iterable)

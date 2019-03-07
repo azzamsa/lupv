@@ -31,7 +31,7 @@ class EditDistanceView(QWidget):
         self.close_btn.clicked.connect(self.close)
         self.save_btn = QPushButton("Save Graph")
         self.save_btn.setIcon(save_icon)
-        self.save_btn.clicked.connect(lambda: self.draw_editdistance(True))
+        self.save_btn.clicked.connect(lambda: self.draw_editdistance(savep=True))
 
         btn_layout = QHBoxLayout()
         btn_layout.addWidget(self.save_btn)

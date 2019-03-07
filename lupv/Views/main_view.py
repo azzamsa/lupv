@@ -206,6 +206,10 @@ class MainView(QMainWindow):
         )
         self.horizontalLayout_20.addWidget(self.cur_filename_combo)
 
+        self.figure = plt.figure()
+        self.canvas = FigureCanvas(self.figure)
+        self.verticalLayout_22.addWidget(self.canvas)
+
         #  spinner
         hour_icon = "../lupv/Resources/img/hourglass.svg"
         hour_pixmap = QPixmap(hour_icon)
@@ -217,6 +221,7 @@ class MainView(QMainWindow):
         self.spinner_stack.setCurrentIndex(0)
         self.load_editdistance_action.setEnabled(False)
         self.export_editdistance_action.setEnabled(False)
+        self.widget_2.setVisible(False)
         self.welcome_lbl = QLabel()
         self.welcome_lbl.setText("Please open records to start analyzing")
         self.welcome_lbl.setStyleSheet("font-size: 20px;")
@@ -780,11 +785,6 @@ class MainView(QMainWindow):
         cur_editdistances_ax, cur_records_ax = self._controller.get_editdistance_values(
             cur_filename, cur_student_name
         )
-
-        self.figure = plt.figure()
-        self.canvas = FigureCanvas(self.figure)
-        self.widget_2.setVisible(False)
-        self.verticalLayout_22.addWidget(self.canvas)
 
         self.figure.clear()
         ax = self.figure.add_subplot(111)

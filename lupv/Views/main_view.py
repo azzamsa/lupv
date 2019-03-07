@@ -24,6 +24,7 @@ from standard import icons
 from Controllers.student_controller import StudentController
 from Controllers.search_controller import SearchController
 from Views.editdistance_view import EditDistanceView
+from Views.ed_prompt_view import EditdistancePrompt
 
 
 class MainView(QMainWindow):
@@ -157,7 +158,9 @@ class MainView(QMainWindow):
         )
 
         self.load_editdistance_action.triggered.connect(self.load_editdistance_file)
-        self.export_editdistance_action.triggered.connect(self.export_editdistance)
+        self.export_editdistance_action.triggered.connect(
+            self.prompt_editdistance_dialog
+        )
         self.compare_editdistance_btn.clicked.connect(
             self.display_compared_editdistance
         )
@@ -213,7 +216,7 @@ class MainView(QMainWindow):
         self.widget.setVisible(False)
         self.spinner_stack.setCurrentIndex(0)
         self.load_editdistance_action.setEnabled(False)
-        self.export_editdistance_action.setEnabled(True)
+        self.export_editdistance_action.setEnabled(False)
         self.welcome_lbl = QLabel()
         self.welcome_lbl.setText("Please open records to start analyzing")
         self.welcome_lbl.setStyleSheet("font-size: 20px;")
@@ -700,14 +703,29 @@ class MainView(QMainWindow):
         resize_column(self.windows_search_tree)
         self.toggle_spinner("ready")
 
-    def export_editdistance(self):
-        # TODO add dyanamic task_name
+    def prompt_editdistance_dialog(self):
+        """Prompt dialog for suspect parameter."""
+        editdistance_prompt = EditdistancePrompt()
+        files = self._search_ctrl.get_sample_files()
+        editdistance_prompt.editdistance_filename_combo.clear()
+        editdistance_prompt.editdistance_filename_combo.addItems(files)
+
+        accepted = editdistance_prompt.exec_()
+        if accepted:
+            filename = editdistance_prompt.editdistance_filename_combo.currentText()
+            if filename:
+                self.export_editdistance(filename)
+            else:
+                QMessageBox.warning(self, "", "Please Choose filename")
+                self.prompt_editdistance_dialog()
+
+    def export_editdistance(self, filename):
         self.toggle_spinner("work")
         qApp.processEvents()
 
         self._controller.create_lupvnotes_dir(self._record_path)
-        students_ed = self._search_ctrl.read_all_editdistance("tugas-pkn.md")
-        filename = self._search_ctrl.construct_editdistance_path("tugas-pkn")
+        students_ed = self._search_ctrl.read_all_editdistance(filename)
+        filename = self._search_ctrl.construct_editdistance_path(filename)
         self._search_ctrl.export_editdistance(students_ed, filename)
 
         self.toggle_spinner("ready")

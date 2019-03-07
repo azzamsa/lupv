@@ -43,9 +43,6 @@ class Controller(QObject):
             if d != "lupv-notes":
                 if os.path.isdir(join(record_path, d, ".git")):
                     student_dirs.append(d)
-                else:
-                    # TODO use log
-                    print("skipped " + d + ". Invalid student directory.")
         return student_dirs
 
     def get_files(self, student_path):

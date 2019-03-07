@@ -164,6 +164,9 @@ class MainView(QMainWindow):
         self.compare_editdistance_btn.clicked.connect(
             self.display_compared_editdistance
         )
+        self.compared_ed_savegraph_btn.clicked.connect(
+            lambda: self.display_compared_editdistance(savep=True)
+        )
 
         # editdistance paged
         self.prev_student_name_combo = MyComboBox()
@@ -221,7 +224,8 @@ class MainView(QMainWindow):
         self.spinner_stack.setCurrentIndex(0)
         self.load_editdistance_action.setEnabled(False)
         self.export_editdistance_action.setEnabled(False)
-        self.widget_2.setVisible(False)
+        # self.widget_2.setVisible(False)
+        self.tabWidget.tabBar().setExpanding(True)
         self.welcome_lbl = QLabel()
         self.welcome_lbl.setText("Please open records to start analyzing")
         self.welcome_lbl.setStyleSheet("font-size: 20px;")
@@ -730,8 +734,8 @@ class MainView(QMainWindow):
 
         self._controller.create_lupvnotes_dir(self._record_path)
         students_ed = self._search_ctrl.read_all_editdistance(filename)
-        filename = self._search_ctrl.construct_editdistance_path(filename)
-        self._search_ctrl.export_editdistance(students_ed, filename)
+        ed_filename = self._search_ctrl.construct_editdistance_path(filename)
+        self._search_ctrl.export_editdistance(students_ed, ed_filename)
 
         self.toggle_spinner("ready")
 
@@ -762,7 +766,7 @@ class MainView(QMainWindow):
         self.cur_filename_combo.clear()
         self.cur_filename_combo.addItems(files)
 
-    def display_compared_editdistance(self):
+    def display_compared_editdistance(self, savep=None):
         if not all(
             (
                 self.prev_student_name_combo,
@@ -797,3 +801,10 @@ class MainView(QMainWindow):
         plt.ylabel("Edit distance from final sumbission")
 
         self.canvas.draw()
+
+        if savep:
+            image_path = self._search_ctrl.construct_ed_graph_path(
+                cur_student_name, prev_student_name
+            )
+            plt.savefig(image_path)
+            QMessageBox.information(self, "", "Graph saved to {}".format(image_path))

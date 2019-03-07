@@ -141,8 +141,16 @@ class SearchController(QObject):
             yield student_ed
 
     def construct_editdistance_path(self, task_name):
-        graph_path = join(
+        editdistance_file_path = join(
             self._record_path, "lupv-notes", task_name + "-editdistance.lup"
+        )
+        return editdistance_file_path
+
+    def construct_ed_graph_path(self, cur_student_name, prev_student_name):
+        graph_path = join(
+            self._record_path,
+            "lupv-notes",
+            "{}_{}.png".format(cur_student_name, prev_student_name),
         )
         return graph_path
 

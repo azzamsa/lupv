@@ -528,8 +528,23 @@
            <layout class="QVBoxLayout" name="verticalLayout_13">
             <item>
              <widget class="QTabWidget" name="tabWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="tabPosition">
+               <enum>QTabWidget::North</enum>
+              </property>
               <property name="currentIndex">
                <number>0</number>
+              </property>
+              <property name="elideMode">
+               <enum>Qt::ElideNone</enum>
+              </property>
+              <property name="movable">
+               <bool>false</bool>
               </property>
               <widget class="QWidget" name="suspects_tab">
                <attribute name="title">
@@ -778,7 +793,7 @@
                            </sizepolicy>
                           </property>
                           <property name="text">
-                           <string>TextLabel</string>
+                           <string>Filename</string>
                           </property>
                          </widget>
                         </item>
@@ -816,7 +831,7 @@
                            </sizepolicy>
                           </property>
                           <property name="text">
-                           <string>Student 2:</string>
+                           <string>Filename:</string>
                           </property>
                          </widget>
                         </item>
@@ -846,20 +861,10 @@
                   <property name="sizeConstraint">
                    <enum>QLayout::SetDefaultConstraint</enum>
                   </property>
-                  <item>
-                   <widget class="QWidget" name="widget_2" native="true">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                   </widget>
-                  </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton">
+                 <widget class="QPushButton" name="compared_ed_savegraph_btn">
                   <property name="text">
                    <string>Save Graph</string>
                   </property>

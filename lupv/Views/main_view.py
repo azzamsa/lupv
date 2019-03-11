@@ -687,7 +687,6 @@ class MainView(QMainWindow):
 
         student_windows = peek(self._search_ctrl.read_windows(search_key))
 
-        print(student_windows)
         if student_windows:
             first, windows = student_windows
             for window in windows:

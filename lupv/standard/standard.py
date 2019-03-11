@@ -30,7 +30,7 @@ def resize_column(widget):
     widget.header().setSectionResizeMode(QHeaderView.ResizeToContents)
 
 
-def peek(self, iterable):
+def peek(iterable):
     try:
         first = next(iterable)
     except StopIteration:

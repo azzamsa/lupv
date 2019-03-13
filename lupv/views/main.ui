@@ -515,13 +515,6 @@
               </widget>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QPushButton" name="show_editdistance_action">
-              <property name="text">
-               <string>Show Editdistance</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="page_4">

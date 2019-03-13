@@ -4,6 +4,7 @@ from collections import OrderedDict
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QComboBox, QHeaderView
 from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QApplication
 
 
 class MyDict(OrderedDict):
@@ -36,3 +37,8 @@ def peek(iterable):
     except StopIteration:
         return None
     return first, itertools.chain([first], iterable)
+
+
+def icon_style(icon_name):
+    style = QApplication.instance().style()
+    return style.standardIcon(icon_name)

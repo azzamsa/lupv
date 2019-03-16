@@ -117,6 +117,7 @@ class MainView(QMainWindow):
         self._ui.stackedWidget.setCurrentIndex(0)
 
     def toggle_spinner(self, toggle):
+        """Show spinner icon while app working."""
         if toggle == "work":
             self._ui.spinner_stack.setCurrentIndex(1)
         else:
@@ -194,6 +195,7 @@ class MainView(QMainWindow):
         self.toogle_sidebar()
 
     def change_table_appearance(self, btn_name):
+        """Toggle columns visibility."""
         rel_col_hidden = True
         real_col_hidden = False
         rel_col_nums = [4, 6, 8]
@@ -208,6 +210,7 @@ class MainView(QMainWindow):
             self._ui.main_table.setColumnHidden(rel_col, rel_col_hidden)
 
     def toggle_main_widgets(self):
+        """Toggle main widget visibility."""
         self.welcome_lbl.setVisible(False)
         self._ui.stackedWidget.setVisible(True)
         self._ui.widget.setVisible(True)
@@ -215,6 +218,7 @@ class MainView(QMainWindow):
         self._ui.export_editdistance_action.setEnabled(True)
 
     def toogle_sidebar(self):
+        """Toggle sidebar icon and visibility."""
         self._ui.page2_btn.setIcon(QIcon(":img/history.svg"))
         self._ui.page2_btn.setIconSize(QSize(64, 64))
         self._ui.page2_btn.setEnabled(True)
@@ -243,4 +247,5 @@ class MainView(QMainWindow):
         self._log_view = LogView(self._ui, self._log_ctrl, self._main_ctrl)
 
     def show_search_view(self):
+        """Show search view page."""
         self._ui.stackedWidget.setCurrentIndex(2)

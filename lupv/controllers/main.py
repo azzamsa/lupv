@@ -65,6 +65,7 @@ class MainController(QObject):
         return work_duration, work_relative_duration
 
     def populate_students_records(self):
+        """Return list of student records."""
         students_records = self._main_model.students_records
 
         for student in students_records:

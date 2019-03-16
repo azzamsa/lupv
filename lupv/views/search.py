@@ -118,6 +118,7 @@ class SearchView:
         self._ui.verticalLayout_22.addWidget(self.canvas)
 
     def toggle_spinner(self, toggle):
+        """Show spinner icon while app working."""
         if toggle == "work":
             self._ui.spinner_stack.setCurrentIndex(1)
         else:
@@ -131,6 +132,7 @@ class SearchView:
         self.suspect_filename_combo.addItems(files)
 
     def display_suspects(self):
+        """Display suspected students."""
         self._ui.suspects_tree.clear()
         insertions_limit = str(self._ui.insertions_limit_spin.value())
         filename = self.suspect_filename_combo.currentText()
@@ -146,6 +148,7 @@ class SearchView:
         self.toggle_spinner("work")
         qApp.processEvents()
 
+        # FIXME
         suspects_2level = self._search_ctrl.get_suspects(
             int(insertions_limit), str(filename)
         )
@@ -179,6 +182,7 @@ class SearchView:
         self.toggle_spinner("ready")
 
     def display_ip_groups(self):
+        """Display grouped students ip address."""
         self.toggle_spinner("work")
         qApp.processEvents()
 
@@ -217,6 +221,7 @@ class SearchView:
         self.toggle_spinner("ready")
 
     def display_windows_search(self):
+        """Display student's opened windows name."""
         self.toggle_spinner("work")
         qApp.processEvents()
 
@@ -226,7 +231,7 @@ class SearchView:
             QMessageBox.warning(self, "", "please supply the window name")
             return None  # magic line `break` alias.
 
-        student_windows = peek(self._search_ctrl.read_windows(search_key))
+        student_windows = peek(self._search_ctrl.get_student_windows(search_key))
 
         if student_windows:
             first, windows = student_windows
@@ -255,12 +260,14 @@ class SearchView:
     #
 
     def display_cur_students_name_ed(self):
+        """Display current student name in editdistance page."""
         students = self._search_ctrl.populate_student_dirs()
         self.cur_student_name_combo.clear()
         students.insert(0, "No Student Selected")
         self.cur_student_name_combo.addItems(students)
 
     def display_cur_student_file_ed(self):
+        """Display current student filename in editdistance page."""
         filenames = self._search_ctrl.populate_sample_filenames()
         self.cur_filename_combo.clear()
         filenames.insert(0, "No File Selected")
@@ -271,12 +278,14 @@ class SearchView:
         return QFileDialog.getOpenFileName(None, caption=caption)
 
     def load_editdistance_file(self):
+        """Load exported editdistance file."""
         filename = self.choosefile_dialog("Select File")
         if not filename[0]:
             return None
         self._search_ctrl.load_prev_editdistances(filename[0])
 
     def display_prev_students_name_ed(self):
+        """Display previous student name in editdistance page."""
         try:
             prev_students = self._search_ctrl.get_prev_students()
         except Exception:
@@ -288,6 +297,7 @@ class SearchView:
         self.prev_student_name_combo.addItems(prev_students)
 
     def display_prev_student_file_ed(self):
+        """Display previous student filename in editdistance page."""
         try:
             sample_filename = self._search_ctrl.get_prev_filename_sample()
         except Exception:
@@ -298,12 +308,14 @@ class SearchView:
         self.prev_filename_combo.addItem(sample_filename)
 
     def calc_prev_editdistances(self, student_name):
+        """Calculate previous editdistances values."""
         prev_editdistances = self._search_model.prev_editdistances
         prev_records_ax = prev_editdistances[student_name]["records_ax"]
         prev_editdistances_ax = prev_editdistances[student_name]["editdistances_ax"]
         return prev_records_ax, prev_editdistances_ax
 
     def export_editdistance(self, filename):
+        """Export current editdistances value to file."""
         self.toggle_spinner("work")
         qApp.processEvents()
 
@@ -331,12 +343,14 @@ class SearchView:
                 self.prompt_editdistance_dialog()
 
     def is_pair_filled(self, field1, field2):
+        """Check if both fields filled."""
         if (field1 != "" and field1 != "No Student Selected") and (
             field2 != "" and field2 != "No File Selected"
         ):
             return True
 
     def display_compared_editdistance(self, savep=None):
+        """Display editdistance graph."""
         cur_student_name = self.cur_student_name_combo.currentText()
         cur_filename = self.cur_filename_combo.currentText()
         prev_student_name = self.prev_student_name_combo.currentText()

@@ -16,9 +16,11 @@ class LogController(QObject):
         self._log_model.current_student = current_student
 
     def change_record_path(self, record_path):
+        """Change record path value."""
         self._log_model.record_path = record_path
 
     def populate_logs(self, selected_file=None):
+        """Return student's log."""
         student_records = self._log_model.student_records
 
         for record in student_records:
@@ -40,23 +42,28 @@ class LogController(QObject):
             yield log
 
     def populate_files(self):
+        """Return list of files."""
         files = self._log_model.read_files()
         return files
 
     def populate_auth_info(self, sha):
+        """Return student's auth information."""
         auth_info = self._log_model.read_auth_info(sha)
         return auth_info
 
     def populate_all_windows(self, sha):
+        """Return all student's window name."""
         all_windows = self._log_model.read_all_windows(sha)
         return all_windows
 
     def populate_focused_window(self, sha):
+        """Return focused window name."""
         focused = self._log_model.read_focused_window(sha)
         return focused
 
     def take_diff_body(self, diff):
         """Remove header from diff."""
+        # FIXME use regex
         lines = diff.splitlines()
         diff_body = lines[11:]
         return "\n".join(diff_body)
@@ -113,6 +120,7 @@ class LogController(QObject):
         return editdistances_ax, records_ax
 
     def get_editdistance_values(self, filename):
+        """Return value of editdistance axis and record axis."""
         records = self.get_student_records()
         editdistances_ax, records_ax = self._main_ctrl.calc_editdistances(
             filename, records, self.get_student_repo()

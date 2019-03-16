@@ -20,7 +20,6 @@ class SearchModel(QObject):
     def prev_editdistances(self, prev_editdistances):
         """Set the value of current student."""
         self._prev_editdistances = prev_editdistances
-        # self.prev_editdistances_changed.emit(prev_editdistances)
 
     def read_sample_files(self):
         """Return files in student directory."""
@@ -36,11 +35,13 @@ class SearchModel(QObject):
         return files
 
     def read_editdistances(self, filename):
+        """Read exported editdistance file."""
         with open(filename, "r") as infile:
             editdistances = yaml.safe_load(infile)
         return editdistances
 
     def write_editdistances(self, students_ed, save_path):
+        """Write exported value to file."""
         with open(save_path, "w") as outfile:
             yaml.dump(students_ed, outfile)
 

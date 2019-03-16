@@ -51,6 +51,7 @@ class LogView:
         self._ui.stackedWidget.setCurrentIndex(1)
 
     def toggle_spinner(self, toggle):
+        """Show spinner icon while app working."""
         if toggle == "work":
             self._ui.spinner_stack.setCurrentIndex(1)
         else:

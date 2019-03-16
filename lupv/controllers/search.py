@@ -20,6 +20,7 @@ class SearchController(QObject):
         self._log_model = log_model
 
     def get_student_info(self, student_dir, datetime=None):
+        """Extract student data from student directory name and format datetime."""
         date = None
         name, student_id = [str(student_dir).split("-")[x] for x in [0, 1]]
         if datetime:
@@ -27,12 +28,14 @@ class SearchController(QObject):
         return name, student_id, date
 
     def populate_sample_filenames(self):
+        """Return filenames sample."""
         # must take random student.
         # so that it can be use even before user visiting log view
         files = self._search_model.read_sample_files()
         return files
 
     def records_iterator(self):
+        """Generator to iterate trough student records."""
         student_dirs = self._main_model.get_student_dirs()
         record_path = self._main_model.record_path
 
@@ -45,6 +48,7 @@ class SearchController(QObject):
                 yield student, record
 
     def analyze_suspects(self, insertions_limit, filename):
+        """Return students with exceeded the insertions limit."""
         suspects = []
 
         for student, record in self.records_iterator():
@@ -62,6 +66,7 @@ class SearchController(QObject):
         return suspects
 
     def group_by_name(self, students):
+        """Group students by name."""
         group = defaultdict(list)
         for student in students:
             key = "{}-{}".format(student.name, student.student_id)
@@ -69,12 +74,13 @@ class SearchController(QObject):
         return group
 
     def get_suspects(self, insertions_limit, filename):
+        """Return suspected students."""
         suspects = self.analyze_suspects(insertions_limit, filename)
         grouped_suspects = self.group_by_name(suspects)
         return grouped_suspects
 
-    # def read_ips(self):
     def get_student_ips(self):
+        """Return student ips."""
         students_ip = []
 
         for student, record in self.records_iterator():
@@ -87,12 +93,10 @@ class SearchController(QObject):
             student_ip = StudentIp(ip, name, student_id, date)
             students_ip.append(student_ip)
 
-        # ip_groups_3level = self.group_by_ip(ip_group_2level)
-        # return ip_groups_3level
         return students_ip
 
-    # def group_by_ip(self, ip_group_2level):
     def group_by_ip(self, students):
+        """Group students by ip."""
         group = defaultdict(list)
         for student in students:
             key = "{}".format(student.ip)
@@ -144,17 +148,20 @@ class SearchController(QObject):
         return group
 
     def get_student_ip_groups(self):
+        """Return multi groped students ips."""
         students_ip = self.get_student_ips()
         grouped_by_ip = self.group_by_ip(students_ip)
         multi_group = self.multigroup_child(grouped_by_ip)
         return multi_group
 
     def idx_of_substring(self, mylist, substring):
+        """Return index of substring in mylist."""
         for idx, string in enumerate(mylist):
             if substring in string:
                 return idx
 
-    def read_windows(self, search_key):
+    def get_student_windows(self, search_key):
+        """Return windows name opened by students."""
         student_window = None
 
         for student, record in self.records_iterator():
@@ -177,31 +184,37 @@ class SearchController(QObject):
     # Editdistance tab
     #
     def populate_student_dirs(self):
+        """Return student directories."""
         student_dirs = self._main_model.get_student_dirs()
         return student_dirs
 
     def load_prev_editdistances(self, filename):
+        """Load exported editdistances file."""
         editdistances = self._search_model.read_editdistances(filename)
         self._search_model.prev_editdistances = editdistances
 
     def get_prev_students(self):
+        """Return loaded students name."""
         prev_editdistances = self._search_model.prev_editdistances
         prev_students = list(prev_editdistances.keys())
         return prev_students
 
     def get_prev_filename_sample(self):
+        """Return loaded filename sample."""
         student_sample = self.get_prev_students()
         prev_editdistances = self._search_model.prev_editdistances
         sample_filename = prev_editdistances[student_sample[0]]["task_name"]
         return sample_filename
 
     def calc_prev_editdistances(self, student_name):
+        """Return loaded editdistances value."""
         editdistances = self._search_model.prev_editdistances
         prev_records_ax = editdistances[student_name]["records_ax"]
         prev_editdistances_ax = editdistances[student_name]["editdistances_ax"]
         return prev_records_ax, prev_editdistances_ax
 
     def _get_student_records(self, student):
+        """Return records of student."""
         record_path = self._main_model.record_path
         student_path = join(record_path, student)
         records = self._main_model.get_records(student_path)
@@ -235,6 +248,7 @@ class SearchController(QObject):
         pathlib.Path(notes_path).mkdir(parents=True, exist_ok=True)
 
     def construct_ed_graph_path(self, cur_student_name, prev_student_name):
+        """Return path for saving editdistance graph file."""
         record_path = self._main_model.record_path
         graph_path = join(
             record_path,
@@ -244,6 +258,7 @@ class SearchController(QObject):
         return graph_path
 
     def calc_all_editdistance(self, filename):
+        """Calculate all students's editdistances."""
         for student, _ in self.records_iterator():
             editdistances_ax, records_ax = self.calc_editdistances(student, filename)
 
@@ -254,6 +269,7 @@ class SearchController(QObject):
             yield student_ed
 
     def construct_editdistance_path(self, task_name):
+        """Return path for saving editdistance file."""
         record_path = self._main_model.record_path
         editdistance_file_path = join(
             record_path, "lupv-notes", "{}-editdistance.lup".format(task_name)
@@ -261,6 +277,7 @@ class SearchController(QObject):
         return editdistance_file_path
 
     def export_editdistance(self, students, save_path):
+        """Export editdistances to file."""
         students_ed = {}
         for student in students:
             student_key = "{}-{}".format(student.name, student.student_id)

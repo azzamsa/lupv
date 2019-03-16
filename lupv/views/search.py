@@ -227,15 +227,14 @@ class SearchView:
 
     def display_student_windows(self):
         """Display student's opened windows name."""
-        self.toggle_spinner("work")
-        qApp.processEvents()
-
         self._ui.windows_search_tree.clear()
         search_key = self._ui.windows_searchkey_widget.text()
         if not search_key:
             QMessageBox.warning(None, "", "please supply the window name")
             return None  # magic line `break` alias.
 
+        self.toggle_spinner("work")
+        qApp.processEvents()
         student_windows = self._search_ctrl.get_student_windows(search_key)
 
         if student_windows:

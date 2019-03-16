@@ -139,10 +139,10 @@ class SearchView:
 
         msg = "please set limit higer than {}\nAbove 10 is recommended"
         if int(insertions_limit) == 0:
-            QMessageBox.warning(self, "", msg.format(insertions_limit))
+            QMessageBox.warning(None, "", msg.format(insertions_limit))
             return None
         if filename == "No File Selected" or not filename:
-            QMessageBox.warning(self, "", "please select a file")
+            QMessageBox.warning(None, "", "please select a file")
             return None
 
         self.toggle_spinner("work")
@@ -233,7 +233,7 @@ class SearchView:
         self._ui.windows_search_tree.clear()
         search_key = self._ui.windows_searchkey_widget.text()
         if not search_key:
-            QMessageBox.warning(self, "", "please supply the window name")
+            QMessageBox.warning(None, "", "please supply the window name")
             return None  # magic line `break` alias.
 
         student_windows = self._search_ctrl.get_student_windows(search_key)
@@ -335,8 +335,10 @@ class SearchView:
 
         self._search_ctrl.create_lupvnotes_dir()
         students_ed = self._search_ctrl.calc_all_editdistance(filename)
-        ed_filename = self._search_ctrl.construct_editdistance_path(filename)
-        self._search_ctrl.export_editdistance(students_ed, ed_filename)
+        ed_path = self._search_ctrl.construct_editdistance_path(filename)
+        self._search_ctrl.export_editdistance(students_ed, ed_path)
+        msg = "Editdistance exported to {}"
+        QMessageBox.information(None, "", msg.format(ed_path))
 
         self.toggle_spinner("ready")
 
@@ -353,7 +355,7 @@ class SearchView:
             if filename:
                 self.export_editdistance(filename)
             else:
-                QMessageBox.warning(self, "", "Please Choose filename")
+                QMessageBox.warning(None, "", "Please Choose filename")
                 self.prompt_editdistance_dialog()
 
     def is_pair_filled(self, field1, field2):

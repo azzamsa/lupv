@@ -66,10 +66,10 @@ class StudentIp(QObject):
 
 
 class StudentWindow(QObject):
-    def __init__(self, window_name, student_name, student_id, date):
+    def __init__(self, window_name, name, student_id, date):
         super().__init__()
         self.window_name = window_name
-        self.student_name = student_name
+        self.name = name
         self.student_id = student_id
         self.date = date
 

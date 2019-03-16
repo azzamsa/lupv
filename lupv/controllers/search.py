@@ -69,8 +69,8 @@ class SearchController(QObject):
         """Group students by name."""
         group = defaultdict(list)
         for student in students:
-            key = "{}-{}".format(student.name, student.student_id)
-            group[key].append(student)
+            student_nameid_key = "{}-{}".format(student.name, student.student_id)
+            group[student_nameid_key].append(student)
         return group
 
     def get_suspects(self, insertions_limit, filename):
@@ -99,8 +99,8 @@ class SearchController(QObject):
         """Group students by ip."""
         group = defaultdict(list)
         for student in students:
-            key = "{}".format(student.ip)
-            group[key].append(student)
+            ip_key = "{}".format(student.ip)
+            group[ip_key].append(student)
         return group
 
     def multigroup_child(self, grouped_students):
@@ -160,9 +160,10 @@ class SearchController(QObject):
             if substring in string:
                 return idx
 
-    def get_student_windows(self, search_key):
+    def get_student_windows2(self, search_key):
         """Return windows name opened by students."""
         student_window = None
+        student_windows = []
 
         for student, record in self.records_iterator():
             windows = self._log_model.read_all_windows(record.hexsha)
@@ -178,7 +179,15 @@ class SearchController(QObject):
                 student_window = StudentWindow(
                     window_name, student_name, student_id, date
                 )
-                yield student_window
+                # yield student_window
+                student_windows.append(student_window)
+
+        return student_windows
+
+    def get_student_windows(self, search_key):
+        ala = self.get_student_windows2(search_key)
+        ali = self.group_by_name(ala)
+        return ali
 
     #
     # Editdistance tab

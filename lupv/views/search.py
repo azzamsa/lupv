@@ -44,16 +44,16 @@ class SearchView:
         )
 
         self._ui.windows_searchkey_widget.returnPressed.connect(
-            self.display_windows_search
+            self.display_student_windows
         )
-        self._ui.windows_search_btn.clicked.connect(self.display_windows_search)
+        self._ui.windows_search_btn.clicked.connect(self.display_student_windows)
         self._ui.windows_search_btn.setIcon(QIcon(":img/account-search.svg"))
         self._ui.windows_search_btn.setIconSize(QSize(16, 16))
         self._ui.windows_search_btn.setToolTip(
             "Search window by name.\nThis might take a while"
         )
 
-        self._ui.group_by_ip_btn.clicked.connect(self.display_ip_groups)
+        self._ui.group_by_ip_btn.clicked.connect(self.display_student_ips)
         self._ui.group_by_ip_btn.setIcon(QIcon(":img/account-search.svg"))
         self._ui.group_by_ip_btn.setIconSize(QSize(16, 16))
         self._ui.group_by_ip_btn.setToolTip(
@@ -148,19 +148,20 @@ class SearchView:
         self.toggle_spinner("work")
         qApp.processEvents()
 
-        # FIXME
-        suspects_2level = self._search_ctrl.get_suspects(
-            int(insertions_limit), str(filename)
-        )
+        suspects = self._search_ctrl.get_suspects(int(insertions_limit), str(filename))
 
-        if len(suspects_2level.keys()) > 0:
-            for key in suspects_2level.keys():
+        if len(suspects.keys()) > 0:
+            for student_name_key in suspects.keys():
                 parent = QTreeWidgetItem(
                     self._ui.suspects_tree,
-                    ["{} [{}]".format(key, len(suspects_2level[key]))],
+                    [
+                        "{} [{}]".format(
+                            student_name_key, len(suspects[student_name_key])
+                        )
+                    ],
                 )
                 bold(parent)
-                for suspect in suspects_2level[key]:
+                for suspect in suspects[student_name_key]:
                     QTreeWidgetItem(
                         parent,
                         [
@@ -181,7 +182,7 @@ class SearchView:
         resize_column(self._ui.suspects_tree)
         self.toggle_spinner("ready")
 
-    def display_ip_groups(self):
+    def display_student_ips(self):
         """Display grouped students ip address."""
         self.toggle_spinner("work")
         qApp.processEvents()
@@ -190,25 +191,29 @@ class SearchView:
         ip_groups = self._search_ctrl.get_student_ip_groups()
 
         if len(ip_groups.keys()) > 0:
-            for key in ip_groups.keys():
+            for ip_key in ip_groups.keys():
                 parent = QTreeWidgetItem(
                     self._ui.group_by_ip_tree,
-                    ["{} [{}]".format(key, len(ip_groups[key]))],
+                    ["{} [{}]".format(ip_key, len(ip_groups[ip_key]))],
                 )
                 bold(parent)
-                for student in ip_groups[key].keys():
+                for student_key in ip_groups[ip_key].keys():
                     child = QTreeWidgetItem(
                         parent,
-                        ["{} [{}]".format(student, len(ip_groups[key][student]))],
+                        [
+                            "{} [{}]".format(
+                                student_key, len(ip_groups[ip_key][student_key])
+                            )
+                        ],
                     )
-                    for students in ip_groups[key][student]:
+                    for student in ip_groups[ip_key][student_key]:
                         QTreeWidgetItem(
                             child,
                             [
-                                str(students.ip),
-                                students.name,
-                                str(students.student_id),
-                                students.date,
+                                str(student.ip),
+                                student.name,
+                                str(student.student_id),
+                                student.date,
                             ],
                         )
         else:
@@ -220,7 +225,7 @@ class SearchView:
         resize_column(self._ui.group_by_ip_tree)
         self.toggle_spinner("ready")
 
-    def display_windows_search(self):
+    def display_student_windows(self):
         """Display student's opened windows name."""
         self.toggle_spinner("work")
         qApp.processEvents()
@@ -231,20 +236,29 @@ class SearchView:
             QMessageBox.warning(self, "", "please supply the window name")
             return None  # magic line `break` alias.
 
-        student_windows = peek(self._search_ctrl.get_student_windows(search_key))
+        student_windows = self._search_ctrl.get_student_windows(search_key)
 
         if student_windows:
-            first, windows = student_windows
-            for window in windows:
-                QTreeWidgetItem(
+            for student_name_key in student_windows.keys():
+                parent = QTreeWidgetItem(
                     self._ui.windows_search_tree,
                     [
-                        window.window_name,
-                        window.student_name,
-                        str(window.student_id),
-                        window.date,
+                        "{} [{}]".format(
+                            student_name_key, len(student_windows[student_name_key])
+                        )
                     ],
                 )
+                bold(parent)
+                for window in student_windows[student_name_key]:
+                    QTreeWidgetItem(
+                        parent,
+                        [
+                            window.window_name,
+                            window.name,
+                            str(window.student_id),
+                            window.date,
+                        ],
+                    )
         else:
             for col in range(1, 5):
                 self._ui.windows_search_tree.hideColumn(col)

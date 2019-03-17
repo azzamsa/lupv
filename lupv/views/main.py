@@ -37,6 +37,7 @@ class MainView(QMainWindow):
         # Other page object
         self._log_model = LogModel(self._main_model)
         self._log_ctrl = LogController(self._main_ctrl, self._log_model)
+        self._log_view = LogView(self._ui, self._log_ctrl, self._main_ctrl)
 
         self._search_model = SearchModel(self._main_model)
         self._search_ctrl = SearchController(
@@ -68,7 +69,9 @@ class MainView(QMainWindow):
         self._ui.page2_btn.clicked.connect(
             lambda: self._ui.stackedWidget.setCurrentIndex(1)
         )
-        self._ui.page3_btn.clicked.connect(self.show_search_view)
+        self._ui.page3_btn.clicked.connect(
+            lambda: self._ui.stackedWidget.setCurrentIndex(2)
+        )
 
         # Main View actions
         open_icon = icon_style(QStyle.SP_DialogOpenButton)
@@ -244,8 +247,17 @@ class MainView(QMainWindow):
         """Show Student Page and do initial things."""
         current_student = self.get_selected_student()
         self._log_ctrl.change_current_student(current_student)
-        self._log_view = LogView(self._ui, self._log_ctrl, self._main_ctrl)
 
-    def show_search_view(self):
-        """Show search view page."""
-        self._ui.stackedWidget.setCurrentIndex(2)
+        # default state
+        for col in [0, 2, 3, 4]:
+            self._ui.log_tree.hideColumn(col)
+        self._ui.log_realdate_rbtn.setChecked(True)
+        self._ui.sha_check.setChecked(False)
+        self._ui.stats_check.setChecked(False)
+        self._ui.show_mode_rbtn.setChecked(True)
+
+        # init functions
+        self._log_view.clear_widgets()
+        self._log_view.display_logs(False)
+        self._log_view.display_filename()
+        self._ui.stackedWidget.setCurrentIndex(1)

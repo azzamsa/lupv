@@ -36,20 +36,6 @@ class LogView:
         self._ui.show_mode_rbtn.setToolTip("Use show mode for file contents")
         self._ui.filename_combo.setToolTip("Filename to track")
 
-        # default state
-        for col in [0, 2, 3, 4]:
-            self._ui.log_tree.hideColumn(col)
-        self._ui.log_realdate_rbtn.setChecked(True)
-        self._ui.sha_check.setChecked(False)
-        self._ui.stats_check.setChecked(False)
-        self._ui.show_mode_rbtn.setChecked(True)
-
-        # init functions
-        self.clear_widgets()
-        self.display_logs(False)
-        self.display_filename()
-        self._ui.stackedWidget.setCurrentIndex(1)
-
     def toggle_spinner(self, toggle):
         """Show spinner icon while app working."""
         if toggle == "work":

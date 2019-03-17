@@ -1,5 +1,3 @@
-from resources.theme import breeze_resources
-
 from PyQt5.QtWidgets import (
     QMainWindow,
     QFileDialog,
@@ -11,7 +9,7 @@ from PyQt5.QtWidgets import (
     qApp,
 )
 
-from PyQt5.QtCore import QFile, QTextStream, QSize, Qt, pyqtSlot
+from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap
 
 from resources import resources
@@ -81,11 +79,6 @@ class MainView(QMainWindow):
         self._ui.quit_action.triggered.connect(self.quit_app)
         self._ui.quit_action.setShortcut(QKeySequence("Ctrl+Q"))
 
-        dark = ":theme/dark.qss"
-        light = ":theme/light.qss"
-        self._ui.dark_theme_action.triggered.connect(lambda: self.toggle_theme(dark))
-        self._ui.light_theme_action.triggered.connect(lambda: self.toggle_theme(light))
-
         self._ui.main_table.clicked.connect(self.show_log_view)
         self._ui.main_table.setToolTip("Click me to analyze")
 
@@ -116,7 +109,6 @@ class MainView(QMainWindow):
         self._ui.load_editdistance_action.setEnabled(False)
         self._ui.export_editdistance_action.setEnabled(False)
         self._ui.tabWidget.tabBar().setExpanding(True)
-        self.toggle_theme(light)
         self._ui.stackedWidget.setCurrentIndex(0)
 
     def toggle_spinner(self, toggle):
@@ -130,14 +122,6 @@ class MainView(QMainWindow):
         """Quit application."""
         QApplication.quit()
         self.close()
-
-    def toggle_theme(self, path):
-        """Change application theme based on theme location."""
-        lupv = QApplication.instance()
-        file = QFile(path)
-        file.open(QFile.ReadOnly | QFile.Text)
-        stream = QTextStream(file)
-        lupv.setStyleSheet(stream.readAll())
 
     def choosepath_dialog(self, caption):
         """Prompts dialog to choose record directory."""

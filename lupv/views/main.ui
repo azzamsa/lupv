@@ -952,28 +952,14 @@
     <addaction name="open_records_action"/>
     <addaction name="quit_action"/>
    </widget>
-   <widget class="QMenu" name="menuSetting">
-    <property name="title">
-     <string>Settin&amp;g</string>
-    </property>
-    <widget class="QMenu" name="menuTheme">
-     <property name="title">
-      <string>&amp;Theme</string>
-     </property>
-     <addaction name="light_theme_action"/>
-     <addaction name="dark_theme_action"/>
-    </widget>
-    <addaction name="menuTheme"/>
-   </widget>
    <widget class="QMenu" name="menuStorage">
     <property name="title">
-     <string>Storage</string>
+     <string>Stora&amp;ge</string>
     </property>
     <addaction name="load_editdistance_action"/>
     <addaction name="export_editdistance_action"/>
    </widget>
    <addaction name="menuMenu"/>
-   <addaction name="menuSetting"/>
    <addaction name="menuStorage"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

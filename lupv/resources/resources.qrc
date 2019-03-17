@@ -8,7 +8,5 @@
     <file>img/search-dim.svg</file>
     <file>img/search.svg</file>
     <file>img/lup.svg</file>
-    <file>theme/light.qss</file>
-    <file>theme/dark.qss</file>
   </qresource>
 </RCC>

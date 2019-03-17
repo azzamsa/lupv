@@ -3,3 +3,4 @@ PyQt5==5.11.3
 editdistance==0.5.2
 pendulum==2.0.4
 matplotlib==3.0.2
+PyYAML==3.13

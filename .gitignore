@@ -4,5 +4,10 @@ resources.py
 __pycache__/
 .agignore
 
+# pyinstaller
+build/
+dist/
+*.spec
+
 # Documentations
 docs/_build/

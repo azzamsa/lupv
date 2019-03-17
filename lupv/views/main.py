@@ -51,15 +51,13 @@ class MainView(QMainWindow):
         self._ui.page1_btn.setIconSize(QSize(69, 69))
         self._ui.page1_btn.setToolTip("Go to Main Window")
 
-        self._ui.page2_btn.setIcon(QIcon(":img/history-dim.svg"))
+        self._ui.page2_btn.setIcon(QIcon(":img/history.svg"))
         self._ui.page2_btn.setIconSize(QSize(64, 64))
         self._ui.page2_btn.setToolTip("Go to Snapshot Window")
-        self._ui.page2_btn.setEnabled(False)
 
-        self._ui.page3_btn.setIcon(QIcon(":img/search-dim.svg"))
+        self._ui.page3_btn.setIcon(QIcon(":img/search.svg"))
         self._ui.page3_btn.setIconSize(QSize(64, 64))
         self._ui.page3_btn.setToolTip("Go to Search Window")
-        self._ui.page3_btn.setEnabled(False)
 
         self._ui.page1_btn.clicked.connect(
             lambda: self._ui.stackedWidget.setCurrentIndex(0)
@@ -178,8 +176,8 @@ class MainView(QMainWindow):
         self._ui.main_reldate_rbtn.setChecked(True)
         self._ui.main_realdate_rbtn.setChecked(False)
 
+        # hooks
         self.toggle_main_widgets()
-        self.toogle_sidebar()
 
     def change_table_appearance(self, btn_name):
         """Toggle columns visibility."""
@@ -203,16 +201,6 @@ class MainView(QMainWindow):
         self._ui.widget.setVisible(True)
         self._ui.load_editdistance_action.setEnabled(True)
         self._ui.export_editdistance_action.setEnabled(True)
-
-    def toogle_sidebar(self):
-        """Toggle sidebar icon and visibility."""
-        self._ui.page2_btn.setIcon(QIcon(":img/history.svg"))
-        self._ui.page2_btn.setIconSize(QSize(64, 64))
-        self._ui.page2_btn.setEnabled(True)
-
-        self._ui.page3_btn.setIcon(QIcon(":img/search.svg"))
-        self._ui.page3_btn.setIconSize(QSize(64, 64))
-        self._ui.page3_btn.setEnabled(True)
 
     @pyqtSlot(str)
     def on_record_path_changed(self, path):

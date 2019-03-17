@@ -18,9 +18,6 @@ class LogView:
             lambda: self.log_appearance_changed("stats")
         )
 
-        self._ui.sha_check.setToolTip("Show/hide SHA value")
-        self._ui.sha_check.clicked.connect(lambda: self.log_appearance_changed("sha"))
-
         self._ui.log_realdate_rbtn.setToolTip("Use Real DateTime format")
         self._ui.log_realdate_rbtn.toggled.connect(
             lambda: self.log_appearance_changed("dateformat")
@@ -173,8 +170,6 @@ class LogView:
         """Actions when appearance setting changed."""
         if btn_name == "stats":
             self.toggle_stats()
-        elif btn_name == "sha":
-            self.toggle_sha()
         else:
             self.toggle_dateformat()
         resize_column(self._ui.log_tree)
@@ -194,13 +189,6 @@ class LogView:
         else:
             for col_num in [3, 4]:
                 self._ui.log_tree.hideColumn(col_num)
-
-    def toggle_sha(self):
-        """Togggle SHA columns visibility."""
-        if self._ui.sha_check.isChecked():
-            self._ui.log_tree.showColumn(2)
-        else:
-            self._ui.log_tree.hideColumn(2)
 
     def toggle_dateformat(self):
         """Togggle dateformat columns visibility."""

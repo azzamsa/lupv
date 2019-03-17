@@ -252,7 +252,6 @@ class MainView(QMainWindow):
         for col in [0, 2, 3, 4]:
             self._ui.log_tree.hideColumn(col)
         self._ui.log_realdate_rbtn.setChecked(True)
-        self._ui.sha_check.setChecked(False)
         self._ui.stats_check.setChecked(False)
         self._ui.show_mode_rbtn.setChecked(True)
 

@@ -119,7 +119,7 @@
         <item>
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="page">
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -317,13 +317,6 @@
                        <widget class="QCheckBox" name="stats_check">
                         <property name="text">
                          <string>Line Insertion and Deletion</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QCheckBox" name="sha_check">
-                        <property name="text">
-                         <string>SHA</string>
                         </property>
                        </widget>
                       </item>

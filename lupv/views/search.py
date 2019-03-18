@@ -28,7 +28,6 @@ class SearchView:
         self._ui.analyze_suspects_btn.clicked.connect(self.display_suspects)
 
         self.suspect_filename_combo = MyComboBox()
-        self.suspect_filename_combo.setEditable(True)
         self.suspect_filename_combo.setSizePolicy(
             QSizePolicy.MinimumExpanding, QSizePolicy.Preferred
         )
@@ -73,12 +72,10 @@ class SearchView:
 
         # editdistance page
         self.cur_student_name_combo = MyComboBox()
-        self.cur_student_name_combo.setEditable(True)
         self.cur_student_name_combo.setSizePolicy(
             QSizePolicy.Preferred, QSizePolicy.Preferred
         )
         self.cur_filename_combo = MyComboBox()
-        self.cur_filename_combo.setEditable(True)
         self.cur_filename_combo.setSizePolicy(
             QSizePolicy.Preferred, QSizePolicy.Preferred
         )
@@ -93,12 +90,10 @@ class SearchView:
         self._ui.horizontalLayout_19.addWidget(self.cur_filename_combo)
 
         self.prev_student_name_combo = MyComboBox()
-        self.prev_student_name_combo.setEditable(True)
         self.prev_student_name_combo.setSizePolicy(
             QSizePolicy.Preferred, QSizePolicy.Preferred
         )
         self.prev_filename_combo = MyComboBox()
-        self.prev_filename_combo.setEditable(True)
         self.prev_filename_combo.setSizePolicy(
             QSizePolicy.Preferred, QSizePolicy.Preferred
         )
@@ -306,7 +301,7 @@ class SearchView:
             QMessageBox.warning(None, "File Not Loaded", msg)
             return None
         self.prev_student_name_combo.clear()
-        prev_students.insert(0, "No File Selected")
+        prev_students.insert(0, "No Student Selected")
         self.prev_student_name_combo.addItems(prev_students)
 
     def display_prev_student_file_ed(self):
@@ -379,34 +374,46 @@ class SearchView:
 
         self.figure.clear()
         ax = self.figure.add_subplot(111)
+        cur_fmt = ""
         prev_fmt = ""
+        bridge_fmt = ""
 
-        cur_editdistances_ax, cur_records_ax = self._search_ctrl.calc_editdistances(
-            cur_student_name, cur_filename
-        )
+        if cur_pair is not None:
+            cur_editdistances_ax, cur_records_ax = self._search_ctrl.calc_editdistances(
+                cur_student_name, cur_filename
+            )
+            ax.plot(cur_records_ax, cur_editdistances_ax, label=cur_student_name)
+            cur_fmt = "{}".format(cur_student_name)
+            image_path = self._search_ctrl.construct_ed_graph_path(cur_student_name)
+
         if prev_pair is not None:
-            prev_records_ax, prev_editdistances_ax = self._search_ctrl.calc_prev_editdistances(
+            prev_editdistances_ax, prev_records_ax = self._search_ctrl.calc_prev_editdistances(
                 prev_student_name
             )
             ax.plot(prev_records_ax, prev_editdistances_ax, label=prev_student_name)
-            prev_fmt = "..{}".format(prev_student_name)
+            prev_fmt = "{}".format(prev_student_name)
+            image_path = self._search_ctrl.construct_ed_graph_path(prev_student_name)
 
-        ax.plot(cur_records_ax, cur_editdistances_ax, label=cur_student_name)
+        if (cur_pair and prev_pair) is not None:
+            bridge_fmt = " .. "
+            image_path = self._search_ctrl.construct_ed_graph_path(
+                cur_student_name, prev_student_name
+            )
+
         ax.legend()
         plt.title(
-            "{} {prev}".format(
-                cur_student_name, prev="" if prev_fmt is None else prev_fmt
+            "{cur}{bridge}{prev}".format(
+                cur="" if cur_fmt is None else cur_fmt,
+                bridge="" if bridge_fmt is None else bridge_fmt,
+                prev="" if prev_fmt is None else prev_fmt,
             )
         )
         plt.xlabel("Records count")
-        plt.ylabel("Edit distance from final sumbission")
+        plt.ylabel("Editdistance from final sumbission")
 
         self.canvas.draw()
 
         if savep:
-            image_path = self._search_ctrl.construct_ed_graph_path(
-                cur_student_name, prev_student_name
-            )
             plt.savefig(image_path)
             QMessageBox.information(None, "", "Graph saved to {}".format(image_path))
 

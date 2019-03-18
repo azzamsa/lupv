@@ -220,7 +220,7 @@ class SearchController(QObject):
         editdistances = self._search_model.prev_editdistances
         prev_records_ax = editdistances[student_name]["records_ax"]
         prev_editdistances_ax = editdistances[student_name]["editdistances_ax"]
-        return prev_records_ax, prev_editdistances_ax
+        return prev_editdistances_ax, prev_records_ax
 
     def _get_student_records(self, student):
         """Return records of student."""
@@ -256,14 +256,17 @@ class SearchController(QObject):
         notes_path = join(record_path, "lupv-notes")
         pathlib.Path(notes_path).mkdir(parents=True, exist_ok=True)
 
-    def construct_ed_graph_path(self, cur_student_name, prev_student_name):
+    def construct_ed_graph_path(self, *args):
         """Return path for saving editdistance graph file."""
         record_path = self._main_model.record_path
-        graph_path = join(
-            record_path,
-            "lupv-notes",
-            "{}_{}.png".format(cur_student_name, prev_student_name),
-        )
+
+        if len(args) == 1:
+            graph_fmt = "{}.png".format(args[0])
+        else:
+            names = "_".join(args)
+            graph_fmt = "{}.png".format(names)
+
+        graph_path = join(record_path, "lupv-notes", graph_fmt)
         return graph_path
 
     def calc_all_editdistance(self, filename):

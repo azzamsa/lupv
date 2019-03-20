@@ -7,7 +7,7 @@ REQUIREMENTS = (HERE / "requirements.txt").read_text()
 
 setup(
     name="Lupv",
-    version="1.6.36",
+    version="1.6.4",
     description="Lup viewer",
     long_description=README,
     long_description_content_type="text/markdown",

@@ -1,8 +1,8 @@
 # Lupv - Lup Viewer
 
-[![image](https://img.shields.io/pypi/v/lupv.svg)](https://pypi.org/project/requests/)
-[![image](https://img.shields.io/pypi/l/lupv.svg)](https://pypi.org/project/requests/)
-[![image](https://img.shields.io/pypi/pyversions/lupv.svg)](https://pypi.org/project/requests/)
+[![image](https://img.shields.io/pypi/v/lupv.svg)](https://pypi.org/project/lupv/)
+[![image](https://img.shields.io/pypi/l/lupv.svg)](https://pypi.org/project/lupv/)
+[![image](https://img.shields.io/pypi/pyversions/lupv.svg)](https://pypi.org/project/lupv/)
 
 ## Screeenshot
 

@@ -6,10 +6,10 @@ from collections import defaultdict
 
 from PyQt5.QtCore import QObject
 
-from models.search import Suspects
-from models.search import StudentIp
-from models.search import StudentWindow
-from models.search import StudentEditdistances
+from Lupv.models.search import Suspects
+from Lupv.models.search import StudentIp
+from Lupv.models.search import StudentWindow
+from Lupv.models.search import StudentEditdistances
 
 
 class SearchController(QObject):

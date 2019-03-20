@@ -12,15 +12,15 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap
 
-from resources import resources
-from standard.standard import icon_style
-from models.logs import LogModel
-from models.search import SearchModel
-from controllers.log import LogController
-from controllers.search import SearchController
-from views.main_ui import Ui_MainWindow
-from views.log import LogView
-from views.search import SearchView
+from Lupv.resources import images
+from Lupv.standard.standard import icon_style
+from Lupv.models.logs import LogModel
+from Lupv.models.search import SearchModel
+from Lupv.controllers.log import LogController
+from Lupv.controllers.search import SearchController
+from Lupv.views.main_ui import Ui_MainWindow
+from Lupv.views.log import LogView
+from Lupv.views.search import SearchView
 
 
 class MainView(QMainWindow):

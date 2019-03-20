@@ -4,7 +4,7 @@ from os.path import join
 
 from PyQt5.QtCore import QObject, pyqtSlot
 
-from models.main import StudentRecords
+from Lupv.models.main import StudentRecords
 
 
 class MainController(QObject):

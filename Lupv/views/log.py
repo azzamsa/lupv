@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMessageBox, QTreeWidgetItem, qApp
 from PyQt5.QtGui import QBrush, QColor
 
-from standard.standard import resize_column
+from Lupv.standard.standard import resize_column
 
 
 class LogView:

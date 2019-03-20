@@ -2,9 +2,9 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from models.main import MainModel
-from controllers.main import MainController
-from views.main import MainView
+from Lupv.models.main import MainModel
+from Lupv.controllers.main import MainController
+from Lupv.views.main import MainView
 
 
 class Lupv(QApplication):
@@ -16,7 +16,10 @@ class Lupv(QApplication):
         self.main_view.show()
 
 
-if __name__ == "__main__":
+def main():
     lupv = Lupv(sys.argv)
-
     sys.exit(lupv.exec_())
+
+
+if __name__ == "__main__":
+    main()

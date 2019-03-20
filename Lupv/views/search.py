@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
     QFileDialog,
 )
 
-from standard.standard import MyComboBox, bold, resize_column, peek
+from Lupv.standard.standard import MyComboBox, bold, resize_column, peek
 
 
 class SearchView:

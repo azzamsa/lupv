@@ -2,7 +2,7 @@ import editdistance as edlib
 
 from PyQt5.QtCore import QObject
 
-from models.logs import Logs
+from Lupv.models.logs import Logs
 
 
 class LogController(QObject):

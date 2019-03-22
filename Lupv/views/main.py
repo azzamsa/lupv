@@ -130,15 +130,16 @@ class MainView(QMainWindow):
         """Check if path is record path."""
         invalid_dirs = self._main_ctrl.validate(path)
 
+        title = "Invalid Directories Warning"
         msg = "Not a valid Tasks directory\n"
         details = "\nContains invalid Task:\n{}".format("\n".join(invalid_dirs))
 
         if len(invalid_dirs) == 0:
             return True
         elif len(invalid_dirs) <= 10:
-            QMessageBox.warning(self, "", msg + details)
+            QMessageBox.warning(self, title, msg + details)
         else:
-            QMessageBox.warning(self, "", msg + "\n\nContains many invalid Tasks")
+            QMessageBox.warning(self, title, msg + "\n\nContains many invalid Tasks")
 
     def open_records(self):
         """Open records directory then display the record."""
@@ -163,8 +164,8 @@ class MainView(QMainWindow):
 
         for row_num, record in enumerate(self._main_ctrl.populate_students_records()):
             self._ui.main_table.insertRow(row_num)
-            for col_num, record_item in enumerate(record.__dict__.items()):
-                tbl_item = QTableWidgetItem(str(record_item[1]))
+            for col_num, item in enumerate(record.items()):
+                tbl_item = QTableWidgetItem(str(item[1]))
                 self._ui.main_table.setItem(row_num, col_num, tbl_item)
 
         self._ui.main_table.setVisible(False)
@@ -212,13 +213,13 @@ class MainView(QMainWindow):
         student_id = self._ui.main_table.item(
             self._ui.main_table.currentRow(), 1
         ).text()
-        current_student = "{}-{}".format(name, student_id)
-        return current_student
+        selected_student_dir = "{}-{}".format(name, student_id)
+        return selected_student_dir
 
     def show_log_view(self):
         """Show Student Page and do initial things."""
-        current_student = self.get_selected_student()
-        self._log_ctrl.change_current_student(current_student)
+        current_student_dir = self.get_selected_student()
+        self._log_ctrl.change_current_student_dir(current_student_dir)
 
         # default state
         for col in [0, 2, 3, 4]:

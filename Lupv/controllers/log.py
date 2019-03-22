@@ -2,8 +2,6 @@ import editdistance as edlib
 
 from PyQt5.QtCore import QObject
 
-from Lupv.models.logs import Logs
-
 
 class LogController(QObject):
     def __init__(self, main_ctrl, log_model):
@@ -12,8 +10,8 @@ class LogController(QObject):
         self._main_ctrl = main_ctrl
         self._log_model = log_model
 
-    def change_current_student(self, current_student):
-        self._log_model.current_student = current_student
+    def change_current_student_dir(self, current_student_dir):
+        self._log_model.current_student_dir = current_student_dir
 
     def change_record_path(self, record_path):
         """Change record path value."""
@@ -38,7 +36,13 @@ class LogController(QObject):
                     insertions = record.stats.files[selected_file]["insertions"]
                     deletions = record.stats.files[selected_file]["deletions"]
 
-            log = Logs(relative_time, time, sha, insertions, deletions)
+            log = dict(
+                relative_time=relative_time,
+                time=time,
+                sha=sha,
+                insertions=insertions,
+                deletions=deletions,
+            )
             yield log
 
     def populate_files(self):

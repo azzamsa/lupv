@@ -66,30 +66,30 @@ class LogView:
 
         if complete:  # can't show stats without selected_file
             self._ui.log_tree.clear()
-            for l in self._log_ctrl.populate_logs(selected_file):
+            for log in self._log_ctrl.populate_logs(selected_file):
                 QTreeWidgetItem(
                     self._ui.log_tree,
                     [
-                        str(l.relative_datetime),
-                        str(l.datetime),
-                        str(l.sha),
+                        str(log["relative_time"]),
+                        str(log["time"]),
+                        str(log["sha"]),
                         "{line}".format(
                             line="No record"
-                            if l.add_stats == 0
-                            else "{} Lines".format(l.add_stats)
+                            if log["insertions"] == 0
+                            else "{} Lines".format(log["insertions"])
                         ),
                         "{line}".format(
                             line="No record"
-                            if l.del_stats == 0
-                            else "{} Lines".format(l.del_stats)
+                            if log["deletions"] == 0
+                            else "{} Lines".format(log["deletions"])
                         ),
                     ],
                 )
         else:
-            for l in self._log_ctrl.populate_logs(selected_file):
+            for log in self._log_ctrl.populate_logs(selected_file):
                 QTreeWidgetItem(
                     self._ui.log_tree,
-                    [str(l.relative_datetime), str(l.datetime), str(l.sha)],
+                    [str(log["relative_time"]), str(log["time"]), str(log["sha"])],
                 )
 
         resize_column(self._ui.log_tree)
@@ -179,7 +179,7 @@ class LogView:
         if self._ui.stats_check.isChecked():
             selected_file = self.get_selected_file()
             if not selected_file:
-                QMessageBox.warning(None, "", "please choose a file")
+                QMessageBox.warning(None, "No Filename Warning", "please choose a file")
                 self._ui.stats_check.setChecked(False)
                 return None
 

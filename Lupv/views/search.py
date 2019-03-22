@@ -134,10 +134,12 @@ class SearchView:
 
         msg = "please set limit higer than {}\nAbove 10 is recommended"
         if int(insertions_limit) == 0:
-            QMessageBox.warning(None, "", msg.format(insertions_limit))
+            QMessageBox.warning(
+                None, "Invalid Value Warning", msg.format(insertions_limit)
+            )
             return None
         if filename == "No File Selected" or not filename:
-            QMessageBox.warning(None, "", "please select a file")
+            QMessageBox.warning(None, "No Filename Warning", "please select a file")
             return None
 
         self.toggle_spinner("work")
@@ -160,11 +162,11 @@ class SearchView:
                     QTreeWidgetItem(
                         parent,
                         [
-                            suspect.name,
-                            str(suspect.student_id),
-                            suspect.filename,
-                            str(suspect.insertions),
-                            str(suspect.date),
+                            suspect["name"],
+                            str(suspect["student_id"]),
+                            suspect["filename"],
+                            str(suspect["insertions"]),
+                            str(suspect["date"]),
                         ],
                     )
         else:
@@ -205,10 +207,10 @@ class SearchView:
                         QTreeWidgetItem(
                             child,
                             [
-                                str(student.ip),
-                                student.name,
-                                str(student.student_id),
-                                student.date,
+                                str(student["ip"]),
+                                student["name"],
+                                str(student["student_id"]),
+                                student["date"],
                             ],
                         )
         else:
@@ -225,7 +227,8 @@ class SearchView:
         self._ui.windows_search_tree.clear()
         search_key = self._ui.windows_searchkey_widget.text()
         if not search_key:
-            QMessageBox.warning(None, "", "please supply the window name")
+            msg = "please supply the window name"
+            QMessageBox.warning(None, "Invalid Value Warning", msg)
             return None  # magic line `break` alias.
 
         self.toggle_spinner("work")
@@ -247,10 +250,10 @@ class SearchView:
                     QTreeWidgetItem(
                         parent,
                         [
-                            window.window_name,
-                            window.name,
-                            str(window.student_id),
-                            window.date,
+                            window["window_name"],
+                            window["name"],
+                            str(window["student_id"]),
+                            window["date"],
                         ],
                     )
         else:
@@ -269,10 +272,10 @@ class SearchView:
 
     def display_cur_students_name_ed(self):
         """Display current student name in editdistance page."""
-        students = self._search_ctrl.populate_student_dirs()
+        student_dirs = self._search_ctrl.populate_student_dirs()
         self.cur_student_name_combo.clear()
-        students.insert(0, "No Student Selected")
-        self.cur_student_name_combo.addItems(students)
+        student_dirs.insert(0, "No Student Selected")
+        self.cur_student_name_combo.addItems(student_dirs)
 
     def display_cur_student_file_ed(self):
         """Display current student filename in editdistance page."""
@@ -293,16 +296,18 @@ class SearchView:
         self._search_ctrl.load_prev_editdistances(filename[0])
 
     def display_prev_students_name_ed(self):
-        """Display previous student name in editdistance page."""
+        """Display previous student name in editdistance page.
+        `prev_student_name` is an alias for student_dir.
+        """
         try:
-            prev_students = self._search_ctrl.get_prev_students()
+            prev_student_names = self._search_ctrl.get_prev_student_names()
         except Exception:
             msg = "Please load editdistances file first"
-            QMessageBox.warning(None, "File Not Loaded", msg)
+            QMessageBox.warning(None, "File Not Loaded Warning", msg)
             return None
         self.prev_student_name_combo.clear()
-        prev_students.insert(0, "No Student Selected")
-        self.prev_student_name_combo.addItems(prev_students)
+        prev_student_names.insert(0, "No Student Selected")
+        self.prev_student_name_combo.addItems(prev_student_names)
 
     def display_prev_student_file_ed(self):
         """Display previous student filename in editdistance page."""
@@ -310,17 +315,10 @@ class SearchView:
             sample_filename = self._search_ctrl.get_prev_filename_sample()
         except Exception:
             msg = "Please load editdistances file first"
-            QMessageBox.warning(None, "File Not Loaded", msg)
+            QMessageBox.warning(None, "File Not Loaded Warning", msg)
             return None
         self.prev_filename_combo.clear()
         self.prev_filename_combo.addItem(sample_filename)
-
-    def calc_prev_editdistances(self, student_name):
-        """Calculate previous editdistances values."""
-        prev_editdistances = self._search_model.prev_editdistances
-        prev_records_ax = prev_editdistances[student_name]["records_ax"]
-        prev_editdistances_ax = prev_editdistances[student_name]["editdistances_ax"]
-        return prev_records_ax, prev_editdistances_ax
 
     def export_editdistances(self, filename):
         """Export current editdistances value to file."""
@@ -330,13 +328,14 @@ class SearchView:
         self._search_ctrl.export_editdistances(filename)
         msg = "Editdistance exported to {}"
         ed_path = self._search_ctrl.construct_editdistance_path(filename)
-        QMessageBox.information(None, "", msg.format(ed_path))
+        QMessageBox.information(None, "Export Information", msg.format(ed_path))
 
         self.toggle_spinner("ready")
 
     def show_editdistance_export_dialog(self):
         """Prompt dialog for suspect parameter."""
         ed_filename_dlg = EdFilenameDialog()
+        ed_filename_dlg.setWindowTitle("Export edit distance")
         files = self._search_ctrl.populate_sample_filenames()
         ed_filename_dlg.editdistance_filename_combo.clear()
         ed_filename_dlg.editdistance_filename_combo.addItems(files)
@@ -347,7 +346,9 @@ class SearchView:
             if filename:
                 self.export_editdistances(filename)
             else:
-                QMessageBox.warning(None, "", "Please Choose filename")
+                QMessageBox.warning(
+                    None, "Invalid Value Warning", "Please Choose filename"
+                )
                 self.prompt_editdistance_dialog()
 
     def is_pair_filled(self, field1, field2):
@@ -358,7 +359,9 @@ class SearchView:
             return True
 
     def display_compared_editdistance(self, savep=None):
-        """Display editdistance graph."""
+        """Display editdistance graph.
+        `student_name` is an alias for student_dir.
+        """
         cur_student_name = self.cur_student_name_combo.currentText()
         cur_filename = self.cur_filename_combo.currentText()
         prev_student_name = self.prev_student_name_combo.currentText()
@@ -367,7 +370,9 @@ class SearchView:
         cur_pair = self.is_pair_filled(cur_student_name, cur_filename)
         prev_pair = self.is_pair_filled(prev_student_name, prev_filename)
         if (cur_pair is None) and (prev_pair is None):
-            QMessageBox.warning(None, "", "Please fill one of the pairs")
+            QMessageBox.warning(
+                None, "Invalid Value Warning", "Please fill one of the pairs"
+            )
             return None
 
         self.figure.clear()
@@ -413,7 +418,9 @@ class SearchView:
 
         if savep:
             plt.savefig(image_path)
-            QMessageBox.information(None, "", "Graph saved to {}".format(image_path))
+            title = "Export Information"
+            msg = "Graph saved to {}".format(image_path)
+            QMessageBox.information(None, title, msg)
 
 
 class EdFilenameDialog(QDialog):

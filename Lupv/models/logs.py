@@ -6,13 +6,13 @@ from PyQt5.QtCore import QObject, pyqtSignal
 
 
 class LogModel(QObject):
-    current_student_changed = pyqtSignal(str)
+    current_student_dir_changed = pyqtSignal(str)
     record_path_changed = pyqtSignal(str)
 
     def __init__(self, main_model):
         super().__init__()
         self._record_path = ""
-        self._current_student = ""
+        self._current_student_dir = ""
         self._student_path = ""
         self._student_repo = None
         self._student_records = None
@@ -20,7 +20,7 @@ class LogModel(QObject):
         self._main_model = main_model
         self._record_path = self._main_model.record_path
 
-        self.current_student_changed.connect(self.on_current_student_changed)
+        self.current_student_dir_changed.connect(self.on_current_student_dir_changed)
 
     @property
     def record_path(self):
@@ -34,15 +34,15 @@ class LogModel(QObject):
         self.record_path_changed.emit(record_path)
 
     @property
-    def current_student(self):
+    def current_student_dir(self):
         """Return the value of current student."""
-        return self._current_student
+        return self._current_student_dir
 
-    @current_student.setter
-    def current_student(self, current_student):
+    @current_student_dir.setter
+    def current_student_dir(self, current_student_dir):
         """Set the value of current student."""
-        self._current_student = current_student
-        self.current_student_changed.emit(current_student)
+        self._current_student_dir = current_student_dir
+        self.current_student_dir_changed.emit(current_student_dir)
 
     @property
     def student_records(self):
@@ -74,8 +74,8 @@ class LogModel(QObject):
         """Set the value of current student."""
         self._student_repo = student_repo
 
-    def on_current_student_changed(self):
-        self.student_path = join(self._record_path, self._current_student)
+    def on_current_student_dir_changed(self):
+        self.student_path = join(self._record_path, self._current_student_dir)
         self.student_repo = git.Repo(self._student_path)
         self.student_records = self._main_model.get_records(self._student_path)
 
@@ -120,16 +120,6 @@ class LogModel(QObject):
 
     def is_exists(self, filename, sha):
         """Check if filename in current record exist."""
-        files = self._student_repo.git.show("--pretty=" "", "--name-only", sha)
+        files = self._student_repo.git.show("--pretty=", "--name-only", sha)
         if filename in files:
             return True
-
-
-class Logs(QObject):
-    def __init__(self, relative_datetime, datetime, sha, add_stats, del_stats):
-        super().__init__()
-        self.relative_datetime = relative_datetime
-        self.datetime = datetime
-        self.sha = sha
-        self.add_stats = add_stats
-        self.del_stats = del_stats

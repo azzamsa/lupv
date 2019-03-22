@@ -1,6 +1,6 @@
-import yaml
 import pathlib
 import editdistance as edlib
+import os
 from os.path import join
 from collections import defaultdict
 
@@ -46,6 +46,12 @@ class SearchController(QObject):
             for record in records:
                 self._log_model.current_student = student
                 yield student, record
+
+    def students_iterator(self):
+        """Generator to iterate trough student records."""
+        student_dirs = self._main_model.get_student_dirs()
+        for student_name in student_dirs:
+            yield student_name
 
     def analyze_suspects(self, insertions_limit, filename):
         """Return students with exceeded the insertions limit."""
@@ -269,17 +275,6 @@ class SearchController(QObject):
         graph_path = join(record_path, "lupv-notes", graph_fmt)
         return graph_path
 
-    def calc_all_editdistance(self, filename):
-        """Calculate all students's editdistances."""
-        for student, _ in self.records_iterator():
-            editdistances_ax, records_ax = self.calc_editdistances(student, filename)
-
-            name, student_id, _ = self.get_student_info(student)
-            student_ed = StudentEditdistances(
-                name, student_id, editdistances_ax, records_ax, filename
-            )
-            yield student_ed
-
     def construct_editdistance_path(self, task_name):
         """Return path for saving editdistance file."""
         record_path = self._main_model.record_path
@@ -288,14 +283,22 @@ class SearchController(QObject):
         )
         return editdistance_file_path
 
-    def export_editdistance(self, students, save_path):
+    def export_editdistances(self, filename):
         """Export editdistances to file."""
-        students_ed = {}
-        for student in students:
-            student_key = "{}-{}".format(student.name, student.student_id)
-            students_ed[student_key] = dict(
-                editdistances_ax=list(student.editdistances_ax),
-                records_ax=list(student.records_ax),
-                task_name=student.task_name,
+        self.create_lupvnotes_dir()
+        save_path = self.construct_editdistance_path(filename)
+        if os.path.isfile(save_path):
+            os.remove(save_path)
+
+        for student in self.students_iterator():
+            student_ed = {}
+            editdistances_ax, records_ax = self.calc_editdistances(student, filename)
+
+            name, student_id, _ = self.get_student_info(student)
+            student_key = "{}-{}".format(name, student_id)
+            student_ed[student_key] = dict(
+                editdistances_ax=editdistances_ax,
+                records_ax=records_ax,
+                task_name=filename,
             )
-        self._search_model.write_editdistances(students_ed, save_path)
+            self._search_model.write_editdistances(student_ed, save_path)

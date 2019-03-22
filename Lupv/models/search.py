@@ -42,7 +42,7 @@ class SearchModel(QObject):
 
     def write_editdistances(self, students_ed, save_path):
         """Write exported value to file."""
-        with open(save_path, "w") as outfile:
+        with open(save_path, "a") as outfile:
             yaml.dump(students_ed, outfile)
 
 

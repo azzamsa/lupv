@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
     QFileDialog,
 )
 
-from Lupv.standard.standard import MyComboBox, bold, resize_column, peek
+from Lupv.standard.standard import MyComboBox, bold, resize_column
 
 
 class SearchView:
@@ -61,7 +61,7 @@ class SearchView:
 
         self._ui.load_editdistance_action.triggered.connect(self.load_editdistance_file)
         self._ui.export_editdistance_action.triggered.connect(
-            self.show_ed_filename_dialog
+            self.show_editdistance_export_dialog
         )
         self._ui.compare_editdistance_btn.clicked.connect(
             self.display_compared_editdistance
@@ -322,21 +322,19 @@ class SearchView:
         prev_editdistances_ax = prev_editdistances[student_name]["editdistances_ax"]
         return prev_records_ax, prev_editdistances_ax
 
-    def export_editdistance(self, filename):
+    def export_editdistances(self, filename):
         """Export current editdistances value to file."""
         self.toggle_spinner("work")
         qApp.processEvents()
 
-        self._search_ctrl.create_lupvnotes_dir()
-        students_ed = self._search_ctrl.calc_all_editdistance(filename)
-        ed_path = self._search_ctrl.construct_editdistance_path(filename)
-        self._search_ctrl.export_editdistance(students_ed, ed_path)
+        self._search_ctrl.export_editdistances(filename)
         msg = "Editdistance exported to {}"
+        ed_path = self._search_ctrl.construct_editdistance_path(filename)
         QMessageBox.information(None, "", msg.format(ed_path))
 
         self.toggle_spinner("ready")
 
-    def show_ed_filename_dialog(self):
+    def show_editdistance_export_dialog(self):
         """Prompt dialog for suspect parameter."""
         ed_filename_dlg = EdFilenameDialog()
         files = self._search_ctrl.populate_sample_filenames()
@@ -347,7 +345,7 @@ class SearchView:
         if accepted:
             filename = ed_filename_dlg.editdistance_filename_combo.currentText()
             if filename:
-                self.export_editdistance(filename)
+                self.export_editdistances(filename)
             else:
                 QMessageBox.warning(None, "", "Please Choose filename")
                 self.prompt_editdistance_dialog()
@@ -408,8 +406,8 @@ class SearchView:
                 prev="" if prev_fmt is None else prev_fmt,
             )
         )
-        plt.xlabel("Records count")
-        plt.ylabel("Editdistance from final sumbission")
+        plt.xlabel("Record count")
+        plt.ylabel("Edit distance from final sumbission")
 
         self.canvas.draw()
 

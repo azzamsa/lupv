@@ -249,7 +249,8 @@ class SearchController(QObject):
         self._log_model.current_student_dir = student_dir
         last_file = self._log_model.read_file(filename, records[0].hexsha)
 
-        # FIXME use record iterator
+        # Can't use record_iterator cause this function only need one
+        # student per operation
         for record in records:
             if self._log_model.is_exists(filename, record.hexsha):
                 current_file = self._log_model.read_file(filename, record.hexsha)

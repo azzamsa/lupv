@@ -166,7 +166,7 @@ class SearchController(QObject):
             if substring in string:
                 return idx
 
-    def get_student_windows2(self, search_key):
+    def collect_student_windows(self, search_key):
         """Return windows name opened by students."""
         student_window = None
         student_windows = []
@@ -185,15 +185,14 @@ class SearchController(QObject):
                 student_window = StudentWindow(
                     window_name, student_name, student_id, date
                 )
-                # yield student_window
                 student_windows.append(student_window)
 
         return student_windows
 
     def get_student_windows(self, search_key):
-        ala = self.get_student_windows2(search_key)
-        ali = self.group_by_name(ala)
-        return ali
+        student_windows = self.collect_student_windows(search_key)
+        student_windows_group = self.group_by_name(student_windows)
+        return student_windows_group
 
     #
     # Editdistance tab

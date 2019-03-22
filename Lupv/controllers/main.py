@@ -4,8 +4,6 @@ from os.path import join
 
 from PyQt5.QtCore import QObject, pyqtSlot
 
-from Lupv.models.main import StudentRecords
-
 
 class MainController(QObject):
     def __init__(self, main_model):
@@ -69,12 +67,12 @@ class MainController(QObject):
         students_records = self._main_model.students_records
 
         for student in students_records:
-            name = student.name
-            student_id = student.student_id
-            total_records = len(student.records)
+            name = student["name"]
+            student_id = student["student_id"]
+            total_records = len(student["records"])
 
             first_record_dt, last_record_dt = [
-                student.records[x].committed_datetime for x in [-1, 0]
+                student["records"][x].committed_datetime for x in [-1, 0]
             ]
             first_record_time, first_record_relativetime = self.get_first_record_time(
                 first_record_dt
@@ -86,15 +84,15 @@ class MainController(QObject):
                 first_record_dt, last_record_dt
             )
 
-            student_records = StudentRecords(
-                name,
-                student_id,
-                total_records,
-                first_record_time,
-                first_record_relativetime,
-                last_record_time,
-                last_record_relativetime,
-                work_duration,
-                work_relative_duration,
+            student_records = dict(
+                name=name,
+                student_id=student_id,
+                total_records=total_records,
+                first_record_time=first_record_time,
+                first_record_relativetime=first_record_relativetime,
+                last_record_time=last_record_time,
+                last_record_relativetime=last_record_relativetime,
+                work_duration=work_duration,
+                work_relative_duration=work_relative_duration,
             )
             yield student_records

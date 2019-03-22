@@ -6,11 +6,6 @@ from collections import defaultdict
 
 from PyQt5.QtCore import QObject
 
-from Lupv.models.search import Suspects
-from Lupv.models.search import StudentIp
-from Lupv.models.search import StudentWindow
-from Lupv.models.search import StudentEditdistances
-
 
 class SearchController(QObject):
     def __init__(self, main_model, search_model, log_model):
@@ -34,39 +29,44 @@ class SearchController(QObject):
         files = self._search_model.read_sample_files()
         return files
 
+    def student_directories_iterator(self):
+        """Generator to iterate trough student directories."""
+        student_dirs = self._main_model.get_student_dirs()
+        for student_dir in student_dirs:
+            yield student_dir
+
     def records_iterator(self):
         """Generator to iterate trough student records."""
-        student_dirs = self._main_model.get_student_dirs()
         record_path = self._main_model.record_path
 
-        for student in student_dirs:
-            student_path = join(record_path, student)
+        for student_dir in self.student_directories_iterator():
+            student_path = join(record_path, student_dir)
             records = self._main_model.get_records(student_path)
 
             for record in records:
-                self._log_model.current_student = student
-                yield student, record
-
-    def students_iterator(self):
-        """Generator to iterate trough student records."""
-        student_dirs = self._main_model.get_student_dirs()
-        for student_name in student_dirs:
-            yield student_name
+                self._log_model.current_student_dir = student_dir
+                yield student_dir, record
 
     def analyze_suspects(self, insertions_limit, filename):
         """Return students with exceeded the insertions limit."""
         suspects = []
 
-        for student, record in self.records_iterator():
+        for student_dir, record in self.records_iterator():
             if self._log_model.is_exists(filename, record.hexsha):
                 insertions = record.stats.files[filename]["insertions"]
 
                 if insertions > insertions_limit:
                     name, student_id, date = self.get_student_info(
-                        student, record.committed_datetime
+                        student_dir, record.committed_datetime
                     )
 
-                    suspect = Suspects(name, student_id, filename, insertions, date)
+                    suspect = dict(
+                        name=name,
+                        student_id=student_id,
+                        filename=filename,
+                        insertions=insertions,
+                        date=date,
+                    )
                     suspects.append(suspect)
 
         return suspects
@@ -75,7 +75,7 @@ class SearchController(QObject):
         """Group students by name."""
         group = defaultdict(list)
         for student in students:
-            student_nameid_key = "{}-{}".format(student.name, student.student_id)
+            student_nameid_key = "{}-{}".format(student["name"], student["student_id"])
             group[student_nameid_key].append(student)
         return group
 
@@ -89,14 +89,14 @@ class SearchController(QObject):
         """Return student ips."""
         students_ip = []
 
-        for student, record in self.records_iterator():
+        for student_dir, record in self.records_iterator():
             auth_file = self._log_model.read_auth_info(record.hexsha)
             ip = auth_file[2]
             name, student_id, date = self.get_student_info(
-                student, record.committed_datetime
+                student_dir, record.committed_datetime
             )
 
-            student_ip = StudentIp(ip, name, student_id, date)
+            student_ip = dict(ip=ip, name=name, student_id=student_id, date=date)
             students_ip.append(student_ip)
 
         return students_ip
@@ -105,7 +105,7 @@ class SearchController(QObject):
         """Group students by ip."""
         group = defaultdict(list)
         for student in students:
-            ip_key = "{}".format(student.ip)
+            ip_key = "{}".format(student["ip"])
             group[ip_key].append(student)
         return group
 
@@ -145,7 +145,9 @@ class SearchController(QObject):
             for student in group_temp:
                 # arrange group item by similar identifier
                 # e.g by name
-                student_name_key = "{}-{}".format(student.name, student.student_id)
+                student_name_key = "{}-{}".format(
+                    student["name"], student["student_id"]
+                )
                 grouped_by_name[student_name_key].append(student)
 
             # insert grouped parent-child item to it's grandparent
@@ -171,7 +173,7 @@ class SearchController(QObject):
         student_window = None
         student_windows = []
 
-        for student, record in self.records_iterator():
+        for student_dir, record in self.records_iterator():
             windows = self._log_model.read_all_windows(record.hexsha)
             windows_lower = [item.lower() for item in windows]
 
@@ -179,11 +181,14 @@ class SearchController(QObject):
             if found:
                 window_name = windows[found]
                 student_name, student_id, date = self.get_student_info(
-                    student, record.committed_datetime
+                    student_dir, record.committed_datetime
                 )
 
-                student_window = StudentWindow(
-                    window_name, student_name, student_id, date
+                student_window = dict(
+                    window_name=window_name,
+                    name=student_name,
+                    student_id=student_id,
+                    date=date,
                 )
                 student_windows.append(student_window)
 
@@ -207,17 +212,17 @@ class SearchController(QObject):
         editdistances = self._search_model.read_editdistances(filename)
         self._search_model.prev_editdistances = editdistances
 
-    def get_prev_students(self):
+    def get_prev_student_names(self):
         """Return loaded students name."""
         prev_editdistances = self._search_model.prev_editdistances
-        prev_students = list(prev_editdistances.keys())
-        return prev_students
+        prev_student_names = list(prev_editdistances.keys())
+        return prev_student_names
 
     def get_prev_filename_sample(self):
         """Return loaded filename sample."""
-        student_sample = self.get_prev_students()
+        student_sample = self.get_prev_student_names()[0]
         prev_editdistances = self._search_model.prev_editdistances
-        sample_filename = prev_editdistances[student_sample[0]]["task_name"]
+        sample_filename = prev_editdistances[student_sample]["task_name"]
         return sample_filename
 
     def calc_prev_editdistances(self, student_name):
@@ -227,23 +232,25 @@ class SearchController(QObject):
         prev_editdistances_ax = editdistances[student_name]["editdistances_ax"]
         return prev_editdistances_ax, prev_records_ax
 
-    def _get_student_records(self, student):
+    def _get_student_records(self, student_dir):
         """Return records of student."""
         record_path = self._main_model.record_path
-        student_path = join(record_path, student)
+        student_path = join(record_path, student_dir)
         records = self._main_model.get_records(student_path)
         return records
 
-    def calc_editdistances(self, student, filename):
+    def calc_editdistances(self, student_dir, filename):
         """Calculate student's editdistance and record axis."""
         records_count = 0
         records_ax = []
         editdistances_ax = []
 
-        records = self._get_student_records(student)
-        self._log_model.current_student = student
+        records = self._get_student_records(student_dir)
+        self._log_model.current_student_dir = student_dir
         last_file = self._log_model.read_file(filename, records[0].hexsha)
 
+        # Can't use record_iterator cause this function only need one
+        # student per operation
         for record in records:
             if self._log_model.is_exists(filename, record.hexsha):
                 current_file = self._log_model.read_file(filename, record.hexsha)
@@ -289,11 +296,13 @@ class SearchController(QObject):
         if os.path.isfile(save_path):
             os.remove(save_path)
 
-        for student in self.students_iterator():
+        for student_dir in self.student_directories_iterator():
             student_ed = {}
-            editdistances_ax, records_ax = self.calc_editdistances(student, filename)
+            editdistances_ax, records_ax = self.calc_editdistances(
+                student_dir, filename
+            )
 
-            name, student_id, _ = self.get_student_info(student)
+            name, student_id, _ = self.get_student_info(student_dir)
             student_key = "{}-{}".format(name, student_id)
             student_ed[student_key] = dict(
                 editdistances_ax=editdistances_ax,

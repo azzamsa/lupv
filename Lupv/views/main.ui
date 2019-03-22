@@ -353,7 +353,7 @@
                  </size>
                 </property>
                 <property name="title">
-                 <string>GroupBox</string>
+                 <string>Auth Information</string>
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_14">
                  <item>

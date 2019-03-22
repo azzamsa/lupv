@@ -57,46 +57,13 @@ class MainModel(QObject):
         student_dirs = self.get_student_dirs()
         students_records = []
 
-        for student in student_dirs:
-            student_path = join(self._record_path, student)
+        for student_dir in student_dirs:
+            student_path = join(self._record_path, student_dir)
             records = self.get_records(student_path)
 
-            name, student_id = [str(student).split("-")[x] for x in [0, 1]]
+            name, student_id = [str(student_dir).split("-")[x] for x in [0, 1]]
 
-            student_records = StudentsRecords(name, student_id, records)
+            student_records = dict(name=name, student_id=student_id, records=records)
             students_records.append(student_records)
 
         self._students_records = students_records
-
-
-class StudentsRecords(QObject):
-    def __init__(self, name, student_id, records):
-        super().__init__()
-        self.name = name
-        self.student_id = student_id
-        self.records = records
-
-
-class StudentRecords(QObject):
-    def __init__(
-        self,
-        name,
-        student_id,
-        total_records,
-        first_record_time,
-        first_record_relativetime,
-        last_record_time,
-        last_record_relativetime,
-        work_duration,
-        work_relative_duration,
-    ):
-        super().__init__()
-        self.name = name
-        self.student_id = student_id
-        self.total_records = total_records
-        self.first_record_time = first_record_time
-        self.first_record_relativetime = first_record_relativetime
-        self.last_record_time = last_record_time
-        self.last_record_relativetime = last_record_relativetime
-        self.work_duration = work_duration
-        self.work_relative_duration = work_relative_duration

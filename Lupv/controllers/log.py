@@ -1,5 +1,3 @@
-import editdistance as edlib
-
 from PyQt5.QtCore import QObject
 
 
@@ -101,32 +99,3 @@ class LogController(QObject):
                 file_content = self.get_diff(filename, sha)
 
             return file_content
-
-    def calc_editdistances(self, filename):
-        """Calculate editdistance and record axis."""
-        records_count = 0
-        records_ax = []
-        editdistances_ax = []
-
-        student_records = self._log_model.student_records
-        last_record_sha = student_records[0].hexsha
-        last_file = self._log_model.show_file(filename, last_record_sha)
-
-        for record in student_records:
-            if self._log_model.is_exists(filename, record.hexsha):
-                current_file = self._log_model.show_file(filename, record.hexsha)
-                editdistance_value = edlib.eval(last_file, current_file)
-                editdistances_ax.append(editdistance_value)
-
-                records_count += 1
-                records_ax.append(records_count)
-
-        return editdistances_ax, records_ax
-
-    def get_editdistance_values(self, filename):
-        """Return value of editdistance axis and record axis."""
-        records = self.get_student_records()
-        editdistances_ax, records_ax = self._main_ctrl.calc_editdistances(
-            filename, records, self.get_student_repo()
-        )
-        return editdistances_ax, records_ax

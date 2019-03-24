@@ -1,8 +1,6 @@
 from PyQt5.QtWidgets import QMessageBox, QTreeWidgetItem, qApp
 from PyQt5.QtGui import QBrush, QColor
 
-from Lupv.standard.standard import resize_column
-
 
 class LogView:
     def __init__(self, Ui, student_ctrl, controller):
@@ -92,7 +90,6 @@ class LogView:
                     [str(log["relative_time"]), str(log["time"]), str(log["sha"])],
                 )
 
-        resize_column(self._ui.log_tree)
         self.toggle_spinner("ready")
 
     def display_file_content(self, sha):
@@ -172,7 +169,8 @@ class LogView:
             self.toggle_stats()
         else:
             self.toggle_dateformat()
-        resize_column(self._ui.log_tree)
+        self._ui.log_tree.setColumnWidth(0, 200)
+        self._ui.log_tree.setColumnWidth(1, 200)
 
     def toggle_stats(self):
         """Togggle insertions deletions columns visibility."""

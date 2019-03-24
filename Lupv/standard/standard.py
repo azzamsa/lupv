@@ -27,10 +27,6 @@ def bold(item):
     item.setFont(0, bold)
 
 
-def resize_column(widget):
-    widget.header().setSectionResizeMode(QHeaderView.ResizeToContents)
-
-
 def peek(iterable):
     try:
         first = next(iterable)

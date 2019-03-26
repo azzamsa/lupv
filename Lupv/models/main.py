@@ -37,7 +37,7 @@ class MainModel(QObject):
         self._students_records = students_records
 
     def get_student_dirs(self):
-        "Return list of student directories"
+        """Return list of student directories."""
         dirs = os.listdir(self._record_path)
         student_dirs = []
         for d in dirs:

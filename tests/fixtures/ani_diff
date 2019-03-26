@@ -1,0 +1,13 @@
+commit 991dcb1ae434ffba832c0ad50b890afac7310608
+Author: student <s@student>
+Date:   Tue Mar 26 13:52:48 2019 +0700
+
+    2019-03-26 13:52:48
+
+diff --git a/tugas-tif.txt b/tugas-tif.txt
+index 241b1d6..f780c49 100644
+--- a/tugas-tif.txt
++++ b/tugas-tif.txt
+@@ -1 +1,2 @@
+ ani 1
++ani 2

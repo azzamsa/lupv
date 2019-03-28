@@ -11,14 +11,8 @@ class MainController(QObject):
         self._record_path = ""
         self._main_model = main_model
 
-        self._main_model.record_path_changed.connect(self.on_record_path_changed)
-
     def change_record_path(self, record_path):
         self._main_model.record_path = record_path
-
-    @pyqtSlot(str)
-    def on_record_path_changed(self, record_path):
-        self._record_path = record_path
 
     def validate(self, path):
         """Check if path contain valid student directory.

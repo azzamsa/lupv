@@ -216,12 +216,6 @@ class TestLogModel:
 
 class TestSearchModel:
     @pytest.fixture
-    def search_main_model(self):
-        main_model = MainModel()
-        search_model = SearchModel(main_model)
-        return main_model, search_model
-
-    @pytest.fixture
     def search_model(self):
         main_model = MainModel()
         search_model = SearchModel(main_model)
@@ -231,8 +225,9 @@ class TestSearchModel:
         search_model.prev_editdistances = None
         assert search_model.prev_editdistances is None
 
-    def test_read_sample_files(self, search_main_model):
-        main_model, search_model = search_main_model
+    def test_read_sample_files(self):
+        main_model = MainModel()
+        search_model = SearchModel(main_model)
 
         record_path = osp.join(osp.dirname(__file__), "student_tasks")
         main_model.record_path = record_path

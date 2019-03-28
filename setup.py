@@ -14,7 +14,7 @@ setup(
     author="azzamsa",
     author_email="azzam@azzamsa.com",
     url="https://gitlab.com/azzamsa/lupv",
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests"]),
     include_package_data=True,
     license="GPLv3",
     classifiers=[

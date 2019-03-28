@@ -1,12 +1,16 @@
 import pytest
 import os.path as osp
 from datetime import datetime, timedelta
+from collections import defaultdict
 
 from Lupv.models.main import MainModel
 from Lupv.controllers.main import MainController
 from Lupv.models.logs import LogModel
 from Lupv.controllers.log import LogController
+from Lupv.models.search import SearchModel
+from Lupv.controllers.search import SearchController
 from tests.helper import fixture
+from tests.fixtures import search_fixture
 
 
 class TestMainController:
@@ -225,3 +229,106 @@ class TestLogController:
 
         assert file_content_show == file_content_show_real
         assert file_content_diff == file_content_diff_real
+
+
+class TestSearchController:
+    @pytest.fixture
+    def search_ctrl(self):
+        main_model = MainModel()
+        record_path = osp.join(osp.dirname(__file__), "student_tasks")
+        main_model.record_path = record_path
+
+        log_model = LogModel(main_model)
+        search_model = SearchModel(main_model)
+        search_ctrl = SearchController(main_model, search_model, log_model)
+        return search_ctrl
+
+    def test_setters(self, search_ctrl):
+        search_ctrl.prev_editdistances = "foo"
+        assert search_ctrl.prev_editdistances == "foo"
+
+    def test_populate_sample_filenames(self, search_ctrl):
+        files = search_ctrl.populate_sample_filenames()
+        assert files[0] == "tugas-tif.txt"
+
+    def test_student_directories_iterator(self, search_ctrl):
+        directories = []
+        for direcotory in search_ctrl.student_directories_iterator():
+            directories.append(direcotory)
+
+        assert directories == ["budi-2222", "ani-1111"]
+
+    def test_record_iterator(self, search_ctrl):
+        student_records = defaultdict(list)
+
+        for student_dir, record in search_ctrl.records_iterator():
+            student_records[student_dir].append(record)
+
+        budi_first_record = student_records["budi-2222"][0]
+        ani_first_record = student_records["ani-1111"][0]
+        assert list(student_records.keys()) == ["budi-2222", "ani-1111"]
+        assert len(student_records["budi-2222"]) == 4
+        assert len(student_records["ani-1111"]) == 4
+        assert budi_first_record.hexsha == "422b64b3811192f412d223fcd5455a661aac0dbf"
+        assert ani_first_record.hexsha == "991dcb1ae434ffba832c0ad50b890afac7310608"
+
+    def test_analyze_suspects(self, search_ctrl):
+        suspects = search_ctrl.analyze_suspects(1, "tugas-tif.txt")
+        # we have no sample student that exceeded that 1 insertions
+        assert not suspects
+
+    def test_group_by_name(self, search_ctrl):
+        students = search_fixture.students
+        group = search_ctrl.group_by_name(students)
+
+        ani_one = group["ani-1111"][0]
+        ani_two = group["ani-1111"][1]
+        assert list(group.keys()) == ["budi-2222", "ani-1111"]
+        assert len(group["ani-1111"]) == 2
+        assert len(group["ani-1111"]) == 2
+        assert ani_one["name"] == "ani"
+        assert ani_two["student_id"] == "1111"
+
+    def test_get_suspects(self, search_ctrl):
+        grouped_suspects = search_ctrl.get_suspects(1, "tugas-tif.txt")
+        assert type(grouped_suspects) is defaultdict
+
+    def test_get_student_ips(self, search_ctrl):
+        students_ip = search_ctrl.get_student_ips()
+        student_records = defaultdict(list)
+        for student_ip in students_ip:
+            student_name = student_ip["name"]
+            student_records[student_name].append(student_ip)
+
+        ani_ip = student_records["ani"]
+        assert ani_ip[0]["ip"] == "111.111.111"
+
+        budi_ip = student_records["budi"]
+        assert budi_ip[0]["ip"] == "22.2.2222"
+
+    def test_group_by_ip(self, search_ctrl):
+        student_ips = search_fixture.student_ips
+        group = search_ctrl.group_by_ip(student_ips)
+
+        budi_one = group["22.2.2222"][0]
+        ani_one = group["111.111.111"][0]
+        assert list(group.keys()) == ["22.2.2222", "111.111.111"]
+        assert budi_one["name"] == "budi"
+        assert budi_one["student_id"] == "2222"
+        assert ani_one["name"] == "ani"
+        assert ani_one["student_id"] == "1111"
+
+    def test_multigroup_child(self, search_ctrl):
+        grouped_students = search_fixture.grouped_students
+        group = search_ctrl.multigroup_child(grouped_students)
+
+        assert list(group.keys()) == ["22.2.2222", "111.111.111"]
+        assert list(group["22.2.2222"].keys()) == ["budi-2222"]
+        assert list(group["111.111.111"].keys()) == ["ani-1111"]
+
+    def test_multigroup_child(self, search_ctrl):
+        multi_group = search_ctrl.get_student_ip_groups()
+
+        assert list(multi_group.keys()) == ["22.2.2222", "111.111.111"]
+        assert list(multi_group["22.2.2222"].keys()) == ["budi-2222"]
+        assert list(multi_group["111.111.111"].keys()) == ["ani-1111"]

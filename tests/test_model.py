@@ -56,10 +56,10 @@ class TestMainModel:
 
         assert ani_record["name"] == "ani"
         assert ani_record["student_id"] == "1111"
-        assert len(ani_record["records"]) == 5
+        assert len(ani_record["records"]) == 3
         assert budi_record["name"] == "budi"
         assert budi_record["student_id"] == "2222"
-        assert len(budi_record["records"]) == 5
+        assert len(budi_record["records"]) == 3
 
 
 class TestLogModel:

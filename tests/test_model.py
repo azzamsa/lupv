@@ -26,14 +26,12 @@ class TestMainModel:
         assert main_model.record_path == "/some/path"
         assert main_model.students_records == "Record"
 
-    def test_get_student_dirs(self, main_model, fs):
+    def test_get_student_dirs(self, main_model):
         """Test get_student_dirs with dummy directories."""
-        fs.create_dir("home/x/student_tasks/ani-1111/.git")
-        fs.create_dir("home/x/student_tasks/budi-2222/.git")
-        fs.create_dir("home/x/student_tasks/lupv-notes")
-        main_model.record_path = "/home/x/student_tasks"
+        record_path = osp.join(osp.dirname(__file__), "student_tasks")
+        main_model.record_path = record_path
 
-        assert main_model.get_student_dirs() == ["ani-1111", "budi-2222"]
+        assert main_model.get_student_dirs() == ["budi-2222", "ani-1111"]
 
     def test_get_records(self, main_model):
         """Test get_records with real git objects."""
@@ -127,14 +125,13 @@ class TestLogModel:
         assert log_model.student_records is None
         assert log_model.student_repo is None
 
-    def test_read_files(self, log_model, fs):
+    def test_read_files(self, log_model, student_paths):
         """Test finding files in student directory with dummy data."""
-        fs.create_file("home/x/student_tasks/ani-1111/tugas-tif.txt")
-        fs.create_file("home/x/student_tasks/ani-1111/tugas-tif-2.txt")
-        log_model.student_path = "/home/x/student_tasks/ani-1111"
+        ani_path, budi_path = student_paths
+        log_model.student_path = ani_path
         files = log_model.read_files()
 
-        assert files == ["tugas-tif.txt", "tugas-tif-2.txt"]
+        assert files == ["tugas-tif.txt"]
 
     def test_read_focused_window(self, log_model, student_paths):
         """Test reading focused window in specific commit with real data."""

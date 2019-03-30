@@ -11,6 +11,7 @@ from Lupv.models.search import SearchModel
 from Lupv.controllers.search import SearchController
 from tests.helper import fixture
 from tests.fixtures import search_fixture
+from tests.fixtures import record_fixture
 
 
 class TestMainController:
@@ -228,18 +229,20 @@ class TestLogController:
         assert log_model.current_student_dir == "ani-1111"
         assert log_model.record_path == "home/x/student_tasks"
 
-    def test_populate_logs(self, log_ctrl):
-        """Test populating student logs."""
-        ani_logs = []
-        for log in log_ctrl.populate_logs(selected_file="tugas-tif.txt"):
-            ani_logs.append(log)
+    def test_populate_logs(self, log_ctrl_model):
+        """Test populating student logs using dummy data."""
+        log_ctrl, log_model = log_ctrl_model
+        log_model.student_records = record_fixture.student_records
+        log_model.is_exists = self.fake_is_exist
+
+        ani_logs = list(log_ctrl.populate_logs(selected_file="tugas-tif.txt"))
 
         ani_log = ani_logs[0]
         assert "ago" in ani_log["relative_time"]
-        assert ani_log["time"] == "Tue, 26 Mar 2019, 13:52:48"
-        assert ani_log["sha"] == "991dcb1ae434ffba832c0ad50b890afac7310608"
-        assert ani_log["insertions"] == 1
-        assert ani_log["deletions"] == 0
+        assert ani_log["time"] == 'Sat, 30 Mar 2019, 01:00:57'
+        assert ani_log["sha"] == '991dcb1ae434ffba832c0ad50b890afac7311111'
+        assert ani_log["insertions"] == 3
+        assert ani_log["deletions"] == 1
 
     def test_populate_files(self, log_ctrl_model):
         """Test populating files in student direcotory.

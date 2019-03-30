@@ -32,24 +32,6 @@ student_ips = [
         "date": "Tue, 26 Mar 2019, 14:08:30",
     },
     {
-        "ip": "22.2.2222",
-        "name": "budi",
-        "student_id": "2222",
-        "date": "Tue, 26 Mar 2019, 14:08:24",
-    },
-    {
-        "ip": "22.2.2222",
-        "name": "budi",
-        "student_id": "2222",
-        "date": "Tue, 26 Mar 2019, 14:08:21",
-    },
-    {
-        "ip": "22.2.2222",
-        "name": "budi",
-        "student_id": "2222",
-        "date": "Tue, 26 Mar 2019, 14:08:18",
-    },
-    {
         "ip": "111.111.111",
         "name": "ani",
         "student_id": "1111",
@@ -60,18 +42,6 @@ student_ips = [
         "name": "ani",
         "student_id": "1111",
         "date": "Tue, 26 Mar 2019, 13:52:45",
-    },
-    {
-        "ip": "111.111.111",
-        "name": "ani",
-        "student_id": "1111",
-        "date": "Tue, 26 Mar 2019, 13:52:42",
-    },
-    {
-        "ip": "111.111.111",
-        "name": "ani",
-        "student_id": "1111",
-        "date": "Tue, 26 Mar 2019, 13:52:38",
     },
 ]
 
@@ -84,25 +54,7 @@ grouped_students = defaultdict(
                 "name": "budi",
                 "student_id": "2222",
                 "date": "Tue, 26 Mar 2019, 14:08:30",
-            },
-            {
-                "ip": "22.2.2222",
-                "name": "budi",
-                "student_id": "2222",
-                "date": "Tue, 26 Mar 2019, 14:08:24",
-            },
-            {
-                "ip": "22.2.2222",
-                "name": "budi",
-                "student_id": "2222",
-                "date": "Tue, 26 Mar 2019, 14:08:21",
-            },
-            {
-                "ip": "22.2.2222",
-                "name": "budi",
-                "student_id": "2222",
-                "date": "Tue, 26 Mar 2019, 14:08:18",
-            },
+            }
         ],
         "111.111.111": [
             {
@@ -116,18 +68,6 @@ grouped_students = defaultdict(
                 "name": "ani",
                 "student_id": "1111",
                 "date": "Tue, 26 Mar 2019, 13:52:45",
-            },
-            {
-                "ip": "111.111.111",
-                "name": "ani",
-                "student_id": "1111",
-                "date": "Tue, 26 Mar 2019, 13:52:42",
-            },
-            {
-                "ip": "111.111.111",
-                "name": "ani",
-                "student_id": "1111",
-                "date": "Tue, 26 Mar 2019, 13:52:38",
             },
         ],
     },

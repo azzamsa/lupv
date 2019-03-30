@@ -1,19 +1,13 @@
 import pytest
 import os.path as osp
-from datetime import datetime, timedelta
-from collections import defaultdict
 
 from Lupv.models.main import MainModel
 from Lupv.controllers.main import MainController
 from Lupv.models.logs import LogModel
 from Lupv.controllers.log import LogController
-from Lupv.models.search import SearchModel
-from Lupv.controllers.search import SearchController
 from tests.helper import fixture
 from tests.fixtures import record_fixture
-from tests.fixtures import search_controller_fixture as scf
 from tests.fixtures import controller_fixture as cf
-from tests.fixtures import model_fixture as mf
 
 
 class TestMainController:
@@ -53,6 +47,7 @@ class TestMainController:
 
     def test_validate_invalid_dir(self, main_ctrl, fs):
         """Test checking valid directories using real data."""
+        # FIXME can we patch the validate functions ?
         fs.create_dir("home/x/student_tasks/ani-1111/.git")
         fs.create_dir("home/x/student_tasks/budi-2222/.git")
         fs.create_dir("home/x/student_tasks/lupv-notes")
@@ -99,6 +94,7 @@ class TestMainController:
         assert "2 hours" in work_relative_duration
 
     def test_populate_students_records(self, main_ctrl_model):
+        # FIXME, all core tested
         """Test populating students record using real data."""
         main_ctrl, main_model = main_ctrl_model
         record_path = osp.join(osp.dirname(__file__), "student_tasks")
@@ -133,10 +129,8 @@ class TestMainController:
         assert budi_record["last_record_time"] == "Fri, 29 Mar 2019, 08:52:47"
         assert "ago" in budi_record["last_record_relativetime"]
         assert budi_record["work_duration"] == "2 days, 18:44:29"
-        assert (
-            budi_record["work_relative_duration"]
-            == "2 days 18 hours 44 minutes 29 seconds"
-        )
+        work_rel = "2 days 18 hours 44 minutes 29 seconds"
+        assert budi_record["work_relative_duration"] == work_rel
 
 
 class TestLogController:

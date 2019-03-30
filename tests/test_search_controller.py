@@ -25,17 +25,6 @@ class TestSearchController:
         search_ctrl = SearchController(main_model, search_model, log_model)
         return search_ctrl
 
-    @pytest.fixture
-    def search_ctrl_log_model(self):
-        main_model = MainModel()
-        record_path = osp.join(osp.dirname(__file__), "student_tasks")
-        main_model.record_path = record_path
-
-        log_model = LogModel(main_model)
-        search_model = SearchModel(main_model)
-        search_ctrl = SearchController(main_model, search_model, log_model)
-        return search_ctrl, log_model
-
     def test_property(self, search_ctrl):
         """Test SearchController properties."""
         search_ctrl.prev_editdistances = "foo"
@@ -55,6 +44,7 @@ class TestSearchController:
         assert directories == ["budi-2222", "ani-1111"]
 
     def test_record_iterator(self, search_ctrl):
+        # FIXME ?
         """Test iterating record of student using real data."""
         student_records = defaultdict(list)
 
@@ -70,6 +60,7 @@ class TestSearchController:
         assert ani_last_record.hexsha == "991dcb1ae434ffba832c0ad50b890afac7310608"
 
     def test_analyze_suspects(self, search_ctrl):
+        # FIXME ?
         """Test finding student that inserted more than certain line on one
         record/commit using real data.
         """
@@ -168,6 +159,17 @@ class TestSearchController:
 
         assert idx == 1
 
+    @pytest.fixture
+    def search_ctrl_log_model(self):
+        main_model = MainModel()
+        record_path = osp.join(osp.dirname(__file__), "student_tasks")
+        main_model.record_path = record_path
+
+        log_model = LogModel(main_model)
+        search_model = SearchModel(main_model)
+        search_ctrl = SearchController(main_model, search_model, log_model)
+        return search_ctrl, log_model
+
     def test_collect_student_windows(self, search_ctrl_log_model):
         """Test getting students ip using using dummy data.
         :note: Faked function already tested before.
@@ -197,7 +199,7 @@ class TestSearchController:
         assert len(student_windows_group["budi-2222"]) == 1
         assert "Firefox" in student_windows_group["budi-2222"][0]["window_name"]
 
-    def test_populate_student_dirs(self, search_ctrl_log_model):
+    def test_populate_student_dirs(self):
         """:note: bridge function."""
         main_model = MainModel()
         record_path = osp.join(osp.dirname(__file__), "student_tasks")
@@ -212,8 +214,8 @@ class TestSearchController:
         student_dirs = search_ctrl.populate_student_dirs()
         assert student_dirs == ["ani-1111", "budi-2222"]
 
-    def test_load_prev_editdistances(self):
-        """:note: bridge function."""
+    @pytest.fixture
+    def search_model_ctrl(self):
         main_model = MainModel()
         record_path = osp.join(osp.dirname(__file__), "student_tasks")
         main_model.record_path = record_path
@@ -221,120 +223,79 @@ class TestSearchController:
         log_model = LogModel(main_model)
         search_model = SearchModel(main_model)
         search_ctrl = SearchController(main_model, search_model, log_model)
+        return search_model, search_ctrl
 
+    def test_load_prev_editdistances(self, search_model_ctrl):
+        """:note: bridge function."""
+        search_model, search_ctrl = search_model_ctrl
         search_model.read_editdistances = mf.fake_read_editdistances
 
         ed_path = "dummy/path"
         search_ctrl.load_prev_editdistances(ed_path)
         assert search_model.prev_editdistances is not None
 
-    def test_get_prev_student_names(self, search_ctrl):
+    def test_get_prev_student_names(self, search_model_ctrl):
         """Test getting previous students name from exported editdistance using dummy data.
         :note: Faked function already tested before.
         """
-        main_model = MainModel()
-        record_path = osp.join(osp.dirname(__file__), "student_tasks")
-        main_model.record_path = record_path
-
-        log_model = LogModel(main_model)
-        search_model = SearchModel(main_model)
-        search_ctrl = SearchController(main_model, search_model, log_model)
-
+        search_model, search_ctrl = search_model_ctrl
         search_model.prev_editdistances = scf.students_ed
         prev_student_names = search_ctrl.get_prev_student_names()
 
         assert prev_student_names == ["budi-2222", "ani-1111"]
 
-    def test_get_prev_filename_sample(self, search_ctrl):
+    def test_get_prev_filename_sample(self, search_model_ctrl):
         """Test getting previous filename from exported editdistance using dummy data.
         :note: Faked function already tested before.
         """
-        main_model = MainModel()
-        record_path = osp.join(osp.dirname(__file__), "student_tasks")
-        main_model.record_path = record_path
-
-        log_model = LogModel(main_model)
-        search_model = SearchModel(main_model)
-        search_ctrl = SearchController(main_model, search_model, log_model)
-
+        search_model, search_ctrl = search_model_ctrl
         search_model.prev_editdistances = scf.students_ed
 
         sample_filename = search_ctrl.get_prev_filename_sample()
         assert sample_filename == "tugas-tif.txt"
 
-    def test_calc_prev_editdistances(self, search_ctrl):
+    def test_calc_prev_editdistances(self, search_model_ctrl):
         """Test calculating previous editdistance from exported editdistance using dummy data.
         :note: Faked function already tested before.
         """
-        main_model = MainModel()
-        record_path = osp.join(osp.dirname(__file__), "student_tasks")
-        main_model.record_path = record_path
-
-        log_model = LogModel(main_model)
-        search_model = SearchModel(main_model)
-        search_ctrl = SearchController(main_model, search_model, log_model)
-
+        search_model, search_ctrl = search_model_ctrl
         search_model.prev_editdistances = scf.students_ed
-
         prev_editdistances_ax, prev_records_ax = search_ctrl.calc_prev_editdistances(
             "ani-1111"
         )
         assert prev_editdistances_ax == [0, 12, 831, 843, 856]
         assert prev_records_ax == [1, 2, 3, 4, 5]
 
-    def test__get_student_records(self, search_ctrl):
-        """:note: bridge function"""
+    @pytest.fixture
+    def search_ctrl_main_model(self):
         main_model = MainModel()
-        record_path = osp.join(osp.dirname(__file__), "student_tasks")
-        main_model.record_path = record_path
-
+        main_model.record_path_changed.disconnect(main_model.read_students_records)
         log_model = LogModel(main_model)
         search_model = SearchModel(main_model)
         search_ctrl = SearchController(main_model, search_model, log_model)
 
-        main_model.get_records = mf.fake_fake_get_records
+        return search_ctrl, main_model
+
+    def test__get_student_records(self, search_ctrl_main_model):
+        """:note: bridge function"""
+        search_ctrl, main_model = search_ctrl_main_model
+        main_model.get_records = mf.fake_get_records
 
         records = search_ctrl._get_student_records("ani-1111")
         assert len(records) == 3
         assert records[0].hexsha == "991dcb1ae434ffba832c0ad50b890afac7311111"
 
     def test_calc_editdistances(self, search_ctrl):
+        """Test calculating editdistance using real data."""
         editdistances_ax, records_ax = search_ctrl.calc_editdistances(
             "ani-1111", "tugas-tif.txt"
         )
         assert editdistances_ax == [0, 6, 11]
         assert records_ax == [1, 2, 3]
 
-    @pytest.fixture
-    def search_ctrl_disconnect(self):
-        main_model.record_path_changed.disconnect(main_model.read_students_records)
-        main_model = MainModel()
-        log_model = LogModel(main_model)
-        log_model.current_student_dir_changed.disconnect(
-            log_model.on_current_student_dir_changed
-        )
-        search_model = SearchModel(main_model)
-        search_ctrl = SearchController(main_model, search_model, log_model)
-
-        log_model = LogModel(main_model)
-        search_model = SearchModel(main_model)
-        search_ctrl = SearchController(main_model, search_model, log_model)
-        return search_ctrl
-
-    def test_create_lupvnotes_dir(self, fs):
-        main_model = MainModel()
-        main_model.record_path_changed.disconnect(main_model.read_students_records)
-        log_model = LogModel(main_model)
-        log_model.current_student_dir_changed.disconnect(
-            log_model.on_current_student_dir_changed
-        )
-        search_model = SearchModel(main_model)
-        search_ctrl = SearchController(main_model, search_model, log_model)
-
-        log_model = LogModel(main_model)
-        search_model = SearchModel(main_model)
-        search_ctrl = SearchController(main_model, search_model, log_model)
-
+    def test_create_lupvnotes_dir(self, fs, search_ctrl_main_model):
+        """Test creating lupv-notes direcotory in fake filesystem."""
+        search_ctrl, main_model = search_ctrl_main_model
         fs.create_dir("home/x/student_tasks/")
 
         main_model.record_path = "home/x/student_tasks"
@@ -342,21 +303,30 @@ class TestSearchController:
         assert osp.isdir("home/x/student_tasks/lupv-notes")
 
     def test_construct_ed_graph_path(self, search_ctrl):
+        """Test constructing editdistance graph path."""
         graph_path = search_ctrl.construct_ed_graph_path("ani-1111")
+        graph_path_2 = search_ctrl.construct_ed_graph_path("ani-1111", "budi-2222")
         assert "/lupv-notes/ani-1111.png" in graph_path
+        assert "/lupv-notes/ani-1111_budi-2222.png" in graph_path_2
 
     def test_construct_editistance_path(self, search_ctrl):
+        """Test constructing editdistance path."""
         editdistance_file_path = search_ctrl.construct_editdistance_path(
             "tugas-tif2.txt"
         )
         assert "lupv-notes/tugas-tif2.txt-editdistance.lup" in editdistance_file_path
 
-    # def test_export_editdistance(self, search_ctrl):
-    #     # fs.create_dir("home/x/student_tasks/lupv-notes/")
+    def test_export_editdistance(self, search_model_ctrl):
+        """bridge function to export editdistance
+        :note: Faked function already tested before.
+        """
+        search_model, search_ctrl = search_model_ctrl
 
-    #     # save_path = "home/x/student_tasks/lupv-notes/tugas-tif3.txt-editdistance.lup"
-    #     search_ctrl.export_editdistances('tugas-tif.txt')
-    #     f = osp.exists(
-    #         "home/x/student_tasks/lupv-notes//tugas-tif3.txt-editdistance.lup"
-    #     )
-    #     print(f)
+        search_ctrl.create_lupvnotes_dir = cf.fake_create_lupvnotes_dir
+        search_ctrl.student_directories_iterator = cf.fake_student_directories_iterator
+        search_ctrl.calc_editdistances = cf.fake_calc_editdistances
+        search_model.write_editdistances = cf.fake_write_editdistances
+
+        search_ctrl.export_editdistances("tugas-tif3.txt")
+
+        assert True  # all core logic already tested

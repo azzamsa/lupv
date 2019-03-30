@@ -53,6 +53,13 @@ def fake_get_diff(filename, sha):
     return " ani 1<br/><span style='color:green;white-space:pre;'>+ani 2</span>"
 
 
+def fake_student_directories_iterator():
+    student_dirs = ["ani-1111", "budi-2222"]
+
+    for student_dir in student_dirs:
+        yield student_dir
+
+
 def fake_record_iterator():
     student_dir = "ani-1111"
     records = record_fixture.student_records
@@ -75,3 +82,15 @@ def fake_multigroup_child(student_group):
 
 def fake_collect_student_windows(search_key):
     return scf.student_windows
+
+
+def fake_create_lupvnotes_dir():
+    pass
+
+
+def fake_calc_editdistances(student_dir, filename):
+    return "a", "b"
+
+
+def fake_write_editdistances(student_ed, filename):
+    pass

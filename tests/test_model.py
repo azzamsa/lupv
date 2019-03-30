@@ -44,7 +44,7 @@ class TestMainModel:
         budi_records = main_model.get_records(budi_path)
 
         assert len(ani_records) == 4
-        assert len(budi_records) == 4
+        assert len(budi_records) == 5
 
     def fake_get_records(self, student_path):
         """Fake the student commit records. Use commit from this repo instead.

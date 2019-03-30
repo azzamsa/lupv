@@ -88,6 +88,7 @@ class LogController(QObject):
         return "<br/>".join(colored_diff)
 
     def get_diff(self, filename, sha):
+        """:note: bridge function that wrap function for getting file content."""
         dirty_diff = self._log_model.read_diff(filename, sha)
         diff_body = self.take_diff_body(dirty_diff)
         file_content = self.wrap_with_html(diff_body)

@@ -78,6 +78,7 @@ class TestLogModel:
     @pytest.fixture
     def student_paths(self):
         """Construct student path.
+
         :returns: real student_path for ani and budi in /test/student_tasks/
         """
         record_path = osp.join(osp.dirname(__file__), "student_tasks")

@@ -1,5 +1,6 @@
 Logs Model
-==============
+==========
 
-.. automodule:: Model.logs
-    :members:
+.. autoclass:: Lupv.models.logs.LogModel
+   :members:
+   :undoc-members:

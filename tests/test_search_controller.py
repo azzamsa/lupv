@@ -37,6 +37,7 @@ class TestSearchController:
 
     def test_student_directories_iterator(self, search_ctrl_main_model):
         """Test iterating student directories in record_path using dummy data.
+
         :note: all faked function has been tested before.
         """
         search_ctrl, main_model = search_ctrl_main_model
@@ -48,6 +49,7 @@ class TestSearchController:
 
     def test_record_iterator(self, search_ctrl_main_model):
         """Test iterating record of student using dummy data.
+
         :note: all faked function has been tested before.
         """
         search_ctrl, main_model = search_ctrl_main_model
@@ -68,6 +70,7 @@ class TestSearchController:
     def test_analyze_suspects(self, search_ctrl_log_model):
         """Test finding student that inserted more than certain line on one
         record/commit using dummy data.
+
         :note: all faked function has been tested before.
         """
         search_ctrl, log_model = search_ctrl_log_model
@@ -116,7 +119,8 @@ class TestSearchController:
 
     def test_get_student_ips(self, search_ctrl_log_model):
         """Test getting students ip using using dummy data.
-        :note: Faked function already tested before.
+
+        :note: all faked function has been tested before.
         """
         search_ctrl, log_model = search_ctrl_log_model
         search_ctrl.records_iterator = cf.fake_record_iterator
@@ -186,7 +190,8 @@ class TestSearchController:
 
     def test_collect_student_windows(self, search_ctrl_log_model):
         """Test getting students ip using using dummy data.
-        :note: Faked function already tested before.
+
+        :note: all faked function has been tested before.
         """
         search_ctrl, log_model = search_ctrl_log_model
         search_ctrl.records_iterator = cf.fake_record_iterator
@@ -250,7 +255,8 @@ class TestSearchController:
 
     def test_get_prev_student_names(self, search_model_ctrl):
         """Test getting previous students name from exported editdistance using dummy data.
-        :note: Faked function already tested before.
+
+        :note: all faked function has been tested before.
         """
         search_model, search_ctrl = search_model_ctrl
         search_model.prev_editdistances = scf.students_ed
@@ -260,7 +266,8 @@ class TestSearchController:
 
     def test_get_prev_filename_sample(self, search_model_ctrl):
         """Test getting previous filename from exported editdistance using dummy data.
-        :note: Faked function already tested before.
+
+        :note: all faked function has been tested before.
         """
         search_model, search_ctrl = search_model_ctrl
         search_model.prev_editdistances = scf.students_ed
@@ -270,7 +277,8 @@ class TestSearchController:
 
     def test_calc_prev_editdistances(self, search_model_ctrl):
         """Test calculating previous editdistance from exported editdistance using dummy data.
-        :note: Faked function already tested before.
+
+        :note: all faked function has been tested before.
         """
         search_model, search_ctrl = search_model_ctrl
         search_model.prev_editdistances = scf.students_ed
@@ -335,7 +343,8 @@ class TestSearchController:
 
     def test_export_editdistance(self, search_model_ctrl):
         """bridge function to export editdistance
-        :note: Faked function already tested before.
+
+        :note: all faked function has been tested before.
         """
         search_model, search_ctrl = search_model_ctrl
 

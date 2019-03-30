@@ -15,7 +15,8 @@ class TestMainController:
     def main_ctrl_model(self):
         """MainController fixture.
         Create MainController instance and disconnect all signal.
-        Return both main_ctrl and main_model because some function need both of them.
+
+        :return: both main_ctrl and main_model because some function need both of them.
         """
         main_model = MainModel()
         main_model.record_path_changed.disconnect(main_model.read_students_records)
@@ -40,13 +41,17 @@ class TestMainController:
         assert main_model.record_path == "home/x/student_tasks"
 
     def test_validate(self, main_ctrl):
-        """Test checking valid directories using real data."""
+        """Test checking valid directories using real data.
+
+        :note: it's faster using real data than dummy filesystem
+            real: 0.2s, fake: 0.5s."""
         record_path = osp.join(osp.dirname(__file__), "student_tasks")
         invalid_dirs = main_ctrl.validate(record_path)
         assert not invalid_dirs
 
     def test_validate_invalid_dir(self, main_ctrl, fs, monkeypatch):
-        """Test checking valid directories using real data.
+        """Test checking valid directories using dummy filesystem.
+
         :note: using monkeypatch and pyfakefs is the same as taking 0.05s."""
         fs.create_dir("home/x/student_tasks/ani-1111/.git")
         fs.create_dir("home/x/student_tasks/budi-2222/.git")
@@ -96,7 +101,8 @@ class TestMainController:
 
     def test_populate_students_records(self, main_ctrl_model):
         """Test populating students record using dummy data.
-        :note: All faked function has been tested before.
+
+        :note: all faked function has been tested before.
         """
         main_ctrl, main_model = main_ctrl_model
 
@@ -131,6 +137,7 @@ class TestLogController:
     def log_ctrl_model(self):
         """LogController fixture.
         Create LogController instance and disconnect all signal.
+
         :return: both log_ctrl and log_model because some function need both of them.
         """
         main_model = MainModel()
@@ -148,7 +155,6 @@ class TestLogController:
     def log_ctrl(self):
         """LogController fixture.
         Create LogController instance and disconnect all signal.
-        :note: Using real data at `/test/student_tasks/ani-1111/`.
         """
         main_model = MainModel()
         main_model.record_path_changed.disconnect(main_model.read_students_records)
@@ -201,8 +207,8 @@ class TestLogController:
         """Test populating files in student direcotory.
 
         :note: Using fake stuff because this function just a bridge to
-        model and didn't do anything important. the correspond logic
-        model already tested in test_model.
+            model and didn't do anything important. the correspond logic
+            model already tested in test_model.
         """
         log_ctrl, log_model = log_ctrl_model
         log_model.read_files = cf.fake_read_files
@@ -223,6 +229,7 @@ class TestLogController:
 
     def test_populate_all_windows(self, log_ctrl_model):
         """Test populating auth info in certain commit.
+
         :note: it's just a bridge function.
         """
         log_ctrl, log_model = log_ctrl_model
@@ -238,6 +245,7 @@ class TestLogController:
 
     def test_populate_focused_window(self, log_ctrl_model):
         """Test populating focused in certain commit.
+
         :note: it's just a bridge function.
         """
         log_ctrl, log_model = log_ctrl_model
@@ -265,6 +273,7 @@ class TestLogController:
 
     def test_get_diff(self, log_ctrl_model):
         """Test getting diff in certain commit.
+
         :note: it's just a bridge function.
         """
         log_ctrl, log_model = log_ctrl_model
@@ -281,6 +290,7 @@ class TestLogController:
 
     def test_populate_file_content(self, log_ctrl_model):
         """Test populating file content
+
         :note: it's just a bridge function.
         """
         log_ctrl, log_model = log_ctrl_model

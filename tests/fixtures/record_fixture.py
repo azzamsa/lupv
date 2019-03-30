@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
-from tests.fixtures.fake_commit import FakeCommit, FakeStats
+from tests.fakes.fake_commit import FakeCommit, FakeStats
 
 dummy_dt = datetime(2019, 3, 30, 1, 1, 0, 0)
 

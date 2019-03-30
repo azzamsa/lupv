@@ -8,8 +8,8 @@ from Lupv.models.search import SearchModel
 from Lupv.controllers.search import SearchController
 
 from tests.fixtures import search_controller_fixture as scf
-from tests.fixtures import controller_fixture as cf
-from tests.fixtures import model_fixture as mf
+from tests.fakes import controller_fake as cf
+from tests.fakes import model_fake as mf
 
 
 class TestSearchController:

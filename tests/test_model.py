@@ -4,7 +4,7 @@ from Lupv.models.main import MainModel
 from Lupv.models.logs import LogModel
 from Lupv.models.search import SearchModel
 from tests.helper import fixture
-from tests.fixtures import model_fixture as mf
+from tests.fakes import model_fake as mf
 
 
 class TestMainModel:

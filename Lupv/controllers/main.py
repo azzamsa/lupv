@@ -23,6 +23,7 @@ class MainController(QObject):
         dirs = os.listdir(path)
         invalid_student_dirs = []
         for d in dirs:
+            # print(d)
             if d != "lupv-notes":
                 if not os.path.isdir(join(path, d, ".git")):
                     invalid_student_dirs.append(d)

@@ -7,7 +7,7 @@ from Lupv.models.logs import LogModel
 from Lupv.controllers.log import LogController
 from tests.helper import fixture
 from tests.fixtures import record_fixture
-from tests.fixtures import controller_fixture as cf
+from tests.fakes import controller_fake as cf
 
 
 class TestMainController:
@@ -45,15 +45,16 @@ class TestMainController:
         invalid_dirs = main_ctrl.validate(record_path)
         assert not invalid_dirs
 
-    def test_validate_invalid_dir(self, main_ctrl, fs):
-        """Test checking valid directories using real data."""
-        # FIXME can we patch the validate functions ?
+    def test_validate_invalid_dir(self, main_ctrl, fs, monkeypatch):
+        """Test checking valid directories using real data.
+        :note: using monkeypatch and pyfakefs is the same as taking 0.05s."""
         fs.create_dir("home/x/student_tasks/ani-1111/.git")
         fs.create_dir("home/x/student_tasks/budi-2222/.git")
         fs.create_dir("home/x/student_tasks/lupv-notes")
         fs.create_dir("home/x/student_tasks/invalid-3333")
 
         invalid_dirs = main_ctrl.validate("home/x/student_tasks")
+
         assert "invalid-3333" == invalid_dirs[0]
 
     def test_relativize_datetime(self, main_ctrl):

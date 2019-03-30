@@ -3,6 +3,10 @@ from tests.fixtures import record_fixture
 
 from tests.fixtures import search_controller_fixture as scf
 
+#
+# MainModel
+#
+
 
 def fake_student_dirs():
     """Fake the student directories."""
@@ -25,6 +29,11 @@ def fake_student_repo(student_path):
     """
     student_repo = git.Repo(student_path)
     return student_repo
+
+
+#
+# SearchModel
+#
 
 
 def fake_read_editdistances(filename):

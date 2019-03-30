@@ -1,11 +1,10 @@
 import pytest
-import git
 import os.path as osp
-
 from Lupv.models.main import MainModel
 from Lupv.models.logs import LogModel
 from Lupv.models.search import SearchModel
 from tests.helper import fixture
+from tests.fixtures import model_fixture as mf
 
 
 class TestMainModel:
@@ -44,29 +43,12 @@ class TestMainModel:
         assert len(ani_records) == 4
         assert len(budi_records) == 5
 
-    def fake_get_records(self, student_path):
-        """Fake the student commit records. Use commit from this repo instead.
-
-        Using commit from this repo instead of real commit in
-        /test/student_tasks/ help avoid using external testing dependencies,
-        but in the end real commit still need to be used cause of
-        faking git commit is not an easy task.
-        """
-        repo_path = osp.dirname(__file__)
-        student_repo = git.Repo(repo_path, search_parent_directories=True)
-        records = list(student_repo.iter_commits("master", max_count=5))
-        return records
-
-    def fake_student_dirs(self):
-        """Fake the student directories."""
-        return ["ani-1111", "budi-2222"]
-
     def test_read_student_records(self, main_model):
         """Test reading students records using fake commit from this repo and
         dummy student directories.
         """
-        main_model.get_student_dirs = self.fake_student_dirs
-        main_model.get_records = self.fake_get_records
+        main_model.get_student_dirs = mf.fake_student_dirs
+        main_model.get_records = mf.fake_get_records
 
         main_model.read_students_records()
         ani_record = main_model.students_records[0]
@@ -103,14 +85,6 @@ class TestLogModel:
         budi_path = osp.join(record_path, "budi-2222")
         return ani_path, budi_path
 
-    def fake_student_repo(self, student_path):
-        """Fake the initialize student_repo to avoid using
-        on_current_student_dir_changed that invoke a lot of thing
-        other than just initialize the student_repo.
-        """
-        student_repo = git.Repo(student_path)
-        return student_repo
-
     def test_property(self, log_model):
         """Test LogModel properties."""
         log_model.record_path = "home/x/test"
@@ -137,11 +111,11 @@ class TestLogModel:
         """Test reading focused window in specific commit with real data."""
         ani_path, budi_path = student_paths
         # check if it can cycle multiple students
-        log_model.student_repo = self.fake_student_repo(ani_path)
+        log_model.student_repo = mf.fake_student_repo(ani_path)
         ani_focused_window = log_model.read_focused_window(
             "243ea13b1248bd2ebf4cd3ad550816619e08b470"
         )
-        log_model.student_repo = self.fake_student_repo(budi_path)
+        log_model.student_repo = mf.fake_student_repo(budi_path)
         budi_focused_window = log_model.read_focused_window(
             "961e5cc0f1fb780e554beb8a5b48f26f586b89d1"
         )
@@ -152,11 +126,11 @@ class TestLogModel:
     def test_read_auth_info(self, log_model, student_paths):
         """Test reading auth info in specific commit with real data."""
         ani_path, budi_path = student_paths
-        log_model.student_repo = self.fake_student_repo(ani_path)
+        log_model.student_repo = mf.fake_student_repo(ani_path)
         ani_auth_info = log_model.read_auth_info(
             "243ea13b1248bd2ebf4cd3ad550816619e08b470"
         )
-        log_model.student_repo = self.fake_student_repo(budi_path)
+        log_model.student_repo = mf.fake_student_repo(budi_path)
         budi_auth_info = log_model.read_auth_info(
             "325b2dae6ab4e56a22ff5fc457e5ccff72740cfd"
         )
@@ -167,11 +141,11 @@ class TestLogModel:
     def test_read_all_windows(self, log_model, student_paths):
         """Test reading all windows in specific commit with real data."""
         ani_path, budi_path = student_paths
-        log_model.student_repo = self.fake_student_repo(ani_path)
+        log_model.student_repo = mf.fake_student_repo(ani_path)
         ani_auth_info = log_model.read_all_windows(
             "e356b905c53c683818f5dacc2f880e3fd7e88d3c"
         )
-        log_model.student_repo = self.fake_student_repo(budi_path)
+        log_model.student_repo = mf.fake_student_repo(budi_path)
         budi_auth_info = log_model.read_all_windows(
             "325b2dae6ab4e56a22ff5fc457e5ccff72740cfd"
         )
@@ -190,12 +164,12 @@ class TestLogModel:
     def test_read_file(self, log_model, student_paths):
         """Test reading file content in specific commit with real data."""
         ani_path, budi_path = student_paths
-        log_model.student_repo = self.fake_student_repo(ani_path)
+        log_model.student_repo = mf.fake_student_repo(ani_path)
         filename = "tugas-tif.txt"
         ani_file = log_model.read_file(
             filename, "991dcb1ae434ffba832c0ad50b890afac7310608"
         )
-        log_model.student_repo = self.fake_student_repo(budi_path)
+        log_model.student_repo = mf.fake_student_repo(budi_path)
         budi_file = log_model.read_file(
             filename, "422b64b3811192f412d223fcd5455a661aac0dbf"
         )
@@ -206,12 +180,12 @@ class TestLogModel:
     def test_read_diff(self, log_model, student_paths):
         """Test reading diff in specific commit with real data."""
         ani_path, budi_path = student_paths
-        log_model.student_repo = self.fake_student_repo(ani_path)
+        log_model.student_repo = mf.fake_student_repo(ani_path)
         filename = "tugas-tif.txt"
         ani_diff = log_model.read_diff(
             filename, "991dcb1ae434ffba832c0ad50b890afac7310608"
         )
-        log_model.student_repo = self.fake_student_repo(budi_path)
+        log_model.student_repo = mf.fake_student_repo(budi_path)
         budi_diff = log_model.read_diff(
             filename, "422b64b3811192f412d223fcd5455a661aac0dbf"
         )
@@ -224,12 +198,12 @@ class TestLogModel:
     def test_is_exists(self, log_model, student_paths):
         """Test checking if certain file exists in specific commit with real data."""
         ani_path, budi_path = student_paths
-        log_model.student_repo = self.fake_student_repo(ani_path)
+        log_model.student_repo = mf.fake_student_repo(ani_path)
         filename = "tugas-tif.txt"
         ani_exists = log_model.is_exists(
             filename, "991dcb1ae434ffba832c0ad50b890afac7310608"
         )
-        log_model.student_repo = self.fake_student_repo(budi_path)
+        log_model.student_repo = mf.fake_student_repo(budi_path)
         budi_exists = log_model.is_exists(
             filename, "422b64b3811192f412d223fcd5455a661aac0dbf"
         )

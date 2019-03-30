@@ -68,6 +68,14 @@ def fake_record_iterator():
         yield student_dir, record
 
 
+def fake_record_iterator_suspect():
+    student_dir = "budi-2222"
+    records = record_fixture.student_record_suspect
+
+    for record in records:
+        yield student_dir, record
+
+
 def fake_get_student_ips():
     return scf.student_ips
 

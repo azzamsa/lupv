@@ -35,44 +35,58 @@ class TestSearchController:
         files = search_ctrl.populate_sample_filenames()
         assert files[0] == "tugas-tif.txt"
 
-    def test_student_directories_iterator(self, search_ctrl):
-        """Test iterating student directories in record_path using real data."""
-        directories = []
-        for direcotory in search_ctrl.student_directories_iterator():
-            directories.append(direcotory)
+    def test_student_directories_iterator(self, search_ctrl_main_model):
+        """Test iterating student directories in record_path using dummy data.
+        :note: all faked function has been tested before.
+        """
+        search_ctrl, main_model = search_ctrl_main_model
+        main_model.get_student_dirs = mf.fake_get_student_dirs
 
-        assert directories == ["budi-2222", "ani-1111"]
+        directories = list(search_ctrl.student_directories_iterator())
 
-    def test_record_iterator(self, search_ctrl):
-        # FIXME ?
-        """Test iterating record of student using real data."""
+        assert directories == ["ani-1111", "budi-2222"]
+
+    def test_record_iterator(self, search_ctrl_main_model):
+        """Test iterating record of student using dummy data.
+        :note: all faked function has been tested before.
+        """
+        search_ctrl, main_model = search_ctrl_main_model
+        search_ctrl.student_directories_iterator = cf.fake_student_directories_iterator
+        main_model.get_records = mf.fake_get_records
+
         student_records = defaultdict(list)
-
         for student_dir, record in search_ctrl.records_iterator():
             student_records[student_dir].append(record)
 
         budi_last_record = student_records["budi-2222"][0]
         ani_last_record = student_records["ani-1111"][0]
-        assert list(student_records.keys()) == ["budi-2222", "ani-1111"]
-        assert len(student_records["budi-2222"]) == 5
-        assert len(student_records["ani-1111"]) == 4
-        assert budi_last_record.hexsha == "0e91ef7e3f1224f44c9174958aaaa2a6fa082f4c"
-        assert ani_last_record.hexsha == "991dcb1ae434ffba832c0ad50b890afac7310608"
+        assert list(student_records.keys()) == ["ani-1111", "budi-2222"]
+        assert len(student_records["budi-2222"]) == 3
+        assert budi_last_record.hexsha == "991dcb1ae434ffba832c0ad50b890afac7311111"
+        assert ani_last_record.hexsha == "991dcb1ae434ffba832c0ad50b890afac7311111"
 
-    def test_analyze_suspects(self, search_ctrl):
-        # FIXME ?
+    def test_analyze_suspects(self, search_ctrl_log_model):
         """Test finding student that inserted more than certain line on one
-        record/commit using real data.
+        record/commit using dummy data.
+        :note: all faked function has been tested before.
         """
-        suspects = search_ctrl.analyze_suspects(15, "tugas-tif.txt")
-        suspects_real = {
-            "name": "budi",
-            "student_id": "2222",
-            "filename": "tugas-tif.txt",
-            "insertions": 19,
-            "date": "Fri, 29 Mar 2019, 08:52:47",
-        }
-        assert suspects[0] == suspects_real
+        search_ctrl, log_model = search_ctrl_log_model
+
+        search_ctrl.records_iterator = cf.fake_record_iterator_suspect
+        log_model.is_exists = cf.fake_is_exists
+        suspects = search_ctrl.analyze_suspects(19, "tugas-tif.txt")
+
+        suspects_real = [
+            {
+                "date": "Sat, 30 Mar 2019, 01:00:51",
+                "filename": "tugas-tif.txt",
+                "insertions": 20,
+                "name": "budi",
+                "student_id": "2222",
+            }
+        ]
+
+        assert suspects == suspects_real
 
     def test_group_by_name(self, search_ctrl):
         """Test grouping student dictionary by name using dummy data."""
@@ -271,6 +285,9 @@ class TestSearchController:
         main_model = MainModel()
         main_model.record_path_changed.disconnect(main_model.read_students_records)
         log_model = LogModel(main_model)
+        log_model.current_student_dir_changed.disconnect(
+            log_model.on_current_student_dir_changed
+        )
         search_model = SearchModel(main_model)
         search_ctrl = SearchController(main_model, search_model, log_model)
 

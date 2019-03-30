@@ -95,42 +95,34 @@ class TestMainController:
         assert "2 hours" in work_relative_duration
 
     def test_populate_students_records(self, main_ctrl_model):
-        # FIXME, all core tested
-        """Test populating students record using real data."""
+        """Test populating students record using dummy data.
+        :note: All faked function has been tested before.
+        """
         main_ctrl, main_model = main_ctrl_model
-        record_path = osp.join(osp.dirname(__file__), "student_tasks")
-        main_model.record_path = record_path
-        main_model.read_students_records()
 
-        student_records = []
-        for student_record in main_ctrl.populate_students_records():
-            student_records.append(student_record)
-            if student_record["name"] == "ani":
-                ani_record = student_record
-            if student_record["name"] == "budi":
-                budi_record = student_record
+        main_model.students_records = record_fixture.student_records_2
+        main_ctrl.get_first_record_time = cf.fake_get_first_record_time
+        main_ctrl.get_last_record_time = cf.fake_get_last_record_time
+        main_ctrl.calc_work_duration = cf.fake_calc_work_duration
 
+        student_records = list(main_ctrl.populate_students_records())
+
+        budi_record = student_records[0]
+        ani_record = student_records[1]
         assert len(student_records) == 2
 
         assert ani_record["name"] == "ani"
         assert ani_record["student_id"] == "1111"
-        assert ani_record["total_records"] == 4
-        assert ani_record["first_record_time"] == "Tue, 26 Mar 2019, 13:52:38"
-        assert "ago" in ani_record["first_record_relativetime"]
-        assert ani_record["last_record_time"] == "Tue, 26 Mar 2019, 13:52:48"
-        assert "ago" in ani_record["last_record_relativetime"]
-        assert ani_record["work_duration"] == "0:00:10"
-        assert ani_record["work_relative_duration"] == "10 seconds"
 
         assert budi_record["name"] == "budi"
         assert budi_record["student_id"] == "2222"
-        assert budi_record["total_records"] == 5
-        assert budi_record["first_record_time"] == "Tue, 26 Mar 2019, 14:08:18"
+        assert budi_record["total_records"] == 3
+        assert budi_record["first_record_time"] == "Tue, 26 Mar 2019, 13:52:38"
         assert "ago" in budi_record["first_record_relativetime"]
-        assert budi_record["last_record_time"] == "Fri, 29 Mar 2019, 08:52:47"
+        assert budi_record["last_record_time"] == "Tue, 26 Mar 2019, 13:52:48"
         assert "ago" in budi_record["last_record_relativetime"]
-        assert budi_record["work_duration"] == "2 days, 18:44:29"
-        work_rel = "2 days 18 hours 44 minutes 29 seconds"
+        assert budi_record["work_duration"] == "0:00:10"
+        work_rel = "10 seconds"
         assert budi_record["work_relative_duration"] == work_rel
 
 

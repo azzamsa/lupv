@@ -9,6 +9,11 @@ def fake_student_dirs():
     return ["ani-1111", "budi-2222"]
 
 
+def fake_get_student_dirs():
+    """Fake the student directories."""
+    return ["ani-1111", "budi-2222"]
+
+
 def fake_get_records(student_path):
     return record_fixture.student_records
 

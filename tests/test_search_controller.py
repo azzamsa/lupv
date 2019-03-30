@@ -311,7 +311,9 @@ class TestSearchController:
         assert records[0].hexsha == "991dcb1ae434ffba832c0ad50b890afac7311111"
 
     def test_calc_editdistances(self, search_ctrl):
-        """Test calculating editdistance using real data."""
+        """Test calculating editdistance using real data.
+
+        :note: using real data because the edlib logic only tested here."""
         editdistances_ax, records_ax = search_ctrl.calc_editdistances(
             "ani-1111", "tugas-tif.txt"
         )

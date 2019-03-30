@@ -239,8 +239,8 @@ class TestLogController:
 
         ani_log = ani_logs[0]
         assert "ago" in ani_log["relative_time"]
-        assert ani_log["time"] == 'Sat, 30 Mar 2019, 01:00:57'
-        assert ani_log["sha"] == '991dcb1ae434ffba832c0ad50b890afac7311111'
+        assert ani_log["time"] == "Sat, 30 Mar 2019, 01:00:57"
+        assert ani_log["sha"] == "991dcb1ae434ffba832c0ad50b890afac7311111"
         assert ani_log["insertions"] == 3
         assert ani_log["deletions"] == 1
 
@@ -353,6 +353,7 @@ class TestLogController:
 class TestSearchController:
     @pytest.fixture
     def search_ctrl(self):
+        """SearchController fixture."""
         main_model = MainModel()
         record_path = osp.join(osp.dirname(__file__), "student_tasks")
         main_model.record_path = record_path
@@ -362,15 +363,18 @@ class TestSearchController:
         search_ctrl = SearchController(main_model, search_model, log_model)
         return search_ctrl
 
-    def test_setters(self, search_ctrl):
+    def test_property(self, search_ctrl):
+        """Test SearchController properties."""
         search_ctrl.prev_editdistances = "foo"
         assert search_ctrl.prev_editdistances == "foo"
 
     def test_populate_sample_filenames(self, search_ctrl):
+        """Test populating sample filename using real data."""
         files = search_ctrl.populate_sample_filenames()
         assert files[0] == "tugas-tif.txt"
 
     def test_student_directories_iterator(self, search_ctrl):
+        """Test iterating student directories in record_path using real data."""
         directories = []
         for direcotory in search_ctrl.student_directories_iterator():
             directories.append(direcotory)
@@ -378,6 +382,7 @@ class TestSearchController:
         assert directories == ["budi-2222", "ani-1111"]
 
     def test_record_iterator(self, search_ctrl):
+        """Test iterating record of student using real data."""
         student_records = defaultdict(list)
 
         for student_dir, record in search_ctrl.records_iterator():
@@ -392,8 +397,10 @@ class TestSearchController:
         assert ani_last_record.hexsha == "991dcb1ae434ffba832c0ad50b890afac7310608"
 
     def test_analyze_suspects(self, search_ctrl):
-        suspects = search_ctrl.analyze_suspects(1, "tugas-tif.txt")
-        # we have no sample student that exceeded that 1 insertions
+        """Test finding student that inserted more than certain line on one
+        record/commit using real data.
+        """
+        suspects = search_ctrl.analyze_suspects(15, "tugas-tif.txt")
         suspects_real = {
             "name": "budi",
             "student_id": "2222",
@@ -404,6 +411,7 @@ class TestSearchController:
         assert suspects[0] == suspects_real
 
     def test_group_by_name(self, search_ctrl):
+        """Test grouping student dictionary by name using dummy data."""
         students = search_fixture.students
         group = search_ctrl.group_by_name(students)
 
@@ -415,9 +423,18 @@ class TestSearchController:
         assert ani_one["name"] == "ani"
         assert ani_two["student_id"] == "1111"
 
+    def fake_analyze_suspects(self, insertions_limit, filename):
+        return search_fixture.students
+
+    def fake_group_by_name(self, students):
+        return "this is just bridge function"
+
     def test_get_suspects(self, search_ctrl):
+        """:note: this is just bridge function. All logic already tested above."""
+        search_ctrl.analyze_suspects = self.fake_analyze_suspects
+        search_ctrl.group_by_name = self.fake_group_by_name
         grouped_suspects = search_ctrl.get_suspects(1, "tugas-tif.txt")
-        assert type(grouped_suspects) is defaultdict
+        assert type(grouped_suspects) is str
 
     def test_get_student_ips(self, search_ctrl):
         students_ip = search_ctrl.get_student_ips()

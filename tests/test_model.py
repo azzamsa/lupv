@@ -11,11 +11,15 @@ from tests.helper import fixture
 class TestMainModel:
     @pytest.fixture
     def main_model(self):
+        """MainModel fixture.
+        Create MainModel instance and disconnect all signal.
+        """
         main_model = MainModel()
         main_model.record_path_changed.disconnect(main_model.read_students_records)
         return main_model
 
-    def test_setters(self, main_model):
+    def test_property(self, main_model):
+        """Test MainModel property with dummy value."""
         main_model.record_path = "/some/path"
         main_model.students_records = "Record"
 
@@ -23,6 +27,7 @@ class TestMainModel:
         assert main_model.students_records == "Record"
 
     def test_get_student_dirs(self, main_model, fs):
+        """Test get_student_dirs with dummy directories."""
         fs.create_dir("home/x/student_tasks/ani-1111/.git")
         fs.create_dir("home/x/student_tasks/budi-2222/.git")
         fs.create_dir("home/x/student_tasks/lupv-notes")
@@ -31,6 +36,7 @@ class TestMainModel:
         assert main_model.get_student_dirs() == ["ani-1111", "budi-2222"]
 
     def test_get_records(self, main_model):
+        """Test get_records with real git objects."""
         record_path = osp.join(osp.dirname(__file__), "student_tasks")
         ani_path = osp.join(record_path, "ani-1111")
         budi_path = osp.join(record_path, "budi-2222")
@@ -41,15 +47,26 @@ class TestMainModel:
         assert len(budi_records) == 4
 
     def fake_get_records(self, student_path):
+        """Fake the student commit records. Use commit from this repo instead.
+
+        Using commit from this repo instead of real commit in
+        /test/student_tasks/ help avoid using external testing dependencies,
+        but in the end real commit still need to be used cause of
+        faking git commit is not an easy task.
+        """
         repo_path = osp.dirname(__file__)
         student_repo = git.Repo(repo_path, search_parent_directories=True)
         records = list(student_repo.iter_commits("master", max_count=5))
         return records
 
     def fake_student_dirs(self):
+        """Fake the student directories."""
         return ["ani-1111", "budi-2222"]
 
     def test_read_student_records(self, main_model):
+        """Test reading students records using fake commit from this repo and
+        dummy student directories.
+        """
         main_model.get_student_dirs = self.fake_student_dirs
         main_model.get_records = self.fake_get_records
 
@@ -68,6 +85,9 @@ class TestMainModel:
 class TestLogModel:
     @pytest.fixture
     def log_model(self):
+        """LogModel fixture.
+        Create LogModel instance and disconnect all signal.
+        """
         main_model = MainModel()
         log_model = LogModel(main_model)
         log_model.current_student_dir_changed.disconnect(
@@ -75,11 +95,26 @@ class TestLogModel:
         )
         return log_model
 
+    @pytest.fixture
+    def student_paths(self):
+        """Construct student path.
+        :returns: real student_path for ani and budi in /test/student_tasks/
+        """
+        record_path = osp.join(osp.dirname(__file__), "student_tasks")
+        ani_path = osp.join(record_path, "ani-1111")
+        budi_path = osp.join(record_path, "budi-2222")
+        return ani_path, budi_path
+
     def fake_student_repo(self, student_path):
+        """Fake the initialize student_repo to avoid using
+        on_current_student_dir_changed that invoke a lot of thing
+        other than just initialize the student_repo.
+        """
         student_repo = git.Repo(student_path)
         return student_repo
 
-    def test_setters(self, log_model):
+    def test_property(self, log_model):
+        """Test LogModel properties."""
         log_model.record_path = "home/x/test"
         log_model.student_path = "home/x/test/ani"
         log_model.current_student_dir = "ani-1111"
@@ -93,6 +128,7 @@ class TestLogModel:
         assert log_model.student_repo is None
 
     def test_read_files(self, log_model, fs):
+        """Test finding files in student directory with dummy data."""
         fs.create_file("home/x/student_tasks/ani-1111/tugas-tif.txt")
         fs.create_file("home/x/student_tasks/ani-1111/tugas-tif-2.txt")
         log_model.student_path = "/home/x/student_tasks/ani-1111"
@@ -100,14 +136,8 @@ class TestLogModel:
 
         assert files == ["tugas-tif.txt", "tugas-tif-2.txt"]
 
-    @pytest.fixture
-    def student_paths(self):
-        record_path = osp.join(osp.dirname(__file__), "student_tasks")
-        ani_path = osp.join(record_path, "ani-1111")
-        budi_path = osp.join(record_path, "budi-2222")
-        return ani_path, budi_path
-
     def test_read_focused_window(self, log_model, student_paths):
+        """Test reading focused window in specific commit with real data."""
         ani_path, budi_path = student_paths
         # check if it can cycle multiple students
         log_model.student_repo = self.fake_student_repo(ani_path)
@@ -123,6 +153,7 @@ class TestLogModel:
         assert budi_focused_window == "~/TESTS/budi-2222/tugas-tif.txt"
 
     def test_read_auth_info(self, log_model, student_paths):
+        """Test reading auth info in specific commit with real data."""
         ani_path, budi_path = student_paths
         log_model.student_repo = self.fake_student_repo(ani_path)
         ani_auth_info = log_model.read_auth_info(
@@ -137,6 +168,7 @@ class TestLogModel:
         assert budi_auth_info == ["budi", "budi-machine", "22.2.2222"]
 
     def test_read_all_windows(self, log_model, student_paths):
+        """Test reading all windows in specific commit with real data."""
         ani_path, budi_path = student_paths
         log_model.student_repo = self.fake_student_repo(ani_path)
         ani_auth_info = log_model.read_all_windows(
@@ -159,6 +191,7 @@ class TestLogModel:
         ]
 
     def test_read_file(self, log_model, student_paths):
+        """Test reading file content in specific commit with real data."""
         ani_path, budi_path = student_paths
         log_model.student_repo = self.fake_student_repo(ani_path)
         filename = "tugas-tif.txt"
@@ -174,6 +207,7 @@ class TestLogModel:
         assert budi_file == "budi line 1\nbudi line 2"
 
     def test_read_diff(self, log_model, student_paths):
+        """Test reading diff in specific commit with real data."""
         ani_path, budi_path = student_paths
         log_model.student_repo = self.fake_student_repo(ani_path)
         filename = "tugas-tif.txt"
@@ -191,6 +225,7 @@ class TestLogModel:
         assert budi_diff == budi_diff_real
 
     def test_is_exists(self, log_model, student_paths):
+        """Test checking if certain file exists in specific commit with real data."""
         ani_path, budi_path = student_paths
         log_model.student_repo = self.fake_student_repo(ani_path)
         filename = "tugas-tif.txt"
@@ -206,6 +241,7 @@ class TestLogModel:
         assert budi_exists is True
 
     def test_on_current_student_dir_changed(self, log_model, student_paths):
+        """Test some action that runs automatically when student_dir changed."""
         record_path = osp.join(osp.dirname(__file__), "student_tasks")
         log_model.record_path = record_path
         log_model.current_student_dir = "ani-1111"
@@ -217,15 +253,18 @@ class TestLogModel:
 class TestSearchModel:
     @pytest.fixture
     def search_model(self):
+        """SearchModel fixture."""
         main_model = MainModel()
         search_model = SearchModel(main_model)
         return search_model
 
-    def test_setters(self, search_model):
+    def test_property(self, search_model):
+        """Test SearchModel properties."""
         search_model.prev_editdistances = None
         assert search_model.prev_editdistances is None
 
     def test_read_sample_files(self):
+        """Test finding files from one sample student with real data."""
         main_model = MainModel()
         search_model = SearchModel(main_model)
 
@@ -236,6 +275,7 @@ class TestSearchModel:
         assert files == ["tugas-tif.txt"]
 
     def test_read_editdistances(self, search_model):
+        """Test reading exported editdistances file with real data."""
         ed_path = osp.join(
             osp.dirname(__file__),
             "student_tasks",
@@ -248,6 +288,7 @@ class TestSearchModel:
         assert "budi-2222" in list(ed.keys())
 
     def test_write_editdistances(self, search_model, tmpdir):
+        """Test writing editdistance to dummy file with dummy data."""
         ed_dummy = {"ani-1111": {"task-name": "tugas-tif.txt"}}
         ed_path = tmpdir.join("editdistance-exported.lup")
         search_model.write_editdistances(ed_dummy, ed_path)

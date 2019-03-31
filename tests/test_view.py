@@ -22,7 +22,7 @@ class Lupv(QApplication):
 class TestMainView:
     @pytest.fixture
     def lupv(self):
-        lupv = Lupv(sys.argv)
+        lupv = Lupv(['-platform', 'minimal'])
         return lupv
 
     def test_toggle_spinner(self, lupv):

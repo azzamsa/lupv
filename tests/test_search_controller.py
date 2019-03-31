@@ -343,7 +343,7 @@ class TestSearchController:
         )
         assert "lupv-notes/tugas-tif2.txt-editdistance.lup" in editdistance_file_path
 
-    def test_export_editdistance(self, search_model_ctrl):
+    def test_export_editdistance(self, search_model_ctrl, fs):
         """bridge function to export editdistance
 
         :note: all faked function has been tested before.
@@ -351,10 +351,12 @@ class TestSearchController:
         search_model, search_ctrl = search_model_ctrl
 
         search_ctrl.create_lupvnotes_dir = cf.fake_create_lupvnotes_dir
+        search_ctrl.construct_editdistance_path = cf.fake_construct_editdistance_path
         search_ctrl.student_directories_iterator = cf.fake_student_directories_iterator
         search_ctrl.calc_editdistances = cf.fake_calc_editdistances
         search_model.write_editdistances = cf.fake_write_editdistances
 
+        fs.create_file("home/x/student_tasks/lupv-notes/ed.text")
         search_ctrl.export_editdistances("tugas-tif3.txt")
 
         assert True  # all core logic already tested

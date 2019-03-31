@@ -134,3 +134,6 @@ def fake_calc_editdistances(student_dir, filename):
 
 def fake_write_editdistances(student_ed, filename):
     pass
+
+def fake_construct_editdistance_path(filename):
+    return "home/x/student_tasks/lupv-notes/ed.text"

@@ -1,0 +1,13 @@
+commit 422b64b3811192f412d223fcd5455a661aac0dbf
+Author: student <s@student>
+Date:   Tue Mar 26 14:08:30 2019 +0700
+
+    2019-03-26 14:08:30
+
+diff --git a/tugas-tif.txt b/tugas-tif.txt
+index 6390e2d..19822fb 100644
+--- a/tugas-tif.txt
++++ b/tugas-tif.txt
+@@ -1 +1,2 @@
+ budi line 1
++budi line 2

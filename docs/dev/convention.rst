@@ -12,6 +12,8 @@ Path concept ::
    ---------------------------------------
                   student_path
 
+- `student_repo` : git.Repo object of student
+
 Naming Variables
 ----------------
 

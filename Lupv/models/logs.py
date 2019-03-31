@@ -75,9 +75,11 @@ class LogModel(QObject):
         self._student_repo = student_repo
 
     def on_current_student_dir_changed(self):
-        self.student_path = join(self._record_path, self._current_student_dir)
-        self.student_repo = git.Repo(self._student_path)
-        self.student_records = self._main_model.get_records(self._student_path)
+        """Run automatically when student_dir value changed."""
+        student_path = join(self._record_path, self._current_student_dir)
+        self._student_path = student_path
+        self._student_repo = git.Repo(student_path)
+        self._student_records = self._main_model.get_records(student_path)
 
     def read_files(self):
         """Return files in student directory."""

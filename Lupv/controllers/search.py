@@ -110,28 +110,45 @@ class SearchController(QObject):
         return group
 
     def multigroup_child(self, grouped_students):
-        """ Create multiple level of item groups:
+        """Create multiple level of item groups:
+
         1. grouped_students (accepted data):
+
             - 123.0
+
               - ani
               - ani
               - ani
+
             - 111.0
+
               - budi
+
         2. extract each group items to temporary holder
+
             - holder[key:123.0] : ani,ani,ani
+
         3. arrange holder items by key (or similar things)
+
             - ani <-- parent level
+
                 - ani
                 - ani
+
         4. insert step three to new dict with grandparent keys
+
             - 123.0 <--- grand parent
+
               - ani <--- parent
+
                 - ani <--- child
                 - ani
+
             - 111.0
+
               - budi
               - ani
+
         `grouped_by_name = defaultdict(list)` placement is crucial, because it
         will be wiped to contain new group each iteration.
         """

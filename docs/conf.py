@@ -1,9 +1,9 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../lupv"))
+sys.path.insert(0, os.path.abspath("../"))
 
-extensions = ["sphinx.ext.autodoc"]
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest']
 
 project = "Lupv"
 copyright = "2019, Azzam S.A"

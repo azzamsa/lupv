@@ -15,3 +15,8 @@ build-output/
 
 # Documentations
 docs/_build/
+
+# test
+.coverage
+htmlcov/
+student_tasks/

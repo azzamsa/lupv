@@ -21,9 +21,14 @@ The Code Documentation
 .. toctree::
    :maxdepth: 2
 
-   classes/controllers/controller.rst
-   classes/controllers/student_controller.rst
+   classes/controllers/main.rst
+   classes/controllers/log.rst
+   classes/controllers/search.rst
+   classes/models/main.rst
    classes/models/logs.rst
-   classes/models/records.rst
-   classes/views/main_view.rst
-   classes/views/editdistance_view.rst
+   classes/models/search.rst
+   classes/views/main.rst
+   classes/views/log.rst
+   classes/views/search.rst
+   classes/tests/test_model.rst
+   classes/tests/test_controller.rst

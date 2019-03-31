@@ -8,3 +8,4 @@ pytest:
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
     - pytest --cov=Lupv -vv -s --durations=10 tests/
+    - codecov

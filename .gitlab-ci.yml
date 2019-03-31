@@ -13,4 +13,4 @@ pytest:
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
     - pytest --cov=Lupv -vv -s --durations=10 tests/
-    - codecov
+    - codecov --token=9eb87afa-bfbc-4826-b3b0-d2c2950fe836

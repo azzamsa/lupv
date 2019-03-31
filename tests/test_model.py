@@ -30,7 +30,9 @@ class TestMainModel:
         record_path = osp.join(osp.dirname(__file__), "student_tasks")
         main_model.record_path = record_path
 
-        assert main_model.get_student_dirs() == ["budi-2222", "ani-1111"]
+        student_dirs = main_model.get_student_dirs()
+
+        assert set(["budi-2222", "ani-1111"]).issubset(student_dirs)
 
     def test_get_records(self, main_model):
         """Test get_records with real git objects."""

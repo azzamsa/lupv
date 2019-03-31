@@ -3,3 +3,4 @@ pytest-qt==3.2.2
 pyfakefs==3.5.8
 coverage==4.5.3
 pytest-cov==2.6.1
+codecov

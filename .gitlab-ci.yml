@@ -1,0 +1,10 @@
+pytest:
+  image: python:3.6
+  script:
+    - wget https://gitlab.com/azzamsa/lupv/uploads/398fa4473db0b43f19d59e26670b3e25/student_tasks.tar.gz -P tests/
+    - tar xf tests/student_tasks.tar.gz -C tests/
+    - apt-get update -q -y
+    - apt-get -q -y --no-install-recommends install python3-pyqt5
+    - pip install -r requirements.txt
+    - pip install -r requirements-dev.txt
+    - pytest --cov=Lupv -vv -s --durations=10 tests/

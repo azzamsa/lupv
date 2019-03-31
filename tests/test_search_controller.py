@@ -98,7 +98,7 @@ class TestSearchController:
 
         ani_one = group["ani-1111"][0]
         ani_two = group["ani-1111"][1]
-        assert list(group.keys()) == ["budi-2222", "ani-1111"]
+        assert set(["budi-2222", "ani-1111"]).issubset(list(group.keys()))
         assert len(group["ani-1111"]) == 2
         assert len(group["ani-1111"]) == 2
         assert ani_one["name"] == "ani"
@@ -262,7 +262,7 @@ class TestSearchController:
         search_model.prev_editdistances = scf.students_ed
         prev_student_names = search_ctrl.get_prev_student_names()
 
-        assert prev_student_names == ["budi-2222", "ani-1111"]
+        assert set(["budi-2222", "ani-1111"]).issubset(prev_student_names)
 
     def test_get_prev_filename_sample(self, search_model_ctrl):
         """Test getting previous filename from exported editdistance using dummy data.

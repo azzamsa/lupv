@@ -2,7 +2,7 @@ import os
 import pendulum
 from os.path import join
 
-from PyQt5.QtCore import QObject, pyqtSlot
+from PyQt5.QtCore import QObject
 
 
 class MainController(QObject):
@@ -23,7 +23,6 @@ class MainController(QObject):
         dirs = os.listdir(path)
         invalid_student_dirs = []
         for d in dirs:
-            # print(d)
             if d != "lupv-notes":
                 if not os.path.isdir(join(path, d, ".git")):
                     invalid_student_dirs.append(d)

@@ -3,7 +3,7 @@
 [![image](https://img.shields.io/pypi/v/lupv.svg)](https://pypi.org/project/lupv/)
 [![image](https://img.shields.io/pypi/l/lupv.svg)](https://pypi.org/project/lupv/)
 [![image](https://img.shields.io/pypi/pyversions/lupv.svg)](https://pypi.org/project/lupv/)
-![Build Status](https://gitlab.com/azzamsa/lupv/badges/master/build.svg)
+[![build status](https://gitlab.com/azzamsa/lupv/badges/master/build.svg)](https://gitlab.com/azzamsa/lupv/commits/master)
 [![codecov](https://codecov.io/gl/azzamsa/lupv/branch/master/graph/badge.svg)](https://codecov.io/gl/azzamsa/lupv)
 
 ## Screeenshot

@@ -18,5 +18,6 @@ docs/_build/
 
 # test
 .coverage
+coverage.xml
 htmlcov/
 student_tasks/

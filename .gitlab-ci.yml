@@ -7,4 +7,4 @@ pytest:
     - apt-get -q -y --no-install-recommends install python3-pyqt5
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
-    - pytest --durations=10 tests/
+    - pytest --cov=Lupv -vv -s --durations=10 tests/

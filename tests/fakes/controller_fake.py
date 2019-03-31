@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from tests.fixtures import record_fixture
 from tests.fixtures import search_controller_fixture as scf
+from tests.fixtures import view_fixture as vf
 from tests.helper import fixture
 
 
@@ -29,6 +30,10 @@ def fake_calc_work_duration(first_record_dt, last_record_dt):
     work_duration = "0:00:10"
     work_relative_duration = "10 seconds"
     return work_duration, work_relative_duration
+
+
+def fake_populate_students_records():
+    return vf.student_records
 
 
 #
@@ -134,6 +139,7 @@ def fake_calc_editdistances(student_dir, filename):
 
 def fake_write_editdistances(student_ed, filename):
     pass
+
 
 def fake_construct_editdistance_path(filename):
     return "home/x/student_tasks/lupv-notes/ed.text"

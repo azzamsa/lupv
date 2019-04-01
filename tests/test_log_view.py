@@ -22,6 +22,7 @@ class TestLogView:
     @pytest.fixture
     def lupv(self):
         lupv = Lupv(sys.argv)
+        lupv.main_view._search_view.plt.close("all")
         return lupv
 
     def test_toggle_spinner(self, lupv):

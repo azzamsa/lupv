@@ -41,6 +41,44 @@ def fake_populate_students_records():
 #
 
 
+def fake_populate_logs(*args):
+    return [
+        {
+            "relative_time": "2 days ago",
+            "time": "Sat, 30 Mar 2019, 01:00:57",
+            "sha": "991dcb1ae434ffba832c0ad50b890afac7311111",
+            "insertions": 3,
+            "deletions": 1,
+        },
+        {
+            "relative_time": "2 days ago",
+            "time": "Sat, 30 Mar 2019, 01:00:54",
+            "sha": "991dcb1ae434ffba832c0ad50b890afac731222",
+            "insertions": 3,
+            "deletions": 1,
+        },
+        {
+            "relative_time": "2 days ago",
+            "time": "Sat, 30 Mar 2019, 01:00:51",
+            "sha": "991dcb1ae434ffba832c0ad50b890afac7313333",
+            "insertions": 3,
+            "deletions": 1,
+        },
+    ]
+
+
+def fake_populate_file_content(*args):
+    return "dummy content"
+
+
+def fake_populate_file_content_no_content(*args):
+    return ""
+
+
+def fake_populate_files():
+    return ["dummy.txt", "dummy_2.txt"]
+
+
 def fake_read_files():
     return ["tugas-tif.txt"]
 

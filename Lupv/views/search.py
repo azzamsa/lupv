@@ -108,7 +108,8 @@ class SearchView:
         self._ui.horizontalLayout_21.addWidget(self.prev_student_name_combo)
         self._ui.horizontalLayout_20.addWidget(self.prev_filename_combo)
 
-        self.figure = plt.figure()
+        self.plt = plt
+        self.figure = self.plt.figure()
         self.canvas = FigureCanvas(self.figure)
         self._ui.verticalLayout_22.addWidget(self.canvas)
 
@@ -404,15 +405,15 @@ class SearchView:
             )
 
         ax.legend()
-        plt.title(
+        self.plt.title(
             "{cur}{bridge}{prev}".format(
                 cur="" if cur_fmt is None else cur_fmt,
                 bridge="" if bridge_fmt is None else bridge_fmt,
                 prev="" if prev_fmt is None else prev_fmt,
             )
         )
-        plt.xlabel("Record count")
-        plt.ylabel("Edit distance from final sumbission")
+        self.plt.xlabel("Record count")
+        self.plt.ylabel("Edit distance from final sumbission")
 
         self.canvas.draw()
 

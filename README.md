@@ -6,6 +6,11 @@
 [![build status](https://gitlab.com/azzamsa/lupv/badges/master/build.svg)](https://gitlab.com/azzamsa/lupv/commits/master)
 [![codecov](https://codecov.io/gl/azzamsa/lupv/branch/devel/graph/badge.svg)](https://codecov.io/gl/azzamsa/lupv)
 
+A system for preventing plagiarism on student assignments with
+snapshotting and activity logging.
+
+All the goal of this project is for research purposes.
+
 ## Screeenshot
 
 ![lupv-thumb](/uploads/3a3936a39b6bd6eedfe3b2bba6ebbaae/lupv-thumb.png)

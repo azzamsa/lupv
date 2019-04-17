@@ -586,7 +586,7 @@ class Ui_MainWindow(object):
         self.windows_search_tree.headerItem().setText(2, _translate("MainWindow", "Nim"))
         self.windows_search_tree.headerItem().setText(3, _translate("MainWindow", "Record DateTime"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.windows_tab), _translate("MainWindow", "Windows"))
-        self.group_by_ip_btn.setText(_translate("MainWindow", "Group by IP Address"))
+        self.group_by_ip_btn.setText(_translate("MainWindow", "Show all IP Addresses"))
         self.group_by_ip_tree.headerItem().setText(1, _translate("MainWindow", "Name"))
         self.group_by_ip_tree.headerItem().setText(3, _translate("MainWindow", "Record DateTime"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.ip_tab), _translate("MainWindow", "IP Address"))

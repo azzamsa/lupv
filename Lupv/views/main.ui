@@ -705,7 +705,7 @@
                   <item>
                    <widget class="QPushButton" name="group_by_ip_btn">
                     <property name="text">
-                     <string>Group by IP Address</string>
+                     <string>Show all IP Addresses</string>
                     </property>
                    </widget>
                   </item>

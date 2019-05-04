@@ -177,7 +177,7 @@ class LogView:
         if self._ui.stats_check.isChecked():
             selected_file = self.get_selected_file()
             if not selected_file:
-                QMessageBox.warning(None, "No Filename Warning", "please choose a file")
+                QMessageBox.warning(None, "No Filename Warning", "Please choose a file")
                 self._ui.stats_check.setChecked(False)
                 return None
 

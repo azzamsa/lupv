@@ -133,14 +133,14 @@ class SearchView:
         insertions_limit = str(self._ui.insertions_limit_spin.value())
         filename = self.suspect_filename_combo.currentText()
 
-        msg = "please set limit higer than {}\nAbove 10 is recommended"
+        msg = "Please set limit higer than {}\nAbove 10 is recommended"
         if int(insertions_limit) == 0:
             QMessageBox.warning(
                 None, "Invalid Value Warning", msg.format(insertions_limit)
             )
             return None
         if filename == "No File Selected" or not filename:
-            QMessageBox.warning(None, "No Filename Warning", "please select a file")
+            QMessageBox.warning(None, "No Filename Warning", "Please select a file")
             return None
 
         self.toggle_spinner("work")
@@ -228,7 +228,7 @@ class SearchView:
         self._ui.windows_search_tree.clear()
         search_key = self._ui.windows_searchkey_widget.text()
         if not search_key:
-            msg = "please supply the window name"
+            msg = "Please supply the window name"
             QMessageBox.warning(None, "Invalid Value Warning", msg)
             return None  # magic line `break` alias.
 

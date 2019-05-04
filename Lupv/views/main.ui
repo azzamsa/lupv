@@ -140,14 +140,14 @@
                  <item>
                   <widget class="QRadioButton" name="main_reldate_rbtn">
                    <property name="text">
-                    <string>Re&amp;lative Date</string>
+                    <string>Re&amp;lative DateTime</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QRadioButton" name="main_realdate_rbtn">
                    <property name="text">
-                    <string>Real &amp;Date</string>
+                    <string>Real &amp;DateTime</string>
                    </property>
                   </widget>
                  </item>
@@ -300,14 +300,14 @@
                         <item>
                          <widget class="QRadioButton" name="log_realdate_rbtn">
                           <property name="text">
-                           <string>Rea&amp;l Date</string>
+                           <string>Rea&amp;l DateTime</string>
                           </property>
                          </widget>
                         </item>
                         <item>
                          <widget class="QRadioButton" name="log_reldate_rbtn">
                           <property name="text">
-                           <string>Re&amp;lative Date</string>
+                           <string>Re&amp;lative DateTime</string>
                           </property>
                          </widget>
                         </item>
@@ -372,7 +372,7 @@
                        <item>
                         <widget class="QLabel" name="machine_const_lbl">
                          <property name="text">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Machine name:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Device name:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                         </widget>
                        </item>
@@ -482,12 +482,12 @@
                </property>
                <column>
                 <property name="text">
-                 <string>Relative Date</string>
+                 <string>Relative DateTime</string>
                 </property>
                </column>
                <column>
                 <property name="text">
-                 <string>Date</string>
+                 <string>DateTime</string>
                 </property>
                </column>
                <column>
@@ -610,7 +610,7 @@
                   </column>
                   <column>
                    <property name="text">
-                    <string>Nim</string>
+                    <string>Student ID</string>
                    </property>
                   </column>
                   <column>
@@ -625,7 +625,7 @@
                   </column>
                   <column>
                    <property name="text">
-                    <string>Date</string>
+                    <string>DateTime</string>
                    </property>
                   </column>
                  </widget>
@@ -681,12 +681,12 @@
                     </column>
                     <column>
                      <property name="text">
-                      <string>Nim</string>
+                      <string>Student ID</string>
                      </property>
                     </column>
                     <column>
                      <property name="text">
-                      <string>Record DateTime</string>
+                      <string>DateTime</string>
                      </property>
                     </column>
                    </widget>
@@ -726,12 +726,12 @@
                     </column>
                     <column>
                      <property name="text">
-                      <string notr="true">Nim</string>
+                      <string notr="true">Student ID</string>
                      </property>
                     </column>
                     <column>
                      <property name="text">
-                      <string>Record DateTime</string>
+                      <string>DateTime</string>
                      </property>
                     </column>
                    </widget>
@@ -742,7 +742,7 @@
               </widget>
               <widget class="QWidget" name="tab">
                <attribute name="title">
-                <string>EditDistance</string>
+                <string>Edit-distance</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_23">
                 <item>
@@ -762,7 +762,7 @@
                            </sizepolicy>
                           </property>
                           <property name="text">
-                           <string>Student 1:</string>
+                           <string>Current Student:</string>
                           </property>
                          </widget>
                         </item>
@@ -800,7 +800,7 @@
                            </sizepolicy>
                           </property>
                           <property name="text">
-                           <string>Student 2:</string>
+                           <string>Previous Student:</string>
                           </property>
                          </widget>
                         </item>
@@ -836,7 +836,7 @@
                      </sizepolicy>
                     </property>
                     <property name="text">
-                     <string>Compare</string>
+                     <string>Show</string>
                     </property>
                    </widget>
                   </item>
@@ -985,12 +985,12 @@
   </action>
   <action name="load_editdistance_action">
    <property name="text">
-    <string>&amp;Load Editdistance File</string>
+    <string>&amp;Load Edit-distance File</string>
    </property>
   </action>
   <action name="export_editdistance_action">
    <property name="text">
-    <string>&amp;Export Editdistance</string>
+    <string>&amp;Export Edit-distance</string>
    </property>
   </action>
  </widget>

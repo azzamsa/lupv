@@ -24,15 +24,18 @@ class MainController(QObject):
         invalid_student_dirs = []
         for d in dirs:
             if d != "lupv-notes":
-                name = d.split("-")[0]
-                student_id = d.split("-")[1]
-                if os.path.isdir(join(path, d, ".git")) and all(
-                    (name.isalpha(), student_id.isdigit())
-                ):
-                    # using `not` didn't work, also hard to read and
-                    # error prone
-                    pass
-                else:
+                try:
+                    name = d.split("-")[0]
+                    student_id = d.split("-")[1]
+                    if os.path.isdir(join(path, d, ".git")) and all(
+                            (name.isalpha(), student_id.isdigit())
+                    ):
+                        # using `not` didn't work, also hard to read and
+                        # error prone
+                        pass
+                    else:
+                        invalid_student_dirs.append(d)
+                except Exception:
                     invalid_student_dirs.append(d)
 
         return invalid_student_dirs

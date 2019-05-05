@@ -60,9 +60,8 @@ class LogView:
 
         self._ui.log_tree.clear()
 
-        selected_file = self.get_selected_file()
-
         if complete:  # can't show stats without selected_file
+            selected_file = self.get_selected_file()
             self._ui.log_tree.clear()
             for log in self._log_ctrl.populate_logs(selected_file):
                 QTreeWidgetItem(
@@ -84,7 +83,7 @@ class LogView:
                     ],
                 )
         else:
-            for log in self._log_ctrl.populate_logs(selected_file):
+            for log in self._log_ctrl.populate_logs():
                 QTreeWidgetItem(
                     self._ui.log_tree,
                     [str(log["relative_time"]), str(log["time"]), str(log["sha"])],

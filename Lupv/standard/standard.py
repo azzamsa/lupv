@@ -7,12 +7,6 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QApplication
 
 
-class MyDict(OrderedDict):
-    def __missing__(self, key):
-        val = self[key] = MyDict()
-        return val
-
-
 class MyComboBox(QComboBox):
     popupAboutToBeShown = pyqtSignal()
 

@@ -3,11 +3,11 @@ from PyQt5.QtGui import QBrush, QColor
 
 
 class LogView:
-    def __init__(self, Ui, student_ctrl, controller):
+    def __init__(self, ui, log_ctrl, main_ctrl):
         super().__init__()
-        self._ui = Ui
-        self._log_ctrl = student_ctrl
-        self._main_ctrl = controller
+        self._ui = ui
+        self._log_ctrl = log_ctrl
+        self._main_ctrl = main_ctrl
 
         self._ui.log_tree.itemSelectionChanged.connect(self.log_selection_changed)
 

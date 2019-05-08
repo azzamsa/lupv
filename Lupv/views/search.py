@@ -20,9 +20,9 @@ from Lupv.standard.standard import MyComboBox, bold, resize_column
 
 
 class SearchView:
-    def __init__(self, Ui, search_ctrl):
+    def __init__(self, ui, search_ctrl):
         super().__init__()
-        self._ui = Ui
+        self._ui = ui
         self._search_ctrl = search_ctrl
 
         self._ui.analyze_suspects_btn.clicked.connect(self.display_suspects)

@@ -188,6 +188,31 @@ class TestLogController:
         assert log_model.current_student_dir == "ani-1111"
         assert log_model.record_path == "home/x/student_tasks"
 
+    def test_populate_logs_no_records(self, log_ctrl_model):
+        """Test populating student logs using dummy data."""
+        log_ctrl, log_model = log_ctrl_model
+        log_model.student_records = []
+        log_model.is_exists = cf.fake_is_exists
+
+        ani_logs = list(log_ctrl.populate_logs(selected_file="tugas-tif.txt"))
+
+        assert ani_logs == []
+
+    def test_populate_logs_no_file(self, log_ctrl_model):
+        """Test populating student logs using dummy data."""
+        log_ctrl, log_model = log_ctrl_model
+        log_model.student_records = record_fixture.student_records
+        log_model.is_exists = cf.fake_is_exists
+
+        ani_logs = list(log_ctrl.populate_logs(selected_file=None))
+
+        ani_log = ani_logs[0]
+        assert "ago" in ani_log["relative_time"]
+        assert ani_log["time"] == "Sat, 30 Mar 2019, 01:00:57"
+        assert ani_log["sha"] == "991dcb1ae434ffba832c0ad50b890afac7311111"
+        assert ani_log["insertions"] == 0
+        assert ani_log["deletions"] == 0
+
     def test_populate_logs(self, log_ctrl_model):
         """Test populating student logs using dummy data."""
         log_ctrl, log_model = log_ctrl_model

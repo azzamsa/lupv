@@ -28,7 +28,7 @@ class MainController(QObject):
                     name = d.split("-")[0]
                     student_id = d.split("-")[1]
                     if os.path.isdir(join(path, d, ".git")) and all(
-                            (name.isalpha(), student_id.isdigit())
+                        (name.isalpha(), student_id.isdigit())
                     ):
                         # using `not` didn't work, also hard to read and
                         # error prone

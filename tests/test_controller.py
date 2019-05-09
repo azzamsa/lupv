@@ -152,6 +152,24 @@ class TestLogController:
         return log_ctrl, log_model
 
     @pytest.fixture
+    def log_ctrl_model_main(self):
+        """LogController fixture.
+        Create LogController instance and disconnect all signal.
+
+        :return: both log_ctrl and log_model because some function need both of them.
+        """
+        main_model = MainModel()
+        main_model.record_path_changed.disconnect(main_model.read_students_records)
+        log_model = LogModel(main_model)
+        log_model.current_student_dir_changed.disconnect(
+            log_model.on_current_student_dir_changed
+        )
+        main_ctrl = MainController(main_model)
+        log_ctrl = LogController(main_ctrl, log_model)
+
+        return log_ctrl, log_model, main_ctrl
+
+    @pytest.fixture
     def log_ctrl(self):
         """LogController fixture.
         Create LogController instance and disconnect all signal.
@@ -223,6 +241,49 @@ class TestLogController:
 
         ani_log = ani_logs[0]
         assert "ago" in ani_log["relative_time"]
+        assert ani_log["time"] == "Sat, 30 Mar 2019, 01:00:57"
+        assert ani_log["sha"] == "991dcb1ae434ffba832c0ad50b890afac7311111"
+        assert ani_log["insertions"] == 3
+        assert ani_log["deletions"] == 1
+
+    def test_populate_logs_no_records_fake_main(self, log_ctrl_model_main):
+        """Test populating student logs using dummy data."""
+        log_ctrl, log_model, main_ctrl = log_ctrl_model_main
+        log_model.student_records = []
+        log_model.is_exists = cf.fake_is_exists
+        main_ctrl.relativize_datetime = cf.fake_relativize_datetime
+
+        ani_logs = list(log_ctrl.populate_logs(selected_file="tugas-tif.txt"))
+
+        assert ani_logs == []
+
+    def test_populate_logs_no_file_fake_main(self, log_ctrl_model_main):
+        """Test populating student logs using dummy data."""
+        log_ctrl, log_model, main_ctrl = log_ctrl_model_main
+        log_model.student_records = record_fixture.student_records
+        log_model.is_exists = cf.fake_is_exists
+        main_ctrl.relativize_datetime = cf.fake_relativize_datetime
+
+        ani_logs = list(log_ctrl.populate_logs(selected_file=None))
+
+        ani_log = ani_logs[0]
+        assert "2 days ago" in ani_log["relative_time"]
+        assert ani_log["time"] == "Sat, 30 Mar 2019, 01:00:57"
+        assert ani_log["sha"] == "991dcb1ae434ffba832c0ad50b890afac7311111"
+        assert ani_log["insertions"] == 0
+        assert ani_log["deletions"] == 0
+
+    def test_populate_logs_fake_main(self, log_ctrl_model_main):
+        """Test populating student logs using dummy data."""
+        log_ctrl, log_model, main_ctrl = log_ctrl_model_main
+        log_model.student_records = record_fixture.student_records
+        log_model.is_exists = cf.fake_is_exists
+        main_ctrl.relativize_datetime = cf.fake_relativize_datetime
+
+        ani_logs = list(log_ctrl.populate_logs(selected_file="tugas-tif.txt"))
+
+        ani_log = ani_logs[0]
+        assert "2 days ago" in ani_log["relative_time"]
         assert ani_log["time"] == "Sat, 30 Mar 2019, 01:00:57"
         assert ani_log["sha"] == "991dcb1ae434ffba832c0ad50b890afac7311111"
         assert ani_log["insertions"] == 3

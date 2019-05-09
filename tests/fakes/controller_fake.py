@@ -36,6 +36,10 @@ def fake_populate_students_records():
     return vf.student_records
 
 
+def fake_relativize_datetime(datetime):
+    return "2 days ago"
+
+
 #
 # LogController
 #

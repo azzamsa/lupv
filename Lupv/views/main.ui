@@ -524,7 +524,7 @@
                <enum>QTabWidget::North</enum>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <property name="elideMode">
                <enum>Qt::ElideNone</enum>
@@ -644,7 +644,7 @@
                     <item>
                      <widget class="QLabel" name="label_3">
                       <property name="text">
-                       <string>Windows Name:</string>
+                       <string>Window Name:</string>
                       </property>
                      </widget>
                     </item>
@@ -671,7 +671,7 @@
                     </property>
                     <column>
                      <property name="text">
-                      <string>Windows Name</string>
+                      <string>Window Name</string>
                      </property>
                     </column>
                     <column>

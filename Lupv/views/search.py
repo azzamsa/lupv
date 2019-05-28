@@ -261,7 +261,7 @@ class SearchView:
             for col in range(1, 5):
                 self._ui.windows_search_tree.hideColumn(col)
             self._ui.windows_search_tree.headerItem().setText(0, "")
-            msg = 'No windows name for "{}" found'
+            msg = 'No window name for "{}" found'
             QTreeWidgetItem(self._ui.windows_search_tree, [msg.format(search_key)])
 
         resize_column(self._ui.windows_search_tree)

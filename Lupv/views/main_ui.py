@@ -523,7 +523,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.stackedWidget.setCurrentIndex(1)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         self.spinner_stack.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -580,9 +580,9 @@ class Ui_MainWindow(object):
         self.suspects_tree.headerItem().setText(3, _translate("MainWindow", "Line Insertions"))
         self.suspects_tree.headerItem().setText(4, _translate("MainWindow", "DateTime"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.suspects_tab), _translate("MainWindow", "Suspects"))
-        self.label_3.setText(_translate("MainWindow", "Windows Name:"))
+        self.label_3.setText(_translate("MainWindow", "Window Name:"))
         self.windows_search_btn.setText(_translate("MainWindow", "Search"))
-        self.windows_search_tree.headerItem().setText(0, _translate("MainWindow", "Windows Name"))
+        self.windows_search_tree.headerItem().setText(0, _translate("MainWindow", "Window Name"))
         self.windows_search_tree.headerItem().setText(2, _translate("MainWindow", "Student ID"))
         self.windows_search_tree.headerItem().setText(3, _translate("MainWindow", "DateTime"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.windows_tab), _translate("MainWindow", "Windows"))

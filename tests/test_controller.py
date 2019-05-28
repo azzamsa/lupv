@@ -49,7 +49,7 @@ class TestMainController:
         invalid_dirs = main_ctrl.validate(record_path)
         assert not invalid_dirs
 
-    def test_validate_invalid_dir(self, main_ctrl, fs, monkeypatch):
+    def test_validate_invalid_dir(self, main_ctrl, fs):
         """Test checking valid directories using dummy filesystem.
 
         :note: using monkeypatch and pyfakefs is the same as taking 0.05s."""
@@ -61,6 +61,26 @@ class TestMainController:
         invalid_dirs = main_ctrl.validate("home/x/student_tasks")
 
         assert "invalid-3333" == invalid_dirs[0]
+
+    def test_validate_invalid_dir_name(self, main_ctrl, fs):
+        """Test checking valid directories using dummy filesystem.
+
+        :note: using monkeypatch and pyfakefs is the same as taking 0.05s."""
+        fs.create_dir("home/x/student_tasks/ani-aa1111/.git")
+
+        invalid_dirs = main_ctrl.validate("home/x/student_tasks")
+
+        assert "ani-aa1111" == invalid_dirs[0]
+
+    def test_validate_exception(self, main_ctrl, fs):
+        """Test checking valid directories using dummy filesystem.
+
+        :note: using monkeypatch and pyfakefs is the same as taking 0.05s."""
+        fs.create_dir("home/x/student_tasks/aa1111/.git")
+
+        invalid_dirs = main_ctrl.validate("home/x/student_tasks")
+
+        assert "aa1111" == invalid_dirs[0]
 
     def test_relativize_datetime(self, main_ctrl):
         """Test convertion datetime to its relative version using dummy data."""

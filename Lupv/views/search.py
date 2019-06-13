@@ -327,7 +327,7 @@ class SearchView:
         qApp.processEvents()
 
         self._search_ctrl.export_editdistances(filename)
-        msg = "Editdistance exported to {}"
+        msg = "Edit-distance exported to {}"
         ed_path = self._search_ctrl.construct_editdistance_path(filename)
         QMessageBox.information(None, "Export Information", msg.format(ed_path))
 

@@ -428,8 +428,8 @@ class EdFilenameDialog(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.cancel_btn = QPushButton("Close")
         self.export_btn = QPushButton("Export")
+        self.cancel_btn = QPushButton("Cancel")
 
         btn_layout = QHBoxLayout()
         btn_layout.addWidget(self.export_btn)

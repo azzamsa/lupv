@@ -367,7 +367,7 @@ class Ui_MainWindow(object):
         self.group_by_ip_tree = QtWidgets.QTreeWidget(self.ip_tab)
         self.group_by_ip_tree.setAnimated(True)
         self.group_by_ip_tree.setObjectName("group_by_ip_tree")
-        self.group_by_ip_tree.headerItem().setText(0, "IP")
+        self.group_by_ip_tree.headerItem().setText(0, "IP Address")
         self.group_by_ip_tree.headerItem().setText(2, "Student ID")
         self.verticalLayout_11.addWidget(self.group_by_ip_tree)
         self.verticalLayout_12.addLayout(self.verticalLayout_11)
@@ -522,8 +522,8 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuStorage.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(1)
-        self.tabWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(0)
         self.spinner_stack.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

@@ -60,8 +60,8 @@ class LogController(QObject):
 
     def populate_focused_window(self, sha):
         """Return focused window name."""
-        focused = self._log_model.read_focused_window(sha)
-        return focused
+        focused_window = self._log_model.read_focused_window(sha)
+        return focused_window
 
     def take_diff_body(self, diff):
         """Remove header from diff."""
